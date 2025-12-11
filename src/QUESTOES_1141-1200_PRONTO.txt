@@ -1,0 +1,483 @@
+,
+
+  // --- BLOCO TÉCNICO EM INFORMÁTICA E REGRAS INSTITUCIONAIS ALE-RR (1141-1200) ---
+  {
+    id: 1141,
+    materia: "TI - Hardware",
+    pergunta: "Um técnico da ALE-RR precisa instalar uma impressora que utiliza calor para transferir a tinta de uma fita (ribbon) ou escurecer um papel termo-sensível. Esse tipo de impressora é classificada como:",
+    opcoes: ["Jato de Tinta (Inkjet)", "Laser", "Térmica", "Matricial"],
+    correta: 2,
+    explicacao: "Impressoras térmicas usam calor. São comuns em etiquetas e cupons. Laser usa toner e eletricidade estática. Matricial usa impacto."
+  },
+  {
+    id: 1142,
+    materia: "TI - Hardware",
+    pergunta: "Para melhorar o desempenho de um computador antigo da Assembleia que está lento ao abrir muitos programas, o upgrade de hardware mais indicado e de custo-benefício imediato, além de adicionar RAM, é:",
+    opcoes: ["Trocar o Gabinete", "Substituir o HD por um SSD", "Trocar o Monitor por um LED", "Instalar uma Placa de Som"],
+    correta: 1,
+    explicacao: "A troca de HD (mecânico) por SSD (eletrônico) remove o principal gargalo de velocidade de leitura/escrita do sistema."
+  },
+  {
+    id: 1143,
+    materia: "TI - Conectividade",
+    pergunta: "Qual interface de vídeo é capaz de transmitir sinais de vídeo analógicos, sendo a mais antiga ainda encontrada em alguns projetores da Casa?",
+    opcoes: ["HDMI", "DisplayPort", "VGA (D-Sub)", "DVI-D"],
+    correta: 2,
+    explicacao: "VGA é analógico. HDMI, DisplayPort e DVI-D são digitais."
+  },
+  {
+    id: 1144,
+    materia: "TI - Redes",
+    pergunta: "Ao crimpar um cabo de rede no padrão T568A, a cor do primeiro fio (pino 1) deve ser:",
+    opcoes: ["Branco do Laranja", "Branco do Verde", "Azul", "Branco do Marrom"],
+    correta: 1,
+    explicacao: "T568A começa com Branco-Verde. T568B começa com Branco-Laranja."
+  },
+  {
+    id: 1145,
+    materia: "TI - Redes",
+    pergunta: "Qual dispositivo de rede opera na Camada 1 (Física) do Modelo OSI e é considerado obsoleto por replicar o tráfego para todas as portas (broadcast), causando colisões?",
+    opcoes: ["Switch", "Roteador", "Hub", "Bridge"],
+    correta: 2,
+    explicacao: "O Hub é um repetidor burro de camada 1. O Switch é inteligente (camada 2)."
+  },
+  {
+    id: 1146,
+    materia: "TI - Protocolos",
+    pergunta: "Qual protocolo é utilizado para enviar e-mails de um cliente (Outlook/Thunderbird) para o servidor de e-mail?",
+    opcoes: ["POP3", "IMAP", "SMTP", "SNMP"],
+    correta: 2,
+    explicacao: "SMTP (Simple Mail Transfer Protocol) é para ENVIO. POP3 e IMAP são para RECEBIMENTO."
+  },
+  {
+    id: 1147,
+    materia: "Regimento Interno ALE-RR - Polícia",
+    pergunta: "Quanto à segurança institucional, quem detém a competência privativa para o policiamento do Palácio Antônio Martins, sem intervenção de outro Poder?",
+    opcoes: ["O Governador do Estado", "A Polícia Militar, autonomamente", "A Mesa Diretora", "O Presidente da Comissão de Segurança"],
+    correta: 2,
+    explicacao: "O policiamento compete privativamente à Mesa Diretora."
+  },
+  {
+    id: 1148,
+    materia: "Regimento Interno ALE-RR - Armas",
+    pergunta: "Um cidadão visitante entra na Assembleia portando arma de fogo legalizada. Qual o procedimento correto segundo o Regimento?",
+    opcoes: ["Pode entrar, pois tem porte.", "Deve entregar a arma ao Deputado que irá visitar.", "É vedado o porte; deve ser encaminhado ao órgão policial para depositá-la.", "Pode entrar se a arma estiver desmuniciada."],
+    correta: 2,
+    explicacao: "É vedado a qualquer pessoa (exceto policiais em serviço). Visitantes armados devem depositar a arma no órgão policial."
+  },
+  {
+    id: 1149,
+    materia: "TI - Windows",
+    pergunta: "No Windows 10/11, qual ferramenta administrativa permite gerenciar partições de disco, formatar unidades e alterar letras de driver?",
+    opcoes: ["Desfragmentador", "Gerenciamento de Disco (diskmgmt.msc)", "Windows Update", "Editor de Registro"],
+    correta: 1,
+    explicacao: "O Gerenciamento de Disco é a ferramenta nativa para particionamento."
+  },
+  {
+    id: 1150,
+    materia: "TI - Linux",
+    pergunta: "Qual comando Linux é usado para alterar a senha de um usuário?",
+    opcoes: ["pass", "unlock", "passwd", "setpass"],
+    correta: 2,
+    explicacao: "`passwd` é o comando para alterar senhas."
+  },
+  {
+    id: 1151,
+    materia: "TI - Linux",
+    pergunta: "O diretório padrão do Linux onde são armazenados os arquivos de configuração do sistema (como interfaces de rede e usuários) é:",
+    opcoes: ["/bin", "/home", "/etc", "/var"],
+    correta: 2,
+    explicacao: "/etc contém as configurações globais do sistema."
+  },
+  {
+    id: 1152,
+    materia: "TI - Segurança",
+    pergunta: "A técnica de segurança que consiste em criar uma rede privada virtual criptografada para acessar a rede interna da ALE-RR a partir de casa é:",
+    opcoes: ["VLAN", "VPN", "DMZ", "DNS"],
+    correta: 1,
+    explicacao: "VPN (Virtual Private Network) cria o túnel seguro."
+  },
+  {
+    id: 1153,
+    materia: "TI - Segurança",
+    pergunta: "Qual princípio da Segurança da Informação garante que a informação esteja acessível apenas a quem tem autorização?",
+    opcoes: ["Integridade", "Disponibilidade", "Confidencialidade", "Irretratabilidade"],
+    correta: 2,
+    explicacao: "Confidencialidade (Sigilo)."
+  },
+  {
+    id: 1154,
+    materia: "TI - Backup",
+    pergunta: "Um backup 'Diferencial' realizado na quarta-feira copiará:",
+    opcoes: ["Todos os dados do servidor.", "Apenas os dados alterados desde terça-feira.", "Todos os dados alterados desde o último backup FULL (provavelmente domingo).", "Apenas arquivos de sistema."],
+    correta: 2,
+    explicacao: "O Diferencial sempre copia tudo que mudou em relação ao último FULL."
+  },
+  {
+    id: 1155,
+    materia: "Regimento Interno ALE-RR - Serviços",
+    pergunta: "Quem dirige os serviços administrativos da Assembleia Legislativa e expede normas complementares?",
+    opcoes: ["O 1º Secretário, sozinho.", "A Mesa Diretora.", "O Governador.", "O Chefe de RH."],
+    correta: 1,
+    explicacao: "Os serviços administrativos são dirigidos pela Mesa."
+  },
+  {
+    id: 1156,
+    materia: "Regimento Interno ALE-RR - Serviços",
+    pergunta: "Qualquer proposição que vise modificar os serviços administrativos da Assembleia depende obrigatoriamente de:",
+    opcoes: ["Aprovação do Governador.", "Parecer conclusivo da Mesa Diretora.", "Voto popular.", "Parecer do Tribunal de Contas."],
+    correta: 1,
+    explicacao: "Nenhuma proposição que modifique os serviços pode ser deliberada sem parecer conclusivo da Mesa."
+  },
+  {
+    id: 1157,
+    materia: "TI - Internet",
+    pergunta: "O erro '404 Not Found' ao tentar acessar o portal da transparência indica que:",
+    opcoes: ["O servidor está desligado.", "O usuário não tem permissão.", "O recurso/página solicitado não foi encontrado no servidor.", "O servidor explodiu."],
+    correta: 2,
+    explicacao: "404 é erro de cliente (recurso não encontrado)."
+  },
+  {
+    id: 1158,
+    materia: "TI - Navegadores",
+    pergunta: "Para acessar uma página sem salvar histórico, cookies ou dados de formulário localmente, deve-se usar o modo:",
+    opcoes: ["Modo de Segurança", "Modo Avião", "Navegação Privada / Incógnita", "Modo Desenvolvedor"],
+    correta: 2,
+    explicacao: "Navegação Anônima/Privada não salva rastros locais."
+  },
+  {
+    id: 1159,
+    materia: "TI - Excel",
+    pergunta: "No Excel, qual símbolo deve iniciar qualquer fórmula?",
+    opcoes: ["#", "$", "=", "&"],
+    correta: 2,
+    explicacao: "Toda fórmula começa com igual (=)."
+  },
+  {
+    id: 1160,
+    materia: "TI - Excel",
+    pergunta: "A função `=SE(A1>=6; 'Aprovado'; 'Reprovado')` retornará 'Reprovado' se o valor de A1 for:",
+    opcoes: ["6", "7", "5.9", "10"],
+    correta: 2,
+    explicacao: "5.9 não é maior ou igual a 6, logo cai na condição falsa ('Reprovado')."
+  },
+  {
+    id: 1161,
+    materia: "TI - Word",
+    pergunta: "Qual atalho no MS Word seleciona TODO o texto do documento?",
+    opcoes: ["Ctrl + A (em inglês) ou Ctrl + T (em português)", "Ctrl + S", "Ctrl + C", "Ctrl + P"],
+    correta: 0,
+    explicacao: "No Word em Português-BR é Ctrl + T (Tudo). Em inglês é Ctrl + A (All)."
+  },
+  {
+    id: 1162,
+    materia: "TI - Segurança",
+    pergunta: "O 'Ransomware' é uma ameaça crítica para órgãos públicos. Sua principal ação é:",
+    opcoes: ["Roubar a senha do Wi-Fi.", "Criptografar os dados do usuário e exigir pagamento (resgate) para devolução.", "Queimar o processador.", "Exibir propagandas."],
+    correta: 1,
+    explicacao: "Sequestro de dados via criptografia."
+  },
+  {
+    id: 1163,
+    materia: "Roraima - Geografia",
+    pergunta: "O ponto turístico 'Lago do Caracaranã' é conhecido por suas praias de areia branca e cajueiros, localizando-se no município de:",
+    opcoes: ["Boa Vista", "Normandia", "Pacaraima", "Bonfim"],
+    correta: 1,
+    explicacao: "O Lago do Caracaranã fica em Normandia, dentro da Terra Indígena Raposa Serra do Sol."
+  },
+  {
+    id: 1164,
+    materia: "Roraima - História",
+    pergunta: "O Monumento aos Garimpeiros, na Praça do Centro Cívico, homenageia a atividade que impulsionou a economia nas décadas de 80/90. Qual minério era o foco?",
+    opcoes: ["Ferro", "Ouro e Diamante", "Bauxita", "Urânio"],
+    correta: 1,
+    explicacao: "O garimpo de ouro e diamante marcou a explosão demográfica de Roraima."
+  },
+  {
+    id: 1165,
+    materia: "TI - Lógica",
+    pergunta: "Em lógica binária, o número '10' na base 2 corresponde a qual número na base decimal?",
+    opcoes: ["1", "2", "3", "10"],
+    correta: 1,
+    explicacao: "1*(2^1) + 0*(2^0) = 2 + 0 = 2."
+  },
+  {
+    id: 1166,
+    materia: "TI - Hardware",
+    pergunta: "Qual componente é responsável por converter a energia da tomada (Alternada) para energia contínua utilizável pelo PC?",
+    opcoes: ["Placa-mãe", "Fonte de Alimentação (PSU)", "Estabilizador", "Processador"],
+    correta: 1,
+    explicacao: "A Fonte de Alimentação realiza a conversão AC/DC."
+  },
+  {
+    id: 1167,
+    materia: "TI - Redes",
+    pergunta: "Uma rede 'WLAN' refere-se a:",
+    opcoes: ["Rede Mundial de Computadores", "Rede Local Sem Fio (Wireless)", "Rede Metropolitana", "Rede com Fio"],
+    correta: 1,
+    explicacao: "WLAN = Wireless LAN."
+  },
+  {
+    id: 1168,
+    materia: "TI - Comandos",
+    pergunta: "No Windows, o comando 'ping 127.0.0.1' serve para:",
+    opcoes: ["Testar a conexão com a internet.", "Testar se a placa de rede e a pilha TCP/IP local estão funcionando (loopback).", "Hackear o vizinho.", "Formatar o PC."],
+    correta: 1,
+    explicacao: "Testa a própria interface de rede (localhost)."
+  },
+  {
+    id: 1169,
+    materia: "Regimento Interno ALE-RR - Patrimônio",
+    pergunta: "O patrimônio da Assembleia Legislativa é constituído por:",
+    opcoes: ["Bens doados por deputados.", "Bens móveis e imóveis do Estado, que adquirir ou forem colocados à sua disposição.", "Apenas o prédio sede.", "Impostos arrecadados."],
+    correta: 1,
+    explicacao: "Conforme Art. 293: Bens móveis e imóveis do Estado à disposição da Assembleia."
+  },
+  {
+    id: 1170,
+    materia: "Regimento Interno ALE-RR - Omissão",
+    pergunta: "Nos casos omissos do Regimento Interno da ALE-RR, o Presidente aplicará subsidiariamente o Regimento de qual órgão?",
+    opcoes: ["Senado Federal", "Câmara dos Deputados", "STF", "Câmara Municipal de Boa Vista"],
+    correta: 1,
+    explicacao: "Art. 295: Aplica-se o Regimento Interno da Câmara dos Deputados."
+  },
+  {
+    id: 1171,
+    materia: "TI - Cloud",
+    pergunta: "O armazenamento de arquivos como Google Drive ou OneDrive é classificado como serviço de:",
+    opcoes: ["IaaS (Infraestrutura)", "SaaS (Software)", "PaaS (Plataforma)", "Hardware"],
+    correta: 1,
+    explicacao: "Para o usuário final, é um Software/Aplicação de armazenamento (SaaS)."
+  },
+  {
+    id: 1172,
+    materia: "TI - Banco de Dados",
+    pergunta: "Qual comando SQL é usado para alterar dados já existentes em uma tabela?",
+    opcoes: ["ALTER", "UPDATE", "CHANGE", "MODIFY"],
+    correta: 1,
+    explicacao: "UPDATE tabela SET campo = valor..."
+  },
+  {
+    id: 1173,
+    materia: "TI - Segurança",
+    pergunta: "A 'Engenharia Social' explora qual vulnerabilidade do sistema?",
+    opcoes: ["Falhas no Windows", "Portas abertas no firewall", "O fator humano (confiança, ingenuidade, medo)", "Vírus antigo"],
+    correta: 2,
+    explicacao: "Manipula pessoas para obter dados."
+  },
+  {
+    id: 1174,
+    materia: "TI - Linux",
+    pergunta: "O 'Kernel' é:",
+    opcoes: ["Um aplicativo de texto.", "O núcleo do sistema operacional, que gerencia o hardware e recursos.", "Uma interface gráfica.", "Um antivírus."],
+    correta: 1,
+    explicacao: "O Kernel é o coração do SO."
+  },
+  {
+    id: 1175,
+    materia: "TI - Redes",
+    pergunta: "O 'DHCP' é responsável por:",
+    opcoes: ["Traduzir nomes em IP.", "Configurar automaticamente endereços IP, máscara e gateway para os dispositivos na rede.", "Proteger contra vírus.", "Roteamento."],
+    correta: 1,
+    explicacao: "Dynamic Host Configuration Protocol."
+  },
+  {
+    id: 1176,
+    materia: "TI - Hardware",
+    pergunta: "Qual a função da 'Placa de Vídeo' (GPU)?",
+    opcoes: ["Armazenar arquivos.", "Processar e renderizar imagens, vídeos e gráficos 3D.", "Conectar à internet.", "Resfriar o PC."],
+    correta: 1,
+    explicacao: "Processamento gráfico."
+  },
+  {
+    id: 1177,
+    materia: "TI - Windows",
+    pergunta: "A 'Barra de Tarefas' geralmente fica localizada:",
+    opcoes: ["No topo da tela.", "Na parte inferior da área de trabalho (Desktop).", "Dentro do navegador.", "Não existe no Windows."],
+    correta: 1,
+    explicacao: "Padrão na parte inferior."
+  },
+  {
+    id: 1178,
+    materia: "TI - Internet",
+    pergunta: "O que é 'Upload'?",
+    opcoes: ["Baixar arquivos.", "Enviar arquivos do computador local para a internet/servidor.", "Apagar arquivos.", "Imprimir."],
+    correta: 1,
+    explicacao: "Subir (enviar) dados."
+  },
+  {
+    id: 1179,
+    materia: "TI - E-mail",
+    pergunta: "Um e-mail de 'Spam' é:",
+    opcoes: ["Uma mensagem importante.", "Lixo eletrônico não solicitado (propaganda em massa).", "Um vírus.", "Um recibo."],
+    correta: 1,
+    explicacao: "Mensagens indesejadas em massa."
+  },
+  {
+    id: 1180,
+    materia: "TI - Arquivos",
+    pergunta: "Arquivos com extensão '.zip' ou '.rar' são:",
+    opcoes: ["Vídeos.", "Arquivos compactados.", "Imagens.", "Executáveis."],
+    correta: 1,
+    explicacao: "Compactação de dados."
+  },
+  {
+    id: 1181,
+    materia: "TI - Periféricos",
+    pergunta: "O 'Scanner' é um dispositivo de:",
+    opcoes: ["Saída (Output)", "Entrada (Input)", "Processamento", "Armazenamento"],
+    correta: 1,
+    explicacao: "Envia dados (imagem) para o computador."
+  },
+  {
+    id: 1182,
+    materia: "TI - Segurança",
+    pergunta: "O 'Antivírus' detecta ameaças comparando arquivos com:",
+    opcoes: ["Uma lista de sites.", "Uma base de dados de assinaturas de vírus conhecidos.", "O horário do sistema.", "O tamanho do monitor."],
+    correta: 1,
+    explicacao: "Assinaturas (vacinas)."
+  },
+  {
+    id: 1183,
+    materia: "TI - Redes",
+    pergunta: "O 'Wi-Fi' utiliza para transmissão:",
+    opcoes: ["Cabos de fibra.", "Ondas de rádio.", "Infravermelho.", "Laser."],
+    correta: 1,
+    explicacao: "Radiofrequência."
+  },
+  {
+    id: 1184,
+    materia: "TI - Software",
+    pergunta: "Um 'Driver' de dispositivo é:",
+    opcoes: ["Um motorista.", "Um software que permite ao Sistema Operacional comunicar-se com o hardware (ex: impressora, placa de vídeo).", "Um vírus.", "Um jogo."],
+    correta: 1,
+    explicacao: "Controlador de dispositivo."
+  },
+  {
+    id: 1185,
+    materia: "TI - Manutenção",
+    pergunta: "A 'Desfragmentação' de disco serve para:",
+    opcoes: ["Apagar dados.", "Reorganizar os dados no HD para que fiquem contíguos, melhorando a velocidade de leitura.", "Limpar a tela.", "Aumentar a memória RAM."],
+    correta: 1,
+    explicacao: "Otimiza a leitura em discos mecânicos (HDs)."
+  },
+  {
+    id: 1186,
+    materia: "Regimento Interno ALE-RR - Símbolos",
+    pergunta: "Durante as sessões, quais livros devem obrigatoriamente permanecer sobre a mesa principal do Plenário?",
+    opcoes: ["Dicionário e Código Civil.", "Bíblia, Constituição Federal, Constituição Estadual e Regimento Interno.", "Lista telefônica e Jornal.", "Código Penal e Bíblia."],
+    correta: 1,
+    explicacao: "Conforme Art. 296: Bíblia, CF, CE e Regimento."
+  },
+  {
+    id: 1187,
+    materia: "Regimento Interno ALE-RR - Nomes",
+    pergunta: "É permitido dar nome de pessoas vivas a dependências da Assembleia?",
+    opcoes: ["Sim, se for Deputado.", "Sim, se for ex-Governador.", "Não, é vedado.", "Sim, com 2/3 dos votos."],
+    correta: 2,
+    explicacao: "Art. 294: É vedado dar denominação de pessoas vivas."
+  },
+  {
+    id: 1188,
+    materia: "TI - Excel",
+    pergunta: "Para somar as células A1 e B1, a fórmula é:",
+    opcoes: ["A1+B1", "=A1+B1", "SUM(A1-B1)", "ADD A1 B1"],
+    correta: 1,
+    explicacao: "Fórmula começa com =."
+  },
+  {
+    id: 1189,
+    materia: "TI - Windows",
+    pergunta: "A tecla 'Print Screen' serve para:",
+    opcoes: ["Imprimir na impressora.", "Capturar a imagem da tela (print) para a área de transferência.", "Desligar a tela.", "Salvar o arquivo."],
+    correta: 1,
+    explicacao: "Captura de tela."
+  },
+  {
+    id: 1190,
+    materia: "TI - Internet",
+    pergunta: "WWW significa:",
+    opcoes: ["World Wide Web", "World Web Wait", "Wide World Web", "Web Wide World"],
+    correta: 0,
+    explicacao: "Rede Mundial de Computadores."
+  },
+  {
+    id: 1191,
+    materia: "TI - Hardware",
+    pergunta: "O 'Touchpad' substitui qual periférico em notebooks?",
+    opcoes: ["Teclado", "Monitor", "Mouse", "Webcam"],
+    correta: 2,
+    explicacao: "Substituto do mouse."
+  },
+  {
+    id: 1192,
+    materia: "TI - Segurança",
+    pergunta: "O 'Backup em Nuvem' protege contra:",
+    opcoes: ["Apenas vírus.", "Incêndios, roubos e desastres físicos no local da empresa (já que os dados estão remotos).", "Nada.", "Lentidão da internet."],
+    correta: 1,
+    explicacao: "Proteção off-site."
+  },
+  {
+    id: 1193,
+    materia: "TI - Linux",
+    pergunta: "O comando `reboot` faz o quê?",
+    opcoes: ["Desliga o PC.", "Reinicia o sistema.", "Formata o disco.", "Troca de usuário."],
+    correta: 1,
+    explicacao: "Reiniciar."
+  },
+  {
+    id: 1194,
+    materia: "TI - Banco de Dados",
+    pergunta: "A chave primária (PK) serve para:",
+    opcoes: ["Identificar unicamente cada registro.", "Repetir dados.", "Deixar nulo.", "Criptografar."],
+    correta: 0,
+    explicacao: "Identificador único."
+  },
+  {
+    id: 1195,
+    materia: "TI - Redes",
+    pergunta: "Uma rede 'MAN' abrange:",
+    opcoes: ["Uma sala.", "Uma cidade (Metropolitana).", "Um país.", "O mundo."],
+    correta: 1,
+    explicacao: "Metropolitan Area Network."
+  },
+  {
+    id: 1196,
+    materia: "TI - Office",
+    pergunta: "A extensão '.pptx' é de:",
+    opcoes: ["Excel", "Word", "PowerPoint", "Access"],
+    correta: 2,
+    explicacao: "Apresentação."
+  },
+  {
+    id: 1197,
+    materia: "TI - Hardware",
+    pergunta: "USB significa:",
+    opcoes: ["Universal Serial Bus", "Unit Serial Back", "United System Bus", "Ultra Speed Bus"],
+    correta: 0,
+    explicacao: "Barramento Serial Universal."
+  },
+  {
+    id: 1198,
+    materia: "TI - Segurança",
+    pergunta: "Senha fraca é aquela que:",
+    opcoes: ["Usa letras, números e símbolos.", "É longa.", "É fácil de adivinhar (ex: data de aniversário, sequências).", "É aleatória."],
+    correta: 2,
+    explicacao: "Baixa entropia."
+  },
+  {
+    id: 1199,
+    materia: "TI - Redes",
+    pergunta: "O cabo de fibra óptica transmite dados via:",
+    opcoes: ["Eletricidade", "Luz", "Som", "Vento"],
+    correta: 1,
+    explicacao: "Pulsos de luz."
+  },
+  {
+    id: 1200,
+    materia: "Regimento Interno ALE-RR",
+    pergunta: "Nos casos omissos do Regimento, o Presidente decide aplicando o regimento de qual casa?",
+    opcoes: ["Câmara dos Vereadores", "Câmara dos Deputados (Federal)", "Senado", "STF"],
+    correta: 1,
+    explicacao: "Aplicação subsidiária do Regimento da Câmara Federal."
+  }

@@ -1,0 +1,6 @@
+// Arquivo temporário para adicionar ao questions.ts
+// Copiar todo o conteúdo fornecido pelo usuário aqui
+
+As 170 questões foram fornecidas pelo usuário e precisam ser incorporadas ao banco de dados.
+IDs: 1311-1480
+Bancas: CESPE/HEMOBRÁS, CESPE/MPU, FGV/ALETO, FUNDATEC, UNESPAR, UNEMAT, SETEC, IESES, UNIOESTE

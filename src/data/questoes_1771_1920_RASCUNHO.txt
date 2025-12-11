@@ -1,0 +1,34 @@
+=== ANÁLISE DAS 150 QUESTÕES RECEBIDAS (IDs 1771-1920) ===
+
+ESTRUTURA IDENTIFICADA:
+------------------------
+
+1. IDs 1771-1785 (15 questões) - Português (FCC/TCE-SP) - Texto Italo Calvino
+2. IDs 1786-1795 (10 questões) - Raciocínio Lógico (FCC/TCE-SP)  
+3. IDs 1796-1820 (25 questões) - TI Específica (CESPE/MPU) - Representação, Lógica, Redes
+4. IDs 1821-1840 (20 questões) - Português (CESPE/TCE-TO, FCC/TCE-SP, CESPE/MPU)
+5. IDs 1841-1870 (30 questões) - TI Específica + Mainframe (CESPE/MPU, SANEPAR)
+6. IDs 1871-1885 (15 questões) - Português (CESPE/TCE-TO, FCC/TCE-SP, CESPE/MPU)
+7. IDs 1886-1895 (10 questões) - Raciocínio Lógico (FCC/TCE-SP)
+8. IDs 1896-1910 (15 questões) - Mainframe (SANEPAR)
+9. IDs 1911-1920 (10 questões) - TI Específica (CESPE/MPU)
+
+TOTAL: 150 QUESTÕES ÚNICAS
+
+OBSERVAÇÃO: O texto enviado continha repetições dos blocos 1871-1920, mas contamos apenas uma vez.
+
+DISTRIBUIÇÃO POR ÁREA:
+---------------------
+- Português: 50 questões (IDs 1771-1785, 1821-1840, 1871-1885)
+- Raciocínio Lógico: 20 questões (IDs 1786-1795, 1886-1895)
+- TI Específica: 50 questões (IDs 1796-1820, 1841-1870 parcial, 1911-1920)
+- Mainframe: 30 questões (IDs 1841-1870 parcial, 1896-1910)
+
+BANCAS:
+-------
+- FCC (TCE-SP): Português + RLM
+- CESPE (MPU, TCE-TO): Português + TI
+- SANEPAR (UEL): Mainframe
+
+STATUS: PRONTO PARA ADICIONAR AO BANCO
+NOVO TOTAL: 1.740 + 150 = 1.890 QUESTÕES
