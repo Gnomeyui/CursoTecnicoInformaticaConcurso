@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="120" fill="url(#grad)"/>
+  
+  <!-- Book Icon -->
+  <path d="M256 128 L180 180 L180 380 L256 340 L332 380 L332 180 Z" fill="white" opacity="0.9"/>
+  <path d="M256 128 L256 340 M256 180 L180 220 M256 220 L332 220 M256 260 L180 300 M256 300 L332 300" stroke="white" stroke-width="8" opacity="0.3"/>
+  
+  <!-- Trophy -->
+  <circle cx="256" cy="420" r="30" fill="#FFD700"/>
+  <path d="M226 420 L226 440 L286 440 L286 420" fill="#FFD700"/>
+  <text x="256" y="435" font-family="Arial" font-size="32" font-weight="bold" fill="#3B82F6" text-anchor="middle">5</text>
+</svg>

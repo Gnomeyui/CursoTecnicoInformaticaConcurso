@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ALE-RR TOP 5</string>
+    <string name="title_activity_main">ALE-RR TOP 5</string>
+    <string name="package_name">com.alerr.top5</string>
+    <string name="custom_url_scheme">alerr</string>
+    
+    <!-- Notificações -->
+    <string name="notification_channel_name">Lembretes de Estudo</string>
+    <string name="notification_channel_description">Notificações para lembrar você de estudar para o concurso</string>
+</resources>
