@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   ArrowLeft, Clock, AlertCircle, CheckCircle, XCircle, 
   Flag, Play, Trophy, Target, Award
 } from 'lucide-react';
+import { Haptics, NotificationType } from '@capacitor/haptics';
 import { useTheme } from '../context/ThemeContext';
 import { QUESTIONS, Question } from '../data/questions';
 import { selectSmartQuestions, shuffleQuestionOptions } from '../utils/questionManager';
@@ -23,23 +24,71 @@ export function SimulatedExam({ onBack, onComplete }: SimulatedExamProps) {
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<number>>(new Set());
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [score, setScore] = useState(0);
+  const endTimeRef = useRef<number>(0); // 🔧 CORREÇÃO: Armazena timestamp de término
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false); // 🔧 CORREÇÃO: Alerta de saída
 
-  // Timer
+  // 🔧 CORREÇÃO: Timer com Timestamp (funciona em background)
   useEffect(() => {
-    if (examState === 'running' && timeRemaining > 0) {
+    if (examState === 'running') {
       const timer = setInterval(() => {
-        setTimeRemaining(prev => {
-          if (prev <= 1) {
-            finishExam();
-            return 0;
-          }
-          return prev - 1;
-        });
+        const now = Date.now();
+        const remaining = Math.max(0, Math.floor((endTimeRef.current - now) / 1000));
+        setTimeRemaining(remaining);
+
+        if (remaining <= 0) {
+          finishExam();
+        }
       }, 1000);
 
       return () => clearInterval(timer);
     }
-  }, [examState, timeRemaining]);
+  }, [examState]);
+
+  // 🔧 CORREÇÃO: Persistência automática do simulado
+  useEffect(() => {
+    if (examState === 'running') {
+      const examBackup = {
+        selectedQuestions,
+        answers,
+        flaggedQuestions: Array.from(flaggedQuestions),
+        currentQuestionIndex,
+        endTime: endTimeRef.current,
+        questionCount,
+        timeLimit
+      };
+      localStorage.setItem('exam_backup', JSON.stringify(examBackup));
+    } else {
+      localStorage.removeItem('exam_backup');
+    }
+  }, [examState, answers, currentQuestionIndex, flaggedQuestions]);
+
+  // 🔧 CORREÇÃO: Restaurar simulado ao carregar
+  useEffect(() => {
+    const backup = localStorage.getItem('exam_backup');
+    if (backup) {
+      try {
+        const data = JSON.parse(backup);
+        const now = Date.now();
+        
+        // Só restaura se ainda tem tempo
+        if (data.endTime > now) {
+          setSelectedQuestions(data.selectedQuestions);
+          setAnswers(data.answers);
+          setFlaggedQuestions(new Set(data.flaggedQuestions));
+          setCurrentQuestionIndex(data.currentQuestionIndex);
+          endTimeRef.current = data.endTime;
+          setQuestionCount(data.questionCount);
+          setTimeLimit(data.timeLimit);
+          setExamState('running');
+        } else {
+          localStorage.removeItem('exam_backup');
+        }
+      } catch (error) {
+        console.error('Erro ao restaurar simulado:', error);
+        localStorage.removeItem('exam_backup');
+      }
+    }
+  }, []);
 
   const startExam = () => {
     // Selecionar questões inteligentes
@@ -49,7 +98,7 @@ export function SimulatedExam({ onBack, onComplete }: SimulatedExamProps) {
     setCurrentQuestionIndex(0);
     setAnswers({});
     setFlaggedQuestions(new Set());
-    setTimeRemaining(timeLimit * 60); // converter para segundos
+    endTimeRef.current = Date.now() + (timeLimit * 60 * 1000); // converter para milissegundos
     setExamState('running');
   };
 

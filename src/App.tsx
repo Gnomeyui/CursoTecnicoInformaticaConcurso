@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { App as CapacitorApp } from '@capacitor/app';
 import { Dashboard } from './components/Dashboard';
 import { Settings } from './components/Settings';
 import { FlashcardScreen } from './components/FlashcardScreen';
@@ -28,6 +29,23 @@ function AppContent() {
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('mix');
+
+  // 🔧 CORREÇÃO CRÍTICA: Listener do Botão Voltar (Android)
+  useEffect(() => {
+    const backButtonListener = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+      if (currentView !== 'dashboard') {
+        // Se não estiver na home, volta para home
+        setCurrentView('dashboard');
+      } else {
+        // Se estiver na home, fecha o app
+        CapacitorApp.exitApp();
+      }
+    });
+
+    return () => {
+      backButtonListener.remove();
+    };
+  }, [currentView]);
 
   useEffect(() => {
     try {

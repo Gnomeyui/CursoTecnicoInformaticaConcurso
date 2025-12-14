@@ -54,6 +54,108 @@ const getLevelFromXP = (xp: number): number => {
   return level;
 };
 
+// 🔧 CORREÇÃO: Mover allBadges para fora do componente (evita recriação)
+const ALL_BADGES: Badge[] = [
+  {
+    id: 'first_question',
+    name: 'Primeira Questão',
+    description: 'Respondeu sua primeira questão',
+    icon: '🎯',
+    target: 1
+  },
+  {
+    id: 'streak_7',
+    name: 'Semana Completa',
+    description: 'Estudou por 7 dias seguidos',
+    icon: '🔥',
+    target: 7
+  },
+  {
+    id: 'streak_30',
+    name: 'Mês Dedicado',
+    description: 'Estudou por 30 dias seguidos',
+    icon: '💪',
+    target: 30
+  },
+  {
+    id: 'questions_100',
+    name: 'Centurião',
+    description: 'Respondeu 100 questões',
+    icon: '💯',
+    target: 100
+  },
+  {
+    id: 'questions_500',
+    name: 'Maratonista',
+    description: 'Respondeu 500 questões',
+    icon: '🏃',
+    target: 500
+  },
+  {
+    id: 'questions_1000',
+    name: 'Mestre',
+    description: 'Respondeu 1000 questões',
+    icon: '🎓',
+    target: 1000
+  },
+  {
+    id: 'questions_2000',
+    name: 'GLÓRIA - 2000 QUESTÕES',
+    description: 'COMPLETOU TODAS AS 2.000 QUESTÕES DO BANCO! 🎉',
+    icon: '👑',
+    target: 2000
+  },
+  {
+    id: 'accuracy_80',
+    name: 'Precisão',
+    description: 'Manteve 80% de acerto em 50 questões',
+    icon: '🎯',
+    target: 50
+  },
+  {
+    id: 'level_5',
+    name: 'Nível 5',
+    description: 'Alcançou o nível 5',
+    icon: '⭐',
+    target: 5
+  },
+  {
+    id: 'level_10',
+    name: 'Nível 10',
+    description: 'Alcançou o nível 10',
+    icon: '🌟',
+    target: 10
+  },
+  {
+    id: 'level_20',
+    name: 'Nível 20',
+    description: 'Alcançou o nível 20',
+    icon: '✨',
+    target: 20
+  },
+  {
+    id: 'study_days_30',
+    name: '30 Dias de Estudo',
+    description: 'Estudou em 30 dias diferentes',
+    icon: '📚',
+    target: 30
+  },
+  {
+    id: 'study_days_60',
+    name: '60 Dias de Estudo',
+    description: 'Estudou em 60 dias diferentes',
+    icon: '📖',
+    target: 60
+  },
+  {
+    id: 'top1_ready',
+    name: 'Pronto para o TOP 1',
+    description: 'Completou 1000 questões com 85% de acerto',
+    icon: '🏆',
+    target: 1000
+  }
+];
+
 export function GameProvider({ children }: { children: ReactNode }) {
   const [gameStats, setGameStats] = useState<GameStats>({
     xp: 0,
@@ -76,6 +178,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     saveGameStats();
   }, [gameStats]);
+
+  // 🔧 CORREÇÃO: Verificar badges automaticamente quando stats mudam
+  useEffect(() => {
+    // Evitar loop infinito: só checa se há mudanças relevantes
+    if (gameStats.totalQuestionsAnswered > 0 || gameStats.xp > 0 || gameStats.streak > 0) {
+      checkAndUnlockBadges();
+    }
+  }, [gameStats.totalQuestionsAnswered, gameStats.xp, gameStats.streak, gameStats.level, gameStats.studyDays.length]);
 
   const loadGameStats = () => {
     try {
@@ -148,114 +258,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const checkAndUnlockBadges = () => {
-    const allBadges: Badge[] = [
-      {
-        id: 'first_question',
-        name: 'Primeira Questão',
-        description: 'Respondeu sua primeira questão',
-        icon: '🎯',
-        target: 1
-      },
-      {
-        id: 'streak_7',
-        name: 'Semana Completa',
-        description: 'Estudou por 7 dias seguidos',
-        icon: '🔥',
-        target: 7
-      },
-      {
-        id: 'streak_30',
-        name: 'Mês Dedicado',
-        description: 'Estudou por 30 dias seguidos',
-        icon: '💪',
-        target: 30
-      },
-      {
-        id: 'questions_100',
-        name: 'Centurião',
-        description: 'Respondeu 100 questões',
-        icon: '💯',
-        target: 100
-      },
-      {
-        id: 'questions_500',
-        name: 'Maratonista',
-        description: 'Respondeu 500 questões',
-        icon: '🏃',
-        target: 500
-      },
-      {
-        id: 'questions_1000',
-        name: 'Mestre',
-        description: 'Respondeu 1000 questões',
-        icon: '🎓',
-        target: 1000
-      },
-      {
-        id: 'questions_2000',
-        name: 'GLÓRIA - 2000 QUESTÕES',
-        description: 'COMPLETOU TODAS AS 2.000 QUESTÕES DO BANCO! 🎉',
-        icon: '👑',
-        target: 2000
-      },
-      {
-        id: 'accuracy_80',
-        name: 'Precisão',
-        description: 'Manteve 80% de acerto em 50 questões',
-        icon: '🎯',
-        target: 50
-      },
-      {
-        id: 'level_5',
-        name: 'Nível 5',
-        description: 'Alcançou o nível 5',
-        icon: '⭐',
-        target: 5
-      },
-      {
-        id: 'level_10',
-        name: 'Nível 10',
-        description: 'Alcançou o nível 10',
-        icon: '🌟',
-        target: 10
-      },
-      {
-        id: 'level_20',
-        name: 'Nível 20',
-        description: 'Alcançou o nível 20',
-        icon: '✨',
-        target: 20
-      },
-      {
-        id: 'study_days_30',
-        name: '30 Dias de Estudo',
-        description: 'Estudou em 30 dias diferentes',
-        icon: '📚',
-        target: 30
-      },
-      {
-        id: 'study_days_60',
-        name: '60 Dias de Estudo',
-        description: 'Estudou em 60 dias diferentes',
-        icon: '📖',
-        target: 60
-      },
-      {
-        id: 'top1_ready',
-        name: 'Pronto para o TOP 1',
-        description: 'Completou 1000 questões com 85% de acerto',
-        icon: '🏆',
-        target: 1000
-      }
-    ];
-
     setGameStats(prev => {
       const unlockedBadges = [...prev.badges];
       const accuracy = prev.totalQuestionsAnswered > 0 
         ? (prev.totalCorrectAnswers / prev.totalQuestionsAnswered) * 100 
         : 0;
 
-      allBadges.forEach(badge => {
+      ALL_BADGES.forEach(badge => {
         const alreadyUnlocked = unlockedBadges.find(b => b.id === badge.id);
         let shouldUnlock = false;
 
