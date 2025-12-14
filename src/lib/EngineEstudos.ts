@@ -182,7 +182,10 @@ export class EngineEstudos {
       stat.streak++;
     } else {
       stat.erros++;
-      stat.streak = 0; // Zerou streak
+      // 🔧 CORREÇÃO PEDAGÓGICA: Não zerar completamente o streak ao errar
+      // Em vez disso, reduzir pela metade (arredondado para baixo)
+      // Isso evita punição excessiva por um erro de distração
+      stat.streak = Math.floor(stat.streak / 2);
     }
   }
 

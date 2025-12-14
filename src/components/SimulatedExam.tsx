@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { Haptics, NotificationType } from '@capacitor/haptics';
 import { useTheme } from '../context/ThemeContext';
+import { useGame } from '../context/GameContext';
 import { QUESTIONS, Question } from '../data/questions';
 import { selectSmartQuestions, shuffleQuestionOptions } from '../utils/questionManager';
 
@@ -15,6 +16,7 @@ interface SimulatedExamProps {
 
 export function SimulatedExam({ onBack, onComplete }: SimulatedExamProps) {
   const { isDarkMode } = useTheme();
+  const { recordSimulatedExam } = useGame();
   const [examState, setExamState] = useState<'config' | 'running' | 'finished'>('config');
   const [questionCount, setQuestionCount] = useState(30);
   const [timeLimit, setTimeLimit] = useState(60); // minutos
@@ -114,6 +116,8 @@ export function SimulatedExam({ onBack, onComplete }: SimulatedExamProps) {
     setScore(correctCount);
     setExamState('finished');
     onComplete(correctCount, selectedQuestions.length);
+    // 🔧 CORREÇÃO: Registrar simulado completado
+    recordSimulatedExam();
   };
 
   const selectAnswer = (answerIndex: number) => {

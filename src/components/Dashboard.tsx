@@ -66,6 +66,7 @@ export function Dashboard({
               {/* Settings Button */}
               <button 
                 onClick={onOpenSettings}
+                aria-label="Abrir configurações"
                 className="p-2 sm:p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors active:scale-95 touch-manipulation min-h-[44px] min-w-[44px]"
               >
                 <SettingsIcon className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600 dark:text-gray-400" />

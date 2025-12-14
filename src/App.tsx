@@ -12,6 +12,7 @@ import { NotificationSettings } from './components/NotificationSettings';
 import { RegimentoInterno } from './components/RegimentoInterno';
 import { DifficultySelector, Difficulty } from './components/DifficultySelector';
 import { ConfettiCelebration } from './components/ConfettiCelebration';
+import { LevelUpCelebration } from './components/LevelUpCelebration';
 import { ThemeProvider } from './context/ThemeContext';
 import { GameProvider, useGame } from './context/GameContext';
 import { StatsProvider } from './context/StatsContext';
@@ -19,7 +20,13 @@ import { NotificationProvider } from './context/NotificationContext';
 import { CustomizationProvider } from './context/CustomizationContext';
 
 function AppContent() {
-  const { showGloriaCelebration, dismissGloriaCelebration } = useGame();
+  const { 
+    showGloriaCelebration, 
+    dismissGloriaCelebration,
+    showLevelUpCelebration,
+    dismissLevelUpCelebration,
+    levelUpInfo
+  } = useGame();
   const [currentView, setCurrentView] = useState<
     'dashboard' | 'study-session' | 'flashcards' | 'settings' | 
     'statistics' | 'achievements' | 'simulated-exam' | 'customization' | 'notifications' | 'regimento' |
@@ -219,6 +226,15 @@ function AppContent() {
           title="🏆 GLÓRIA! 🏆"
           message="Você completou todas as 2.000 questões do banco!"
           icon="👑"
+        />
+      )}
+      
+      {showLevelUpCelebration && levelUpInfo && (
+        <LevelUpCelebration
+          show={showLevelUpCelebration}
+          onComplete={dismissLevelUpCelebration}
+          oldLevel={levelUpInfo.oldLevel}
+          newLevel={levelUpInfo.newLevel}
         />
       )}
     </>
