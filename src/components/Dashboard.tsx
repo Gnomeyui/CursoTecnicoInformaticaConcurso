@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   Trophy, Target, Flame, BookOpen, Settings as SettingsIcon,
   TrendingUp, Award, Zap, Brain, Layers, Moon, Sun, BarChart3, 
-  Clock, Palette, Bell
+  Clock, Palette, Bell, FileText
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useGame } from '../context/GameContext';
@@ -16,6 +16,9 @@ interface DashboardProps {
   onOpenStatistics: () => void;
   onOpenAchievements: () => void;
   onOpenSimulatedExam: () => void;
+  onOpenRegimento: () => void;
+  onOpenCustomization: () => void;
+  onOpenNotifications: () => void;
 }
 
 export function Dashboard({ 
@@ -26,11 +29,14 @@ export function Dashboard({
   onOpenSettings,
   onOpenStatistics,
   onOpenAchievements,
-  onOpenSimulatedExam
+  onOpenSimulatedExam,
+  onOpenRegimento,
+  onOpenCustomization,
+  onOpenNotifications
 }: DashboardProps) {
   const accuracy = totalQuestions > 0 ? Math.round((dailyScore / totalQuestions) * 100) : 0;
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const { gameStats } = useGame();
+  const { gameStats, markBadgesAsViewed, getNewBadgesCount } = useGame();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-emerald-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-200">
@@ -39,7 +45,7 @@ export function Dashboard({
         <div className="px-3 sm:px-4 md:px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl text-slate-900 dark:text-white transition-colors duration-200">ALE-RR Top 5</h1>
+              <h1 className="text-xl sm:text-2xl md:text-3xl text-slate-900 dark:text-white transition-colors duration-200">ALE-RR TOP 1</h1>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-400 mt-1 transition-colors duration-200">
                 Técnico em Informática · Nível {gameStats.level}
               </p>
@@ -180,21 +186,25 @@ export function Dashboard({
           </button>
 
           <button
-            onClick={onOpenAchievements}
+            onClick={() => {
+              onOpenAchievements(); // 🔔 Abre conquistas
+              markBadgesAsViewed(); // 🔔 Marcar badges como visualizadas ao abrir
+            }}
             className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-all border border-slate-100 dark:border-gray-700 text-center relative"
           >
-            {gameStats.badges.length > 0 && (
-              <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">
-                {gameStats.badges.length}
-              </div>
-            )}
             <div className="flex justify-center mb-2">
-              <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                <Trophy className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+              <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                <Trophy className="w-6 h-6 text-amber-600 dark:text-amber-400" />
               </div>
             </div>
             <div className="text-sm text-slate-900 dark:text-white mb-1">Conquistas</div>
-            <div className="text-xs text-slate-600 dark:text-gray-400">Badges desbloqueados</div>
+            <div className="text-xs text-slate-600 dark:text-gray-400">{gameStats.badges.length} badges desbloqueadas</div>
+            {/* 🔔 Badge de notificação - só mostra se houver conquistas novas */}
+            {getNewBadgesCount() > 0 && (
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center animate-pulse shadow-lg border-2 border-white dark:border-gray-800">
+                {getNewBadgesCount()}
+              </div>
+            )}
           </button>
 
           <button
@@ -211,7 +221,20 @@ export function Dashboard({
           </button>
 
           <button
-            onClick={() => {/* Will add customization link */}}
+            onClick={onOpenRegimento}
+            className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-all border border-slate-100 dark:border-gray-700 text-center"
+          >
+            <div className="flex justify-center mb-2">
+              <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                <FileText className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              </div>
+            </div>
+            <div className="text-sm text-slate-900 dark:text-white mb-1">Regimento</div>
+            <div className="text-xs text-slate-600 dark:text-gray-400">Texto completo ALE-RR</div>
+          </button>
+
+          <button
+            onClick={onOpenCustomization}
             className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-all border border-slate-100 dark:border-gray-700 text-center"
           >
             <div className="flex justify-center mb-2">
@@ -221,6 +244,19 @@ export function Dashboard({
             </div>
             <div className="text-sm text-slate-900 dark:text-white mb-1">Personalizar</div>
             <div className="text-xs text-slate-600 dark:text-gray-400">Temas e cores</div>
+          </button>
+
+          <button
+            onClick={onOpenNotifications}
+            className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md hover:shadow-lg transition-all border border-slate-100 dark:border-gray-700 text-center"
+          >
+            <div className="flex justify-center mb-2">
+              <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                <Bell className="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
+            </div>
+            <div className="text-sm text-slate-900 dark:text-white mb-1">Notificações</div>
+            <div className="text-xs text-slate-600 dark:text-gray-400">Alertas e lembretes</div>
           </button>
         </div>
       </div>

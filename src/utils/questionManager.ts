@@ -118,24 +118,39 @@ function calculateReviewWeight(history: QuestionHistory | undefined): number {
 }
 
 /**
- * Seleciona questões de forma inteligente:
+ * Seleciona questões de forma inteligente com filtro de dificuldade:
  * - A cada 10 questões: 7 novas + 2 erradas antigas + 1 acertada antiga
  * - Nunca repete questão na mesma sessão
  * - Embaralha tudo no final
+ * - Filtra por dificuldade (facil/medio/dificil/mix)
  */
 export function selectSmartQuestions(
   allQuestions: Question[],
   count: number,
-  sessionUsedIds: Set<number> = new Set()
+  sessionUsedIds: Set<number> = new Set(),
+  difficulty: 'facil' | 'medio' | 'dificil' | 'mix' = 'mix' // ✅ NOVO
 ): Question[] {
   const history = loadQuestionHistory();
+  
+  // ✅ NOVO: Filtrar por dificuldade
+  let filteredQuestions = allQuestions;
+  
+  if (difficulty !== 'mix') {
+    filteredQuestions = allQuestions.filter(q => {
+      // Fallback: se questão não tem dificuldade, classifica automaticamente
+      if (!q.dificuldade) {
+        return true; // Inclui questões sem dificuldade no modo não-mix
+      }
+      return q.dificuldade === difficulty;
+    });
+  }
   
   // Separar questões por categoria
   const neverSeen: Question[] = [];
   const wrongBefore: Question[] = [];
   const correctBefore: Question[] = [];
 
-  allQuestions.forEach(q => {
+  filteredQuestions.forEach(q => {
     // Pular questões já usadas nesta sessão
     if (sessionUsedIds.has(q.id)) return;
 

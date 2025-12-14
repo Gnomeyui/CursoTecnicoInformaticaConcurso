@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { QuizScreen } from './components/QuizScreen';
 import { Dashboard } from './components/Dashboard';
 import { Settings } from './components/Settings';
 import { FlashcardScreen } from './components/FlashcardScreen';
@@ -9,20 +8,26 @@ import { Achievements } from './components/Achievements';
 import { SimulatedExam } from './components/SimulatedExam';
 import { Customization } from './components/Customization';
 import { NotificationSettings } from './components/NotificationSettings';
+import { RegimentoInterno } from './components/RegimentoInterno';
+import { DifficultySelector, Difficulty } from './components/DifficultySelector';
+import { ConfettiCelebration } from './components/ConfettiCelebration';
 import { ThemeProvider } from './context/ThemeContext';
-import { GameProvider } from './context/GameContext';
+import { GameProvider, useGame } from './context/GameContext';
 import { StatsProvider } from './context/StatsContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { CustomizationProvider } from './context/CustomizationContext';
 
-export default function App() {
+function AppContent() {
+  const { showGloriaCelebration, dismissGloriaCelebration } = useGame();
   const [currentView, setCurrentView] = useState<
-    'dashboard' | 'quiz' | 'study-session' | 'flashcards' | 'settings' | 
-    'statistics' | 'achievements' | 'simulated-exam' | 'customization' | 'notifications'
+    'dashboard' | 'study-session' | 'flashcards' | 'settings' | 
+    'statistics' | 'achievements' | 'simulated-exam' | 'customization' | 'notifications' | 'regimento' |
+    'difficulty-selector'
   >('dashboard');
   const [dailyScore, setDailyScore] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('mix');
 
   useEffect(() => {
     try {
@@ -30,7 +35,6 @@ export default function App() {
     } catch (err) {
       console.error('Erro ao carregar progresso:', err);
       setError('Erro ao carregar dados. Tentando novamente...');
-      // Tentar limpar localStorage corrompido
       try {
         localStorage.removeItem('alerr_progress');
         saveProgress(0, 0);
@@ -71,7 +75,6 @@ export default function App() {
     }
   };
 
-  // Tela de erro caso algo quebre
   if (error) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
@@ -94,67 +97,96 @@ export default function App() {
   }
 
   return (
+    <>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        {currentView === 'dashboard' && (
+          <Dashboard 
+            dailyScore={dailyScore} 
+            totalQuestions={totalQuestions}
+            onStartQuiz={() => setCurrentView('difficulty-selector')}
+            onStartFlashcards={() => setCurrentView('flashcards')}
+            onOpenSettings={() => setCurrentView('settings')}
+            onOpenStatistics={() => setCurrentView('statistics')}
+            onOpenAchievements={() => setCurrentView('achievements')}
+            onOpenSimulatedExam={() => setCurrentView('simulated-exam')}
+            onOpenRegimento={() => setCurrentView('regimento')}
+            onOpenCustomization={() => setCurrentView('customization')}
+            onOpenNotifications={() => setCurrentView('notifications')}
+          />
+        )}
+        {currentView === 'flashcards' && (
+          <FlashcardScreen 
+            onBack={() => setCurrentView('dashboard')}
+            dailyScore={dailyScore}
+            onScoreUpdate={saveProgress}
+          />
+        )}
+        {currentView === 'settings' && (
+          <Settings onBack={() => setCurrentView('dashboard')} />
+        )}
+        {currentView === 'study-session' && (
+          <StudySession 
+            onBack={() => setCurrentView('dashboard')}
+            dailyScore={dailyScore}
+            totalQuestions={totalQuestions}
+            onScoreUpdate={saveProgress}
+            difficulty={selectedDifficulty}
+          />
+        )}
+        {currentView === 'statistics' && (
+          <Statistics onBack={() => setCurrentView('dashboard')} />
+        )}
+        {currentView === 'achievements' && (
+          <Achievements onBack={() => setCurrentView('dashboard')} />
+        )}
+        {currentView === 'simulated-exam' && (
+          <SimulatedExam 
+            onBack={() => setCurrentView('dashboard')}
+            onComplete={saveProgress}
+          />
+        )}
+        {currentView === 'customization' && (
+          <Customization onBack={() => setCurrentView('dashboard')} />
+        )}
+        {currentView === 'notifications' && (
+          <NotificationSettings onBack={() => setCurrentView('dashboard')} />
+        )}
+        {currentView === 'regimento' && (
+          <RegimentoInterno onBack={() => setCurrentView('dashboard')} />
+        )}
+        {currentView === 'difficulty-selector' && (
+          <DifficultySelector
+            onSelectDifficulty={(diff) => {
+              setSelectedDifficulty(diff);
+              setCurrentView('study-session');
+            }}
+            onBack={() => setCurrentView('dashboard')}
+          />
+        )}
+      </div>
+      
+      {/* Celebração GLÓRIA - 2000 Questões */}
+      {showGloriaCelebration && (
+        <ConfettiCelebration
+          show={showGloriaCelebration}
+          onComplete={dismissGloriaCelebration}
+          title="🏆 GLÓRIA! 🏆"
+          message="Você completou todas as 2.000 questões do banco!"
+          icon="👑"
+        />
+      )}
+    </>
+  );
+}
+
+export default function App() {
+  return (
     <ThemeProvider>
       <CustomizationProvider>
         <GameProvider>
           <StatsProvider>
             <NotificationProvider>
-              <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-                {currentView === 'dashboard' && (
-                  <Dashboard 
-                    dailyScore={dailyScore} 
-                    totalQuestions={totalQuestions}
-                    onStartQuiz={() => setCurrentView('study-session')}
-                    onStartFlashcards={() => setCurrentView('flashcards')}
-                    onOpenSettings={() => setCurrentView('settings')}
-                    onOpenStatistics={() => setCurrentView('statistics')}
-                    onOpenAchievements={() => setCurrentView('achievements')}
-                    onOpenSimulatedExam={() => setCurrentView('simulated-exam')}
-                  />
-                )}
-                {currentView === 'quiz' && (
-                  <QuizScreen 
-                    onBack={() => setCurrentView('dashboard')}
-                    dailyScore={dailyScore}
-                    onScoreUpdate={saveProgress}
-                  />
-                )}
-                {currentView === 'flashcards' && (
-                  <FlashcardScreen 
-                    onBack={() => setCurrentView('dashboard')}
-                    dailyScore={dailyScore}
-                    onScoreUpdate={saveProgress}
-                  />
-                )}
-                {currentView === 'settings' && (
-                  <Settings onBack={() => setCurrentView('dashboard')} />
-                )}
-                {currentView === 'study-session' && (
-                  <StudySession 
-                    onBack={() => setCurrentView('dashboard')}
-                    dailyScore={dailyScore}
-                    onScoreUpdate={saveProgress}
-                  />
-                )}
-                {currentView === 'statistics' && (
-                  <Statistics onBack={() => setCurrentView('dashboard')} />
-                )}
-                {currentView === 'achievements' && (
-                  <Achievements onBack={() => setCurrentView('dashboard')} />
-                )}
-                {currentView === 'simulated-exam' && (
-                  <SimulatedExam 
-                    onBack={() => setCurrentView('dashboard')}
-                    onComplete={saveProgress}
-                  />
-                )}
-                {currentView === 'customization' && (
-                  <Customization onBack={() => setCurrentView('dashboard')} />
-                )}
-                {currentView === 'notifications' && (
-                  <NotificationSettings onBack={() => setCurrentView('dashboard')} />
-                )}
-              </div>
+              <AppContent />
             </NotificationProvider>
           </StatsProvider>
         </GameProvider>

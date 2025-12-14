@@ -67,14 +67,14 @@ export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: Flashcard
   const accuracy = sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 pb-safe">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pb-safe">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-slate-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="px-3 sm:px-4 py-3">
           <div className="flex items-center justify-between gap-2">
             <button 
               onClick={onBack}
-              className="flex items-center gap-1 text-slate-600 hover:text-slate-900 transition-colors active:scale-95 touch-manipulation min-h-[44px]"
+              className="flex items-center gap-1 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-colors active:scale-95 touch-manipulation min-h-[44px]"
             >
               <ChevronLeft className="w-5 h-5" />
               <span className="text-sm">Voltar</span>
@@ -82,13 +82,13 @@ export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: Flashcard
             
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="text-center">
-                <div className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wide">Hoje</div>
-                <div className="text-lg sm:text-xl text-emerald-600">{dailyScore}</div>
+                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wide">Hoje</div>
+                <div className="text-lg sm:text-xl text-emerald-600 dark:text-emerald-400">{dailyScore}</div>
               </div>
               
               <div className="text-center">
-                <div className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wide">Precisão</div>
-                <div className="text-lg sm:text-xl text-purple-600">{accuracy}%</div>
+                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wide">Precisão</div>
+                <div className="text-lg sm:text-xl text-purple-600 dark:text-purple-400">{accuracy}%</div>
               </div>
             </div>
           </div>
@@ -100,14 +100,14 @@ export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: Flashcard
         {/* Progress */}
         <div className="mb-4 sm:mb-6">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-xs sm:text-sm text-slate-600">
+            <span className="text-xs sm:text-sm text-slate-600 dark:text-gray-400">
               Card {currentIndex + 1} de {FLASHCARDS.length}
             </span>
-            <span className="text-xs sm:text-sm text-slate-600 font-medium">
+            <span className="text-xs sm:text-sm text-slate-600 dark:text-gray-400 font-medium">
               {Math.round(((currentIndex + 1) / FLASHCARDS.length) * 100)}%
             </span>
           </div>
-          <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+          <div className="h-2 bg-slate-200 dark:bg-gray-700 rounded-full overflow-hidden">
             <div 
               className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300"
               style={{ width: `${((currentIndex + 1) / FLASHCARDS.length) * 100}%` }}
@@ -117,7 +117,7 @@ export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: Flashcard
 
         {/* Topic Badge */}
         <div className="flex items-center gap-2 mb-4">
-          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full border-2 text-xs sm:text-sm bg-indigo-50 text-indigo-700 border-indigo-200">
+          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full border-2 text-xs sm:text-sm bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-700">
             <Scale className="w-4 h-4" />
             <span className="uppercase tracking-wide">{currentCard.topico}</span>
           </div>
@@ -180,14 +180,14 @@ export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: Flashcard
 
         {/* Info Card */}
         {!isFlipped && (
-          <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-4 sm:p-5 border-2 border-purple-200 mb-20 sm:mb-6">
+          <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-2xl p-4 sm:p-5 border-2 border-purple-200 dark:border-purple-700 mb-20 sm:mb-6">
             <div className="flex items-start gap-3">
-              <BookOpen className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-sm sm:text-base text-purple-900 font-semibold mb-1">
+                <h3 className="text-sm sm:text-base text-purple-900 dark:text-purple-200 font-semibold mb-1">
                   Como usar os Flashcards:
                 </h3>
-                <p className="text-xs sm:text-sm text-purple-700 leading-relaxed">
+                <p className="text-xs sm:text-sm text-purple-700 dark:text-purple-300 leading-relaxed">
                   1. Leia a pergunta com atenção<br/>
                   2. Tente lembrar a resposta<br/>
                   3. Toque no card para revelar<br/>
@@ -200,14 +200,14 @@ export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: Flashcard
 
         {/* Action Buttons */}
         {isFlipped && (
-          <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-lg border-2 border-slate-200 mb-20 sm:mb-6">
-            <h3 className="text-base sm:text-lg text-center text-slate-900 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-5 shadow-lg border-2 border-slate-200 dark:border-gray-700 mb-20 sm:mb-6">
+            <h3 className="text-base sm:text-lg text-center text-slate-900 dark:text-white mb-4">
               Você acertou?
             </h3>
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <button
                 onClick={() => handleAnswer(false)}
-                className="flex flex-col items-center gap-2 p-4 sm:p-5 rounded-xl bg-red-50 border-2 border-red-200 text-red-700 hover:bg-red-100 active:scale-95 transition-all touch-manipulation"
+                className="flex flex-col items-center gap-2 p-4 sm:p-5 rounded-xl bg-red-50 dark:bg-red-900/30 border-2 border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/50 active:scale-95 transition-all touch-manipulation"
               >
                 <ThumbsDown className="w-6 h-6 sm:w-7 sm:h-7" />
                 <span className="text-sm sm:text-base font-semibold">Errei</span>
@@ -215,7 +215,7 @@ export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: Flashcard
               
               <button
                 onClick={() => handleAnswer(true)}
-                className="flex flex-col items-center gap-2 p-4 sm:p-5 rounded-xl bg-green-50 border-2 border-green-200 text-green-700 hover:bg-green-100 active:scale-95 transition-all touch-manipulation"
+                className="flex flex-col items-center gap-2 p-4 sm:p-5 rounded-xl bg-green-50 dark:bg-green-900/30 border-2 border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/50 active:scale-95 transition-all touch-manipulation"
               >
                 <ThumbsUp className="w-6 h-6 sm:w-7 sm:h-7" />
                 <span className="text-sm sm:text-base font-semibold">Acertei</span>
@@ -230,7 +230,7 @@ export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: Flashcard
 
       {/* Fixed Bottom Button - Only when not flipped */}
       {!isFlipped && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-3 sm:p-4 safe-area-bottom z-40 sm:relative sm:border-0 sm:bg-transparent">
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-slate-200 dark:border-gray-700 p-3 sm:p-4 safe-area-bottom z-40 sm:relative sm:border-0 sm:bg-transparent dark:sm:bg-transparent">
           <div className="max-w-3xl mx-auto">
             <button
               onClick={handleFlip}

@@ -1,24 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { FLASHCARDS, Flashcard } from '../data/flashcards';
-import { QUESTIONS, Question } from '../data/questions';
 import { 
-  selectSmartQuestions, 
-  shuffleQuestionOptions, 
-  recordAnswer 
-} from '../utils/questionManager';
-import { 
-  Laptop, Shield, Scale, BookOpen, Network, 
-  ChevronLeft, CheckCircle2, XCircle, Circle, 
-  Award, Zap, RotateCw, Eye, EyeOff, ArrowRight
+  ArrowLeft, ChevronRight, Check, X, Clock, Zap, Star, TrendingUp, Trophy,
+  ChevronLeft, Eye, EyeOff, BookOpen, Scale, ArrowRight, Shield, Network,
+  Laptop, CheckCircle2, XCircle, Circle, Award
 } from 'lucide-react';
+import { getQuestionsBySubject, recordAnswer, selectSmartQuestions, shuffleQuestionOptions } from '../utils/questionManager';
+import { useTheme } from '../context/ThemeContext';
+import { useGame } from '../context/GameContext'; // 🚀 GameContext
+import { useStats } from '../context/StatsContext'; // 📊 NOVO: StatsContext
+import { FLASHCARDS } from '../data/flashcards';
+import { QUESTIONS_WITH_DIFFICULTY } from '../data/questionsWithDifficulty';
+import { Question } from '../types/estudos';
+
+interface Flashcard {
+  id: number;
+  topico: string;
+  frente: string;
+  verso: string;
+  dificuldade: 'Fácil' | 'Média' | 'Difícil';
+}
 
 interface StudySessionProps {
   onBack: () => void;
   dailyScore: number;
+  totalQuestions?: number; // ✅ ADICIONADO (opcional para compatibilidade)
   onScoreUpdate: (score: number, total: number) => void;
+  difficulty?: 'facil' | 'medio' | 'dificil' | 'mix'; // ✅ NOVO: Dificuldade selecionada
 }
 
-export function StudySession({ onBack, dailyScore, onScoreUpdate }: StudySessionProps) {
+export function StudySession({ onBack, dailyScore, totalQuestions = 0, onScoreUpdate, difficulty = 'mix' }: StudySessionProps) {
+  // 🚀 GameContext para XP e badges
+  const { addXP, checkAndUnlockBadges, updateStreak, recordStudyDay, recordQuestionAnswer: recordGameAnswer, gameStats } = useGame();
+  // 📊 StatsContext para estatísticas detalhadas
+  const { recordQuestionAnswer: recordStatsAnswer } = useStats();
+
   const [phase, setPhase] = useState<'flashcards' | 'questions'>('flashcards');
   const [flashcardsList, setFlashcardsList] = useState<Flashcard[]>([]);
   const [questionsList, setQuestionsList] = useState<Question[]>([]);
@@ -31,6 +46,8 @@ export function StudySession({ onBack, dailyScore, onScoreUpdate }: StudySession
   const [sessionTotal, setSessionTotal] = useState(0);
   const [usedQuestionIds, setUsedQuestionIds] = useState<Set<number>>(new Set());
   const [flashcardsCompleted, setFlashcardsCompleted] = useState(0);
+  const [showXPGain, setShowXPGain] = useState(false);
+  const [lastXPGain, setLastXPGain] = useState(0);
 
   // Carregar configurações e inicializar sessão
   useEffect(() => {
@@ -69,9 +86,10 @@ export function StudySession({ onBack, dailyScore, onScoreUpdate }: StudySession
 
   const loadQuestions = (questionsPerSession: number) => {
     const smartSelection = selectSmartQuestions(
-      QUESTIONS, 
+      QUESTIONS_WITH_DIFFICULTY, // ✅ NOVO: Usa questões com dificuldade automática
       questionsPerSession,
-      usedQuestionIds
+      usedQuestionIds,
+      difficulty // ✅ Passa a dificuldade selecionada
     );
     const shuffledQuestions = smartSelection.map(q => shuffleQuestionOptions(q));
     setQuestionsList(shuffledQuestions);
@@ -102,19 +120,44 @@ export function StudySession({ onBack, dailyScore, onScoreUpdate }: StudySession
     
     const wasCorrect = selectedOption === currentQuestion.correta;
     
-    // Registrar resposta
+    // Registrar resposta no questionManager (para histórico local)
     recordAnswer(currentQuestion.id, wasCorrect);
+    
+    // Registrar resposta no GameContext (para estatísticas globais e badges)
+    recordGameAnswer(wasCorrect);
+    
+    // 📊 Registrar resposta no StatsContext (para estatísticas detalhadas por matéria)
+    recordStatsAnswer(currentQuestion.materia, wasCorrect);
     
     // Marcar questão como usada
     setUsedQuestionIds(prev => new Set([...prev, currentQuestion.id]));
     
+    // ✅ CORREÇÃO: Usar total acumulado do dia
+    const totalQuestionsNow = totalQuestions + newTotal;
+    
     if (wasCorrect) {
       const newScore = sessionCorrect + 1;
       setSessionCorrect(newScore);
-      onScoreUpdate(dailyScore + newScore, sessionTotal + 1);
+      onScoreUpdate(dailyScore + 1, totalQuestionsNow);
     } else {
-      onScoreUpdate(dailyScore + sessionCorrect, sessionTotal + 1);
+      onScoreUpdate(dailyScore, totalQuestionsNow);
     }
+
+    // 🚀 NOVO: Adicionar XP e verificar badges
+    if (wasCorrect) {
+      const xpGain = 10; // +10 XP por questão correta
+      addXP(xpGain);
+      setLastXPGain(xpGain);
+      setShowXPGain(true);
+      setTimeout(() => setShowXPGain(false), 2000); // Ocultar após 2 segundos
+    }
+    
+    // Verificar badges (sempre, pois algumas dependem do total de questões respondidas)
+    checkAndUnlockBadges();
+    
+    // Atualizar streak e dia de estudo (apenas na primeira questão do dia)
+    updateStreak();
+    recordStudyDay();
   };
 
   const handleNext = () => {
@@ -267,6 +310,17 @@ export function StudySession({ onBack, dailyScore, onScoreUpdate }: StudySession
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
+        {/* XP Gain Notification */}
+        {showXPGain && (
+          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-bounce">
+            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-2">
+              <Zap className="w-5 h-5" />
+              <span className="font-bold">+{lastXPGain} XP</span>
+              <Award className="w-5 h-5" />
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-slate-200 dark:border-gray-700 sticky top-0 z-50">
           <div className="px-3 sm:px-4 py-3">
@@ -279,6 +333,11 @@ export function StudySession({ onBack, dailyScore, onScoreUpdate }: StudySession
                 <span className="text-sm">Sair</span>
               </button>
               <div className="flex items-center gap-3">
+                {/* XP Display */}
+                <div className="flex items-center gap-1 text-sm bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 px-2 py-1 rounded-lg border border-yellow-300 dark:border-yellow-700">
+                  <Zap className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                  <span className="text-yellow-700 dark:text-yellow-300 font-semibold">{gameStats.xp} XP</span>
+                </div>
                 <div className="flex items-center gap-1 text-sm">
                   <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
                   <span className="text-green-600 dark:text-green-400 font-semibold">{sessionCorrect}</span>

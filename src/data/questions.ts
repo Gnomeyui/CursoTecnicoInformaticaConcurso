@@ -5,6 +5,7 @@ export interface Question {
   opcoes: string[];
   correta: number;
   explicacao: string;
+  dificuldade: 'facil' | 'medio' | 'dificil'; // ✅ NOVO: Sistema de dificuldade
 }
 
 export const QUESTIONS: Question[] = [
@@ -15,7 +16,8 @@ export const QUESTIONS: Question[] = [
     pergunta: "A Assembleia Legislativa do Estado de Roraima é composta por quantos Deputados Estaduais?",
     opcoes: ["18 Deputados", "24 Deputados", "30 Deputados", "15 Deputados"],
     correta: 1,
-    explicacao: "Conforme a Constituição Estadual e o Art. 27 da CF/88, Roraima (por ter até 12 deputados federais) tem o triplo desse número em estaduais: 8 federais x 3 = 24 Estaduais."
+    explicacao: "Conforme a Constituição Estadual e o Art. 27 da CF/88, Roraima (por ter até 12 deputados federais) tem o triplo desse número em estaduais: 8 federais x 3 = 24 Estaduais.",
+    dificuldade: 'facil'
   },
   {
     id: 2,
@@ -1696,7 +1698,7 @@ export const QUESTIONS: Question[] = [
     pergunta: "Qual é o município de Roraima localizado mais ao norte do estado, conhecido por ter grande parte de seu território em áreas indígenas e serranas?",
     opcoes: ["Uiramutã", "Caroebe", "São João da Baliza", "Mucajaí"],
     correta: 0,
-    explicacao: "Uiramutã é o município mais setentrional, onde fica o Monte Caburaí, e tem alta concentração de população indígena."
+    explicacao: "Uiramutã �� o município mais setentrional, onde fica o Monte Caburaí, e tem alta concentração de população indígena."
   },
   {
     id: 219,
@@ -3877,8 +3879,611 @@ export const QUESTIONS: Question[] = [
     pergunta: "(CESPE/MPU) Julgue o item: Um firewall de filtro de pacotes (stateless) analisa o conteúdo da aplicação (camada 7) para tomar decisões de bloqueio.",
     opcoes: ["Certo.", "Errado."],
     correta: 1,
-    explicacao: "Errado. Filtro de pacotes simples olha apenas cabeçalhos (IP/Porta) nas camadas 3 e 4. Quem olha aplicação é o Proxy ou Firewall de Aplicação. Gabarito: E."
+    explicacao: "Errado. Filtro de pacotes simples olha apenas cabeçalhos (IP/Porta) nas camadas 3 e 4. Quem olha aplicação é o Proxy ou Firewall de Aplicação. Gabarito: E.",
+    dificuldade: "medio"
+  },
+
+  // --- BLOCO FINAL: RUMO AO TOP 1 (IDs 1951-2000) 🏆 ---
+  // INFORMÁTICA AVANÇADA (1951-1965)
+  {
+    id: 1951,
+    materia: "TI - Cloud Computing",
+    pergunta: "No modelo de serviço IaaS (Infrastructure as a Service), o provedor é responsável por:",
+    opcoes: [
+      "Gerenciar o sistema operacional e as aplicações do cliente",
+      "Fornecer apenas processamento, armazenamento e rede virtualizados",
+      "Manter as aplicações SaaS atualizadas automaticamente",
+      "Configurar firewalls e políticas de segurança da aplicação"
+    ],
+    correta: 1,
+    explicacao: "No IaaS, o provedor fornece infraestrutura (CPU, RAM, disco, rede). O cliente gerencia SO, apps e dados. Exemplos: AWS EC2, Azure VMs.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1952,
+    materia: "TI - DevOps",
+    pergunta: "Qual ferramenta é um sistema de orquestração de containers open-source desenvolvido pelo Google?",
+    opcoes: ["Docker Swarm", "Kubernetes", "Apache Mesos", "Rancher"],
+    correta: 1,
+    explicacao: "Kubernetes (K8s) foi criado pelo Google e é o padrão da indústria para orquestração de containers. Docker Swarm é do Docker Inc.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1953,
+    materia: "TI - Banco de Dados",
+    pergunta: "Em SQL, qual comando é usado para reverter uma transação que ainda não foi confirmada?",
+    opcoes: ["REVERT", "UNDO", "ROLLBACK", "CANCEL"],
+    correta: 2,
+    explicacao: "ROLLBACK desfaz todas as mudanças da transação atual. COMMIT confirma. SAVEPOINT cria pontos de retorno intermediários.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1954,
+    materia: "TI - Arquitetura de Computadores",
+    pergunta: "A memória cache L1 geralmente é:",
+    opcoes: [
+      "Compartilhada entre todos os núcleos do processador",
+      "Maior e mais lenta que a cache L2",
+      "Dividida em cache de instruções e cache de dados",
+      "Localizada na placa-mãe, externa ao processador"
+    ],
+    correta: 2,
+    explicacao: "Cache L1 é dividida em i-cache (instruções) e d-cache (dados). É a menor e mais rápida, exclusiva de cada core.",
+    dificuldade: "dificil"
+  },
+  {
+    id: 1955,
+    materia: "TI - Virtualização",
+    pergunta: "Qual tipo de hypervisor roda diretamente sobre o hardware, sem necessidade de um sistema operacional hospedeiro?",
+    opcoes: ["Tipo 1 (bare-metal)", "Tipo 2 (hosted)", "Tipo 3 (container)", "Paravirtualização"],
+    correta: 0,
+    explicacao: "Hypervisor Tipo 1 (bare-metal) roda direto no hardware. Exemplos: VMware ESXi, Hyper-V, Xen. Tipo 2 precisa de SO (VirtualBox, VMware Workstation).",
+    dificuldade: "medio"
+  },
+  {
+    id: 1956,
+    materia: "TI - Metodologias Ágeis",
+    pergunta: "No Scrum, qual cerimônia tem como objetivo identificar impedimentos e sincronizar o trabalho diário?",
+    opcoes: ["Sprint Planning", "Daily Scrum", "Sprint Review", "Sprint Retrospective"],
+    correta: 1,
+    explicacao: "Daily Scrum (reunião diária) dura 15min e cada membro responde: O que fiz? O que vou fazer? Há impedimentos?",
+    dificuldade: "facil"
+  },
+  {
+    id: 1957,
+    materia: "TI - Engenharia de Software",
+    pergunta: "O padrão de projeto Singleton tem como objetivo:",
+    opcoes: [
+      "Permitir múltiplas instâncias de uma classe",
+      "Garantir que uma classe tenha apenas uma instância global",
+      "Separar a interface da implementação",
+      "Criar famílias de objetos relacionados"
+    ],
+    correta: 1,
+    explicacao: "Singleton garante UMA única instância global da classe, com ponto de acesso global. Usado para configurações, logs, conexões DB.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1958,
+    materia: "TI - HTML/CSS",
+    pergunta: "Qual propriedade CSS é usada para criar um layout de grade bidimensional (linhas e colunas)?",
+    opcoes: ["display: flex;", "display: grid;", "display: table;", "display: inline-block;"],
+    correta: 1,
+    explicacao: "CSS Grid (display: grid;) cria layouts 2D. Flexbox (display: flex;) é para layouts 1D (linha OU coluna).",
+    dificuldade: "facil"
+  },
+  {
+    id: 1959,
+    materia: "TI - JavaScript",
+    pergunta: "Qual método de array em JavaScript retorna um NOVO array com os elementos que passaram em um teste?",
+    opcoes: ["map()", "filter()", "forEach()", "reduce()"],
+    correta: 1,
+    explicacao: "filter() retorna novo array com elementos que atendem a condição. map() transforma elementos. forEach() apenas itera.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1960,
+    materia: "TI - Git/Versionamento",
+    pergunta: "Qual comando Git é usado para mesclar (merge) uma branch específica na branch atual?",
+    opcoes: ["git merge <branch>", "git join <branch>", "git combine <branch>", "git pull <branch>"],
+    correta: 0,
+    explicacao: "git merge <branch> mescla a branch especificada na branch atual. git pull = fetch + merge de repositório remoto.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1961,
+    materia: "TI - API REST",
+    pergunta: "Qual código HTTP indica que um recurso foi criado com sucesso?",
+    opcoes: ["200 OK", "201 Created", "202 Accepted", "204 No Content"],
+    correta: 1,
+    explicacao: "201 Created indica criação bem-sucedida (POST). 200 OK é sucesso genérico. 204 No Content é sucesso sem corpo de resposta.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1962,
+    materia: "TI - JSON",
+    pergunta: "Em JSON, qual tipo de dado NÃO é válido?",
+    opcoes: ["string", "number", "boolean", "undefined"],
+    correta: 3,
+    explicacao: "JSON aceita: string, number, boolean, null, object, array. NÃO aceita: undefined, function, Date (deve ser string).",
+    dificuldade: "medio"
+  },
+  {
+    id: 1963,
+    materia: "TI - XML",
+    pergunta: "Em XML, qual declaração indica a versão e a codificação do documento?",
+    opcoes: [
+      "<!DOCTYPE xml>",
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+      "<xml version=\"1.0\">",
+      "<!-- XML 1.0 UTF-8 -->"
+    ],
+    correta: 1,
+    explicacao: "<?xml version=\"1.0\" encoding=\"UTF-8\"?> é o prólogo XML obrigatório na primeira linha do documento.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1964,
+    materia: "TI - Expressões Regulares",
+    pergunta: "Na regex, qual metacaractere representa QUALQUER caractere único (exceto quebra de linha)?",
+    opcoes: ["*", ".", "+", "?"],
+    correta: 1,
+    explicacao: "Ponto (.) representa qualquer caractere. * = zero ou mais, + = um ou mais, ? = zero ou um.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1965,
+    materia: "TI - UML",
+    pergunta: "Qual diagrama UML mostra a sequência temporal de mensagens entre objetos?",
+    opcoes: ["Diagrama de Classes", "Diagrama de Sequência", "Diagrama de Casos de Uso", "Diagrama de Componentes"],
+    correta: 1,
+    explicacao: "Diagrama de Sequência mostra interações entre objetos ao longo do tempo (eixo vertical). Casos de Uso mostram funcionalidades.",
+    dificuldade: "facil"
+  },
+
+  // REDES E SEGURANÇA (1966-1975)
+  {
+    id: 1966,
+    materia: "Redes - IPv6",
+    pergunta: "Qual é o tamanho de um endereço IPv6?",
+    opcoes: ["32 bits", "64 bits", "128 bits", "256 bits"],
+    correta: 2,
+    explicacao: "IPv6 usa 128 bits (16 bytes), escrito em hexadecimal. IPv4 usa 32 bits. Isso permite 2^128 endereços.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1967,
+    materia: "Redes - VPN",
+    pergunta: "Qual protocolo é comumente usado para criar túneis VPN site-to-site seguros?",
+    opcoes: ["PPTP", "L2TP", "IPSec", "SSL/TLS"],
+    correta: 2,
+    explicacao: "IPSec (IP Security) é o padrão para VPN site-to-site corporativa. SSL/TLS é para VPN de acesso remoto (navegador).",
+    dificuldade: "medio"
+  },
+  {
+    id: 1968,
+    materia: "Redes - QoS",
+    pergunta: "QoS (Quality of Service) em redes tem como objetivo principal:",
+    opcoes: [
+      "Aumentar a velocidade da internet",
+      "Priorizar tipos específicos de tráfego",
+      "Criptografar pacotes de dados",
+      "Detectar intrusões na rede"
+    ],
+    correta: 1,
+    explicacao: "QoS prioriza tráfego crítico (VoIP, vídeo) sobre tráfego menos urgente (downloads). Garante latência e jitter baixos.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1969,
+    materia: "Segurança - PKI",
+    pergunta: "Na infraestrutura de chave pública (PKI), a Autoridade Certificadora (CA) é responsável por:",
+    opcoes: [
+      "Gerar chaves privadas para os usuários",
+      "Emitir e assinar certificados digitais",
+      "Criptografar todos os dados trafegados",
+      "Armazenar senhas dos usuários"
+    ],
+    correta: 1,
+    explicacao: "CA (Certificate Authority) emite, assina e revoga certificados digitais. O usuário gera seu próprio par de chaves (pública/privada).",
+    dificuldade: "medio"
+  },
+  {
+    id: 1970,
+    materia: "Segurança - Criptografia",
+    pergunta: "Qual algoritmo de criptografia é SIMÉTRICO (usa a mesma chave para cifrar e decifrar)?",
+    opcoes: ["RSA", "AES", "ECC", "Diffie-Hellman"],
+    correta: 1,
+    explicacao: "AES (Advanced Encryption Standard) é simétrico. RSA, ECC e Diffie-Hellman são assimétricos (par de chaves pública/privada).",
+    dificuldade: "medio"
+  },
+  {
+    id: 1971,
+    materia: "Segurança - Hash",
+    pergunta: "Qual algoritmo de hash é considerado INSEGURO para uso atual devido a vulnerabilidades de colisão?",
+    opcoes: ["SHA-256", "SHA-3", "MD5", "BLAKE2"],
+    correta: 2,
+    explicacao: "MD5 é quebrado (colisões foram encontradas). SHA-1 também é inseguro. Use SHA-256 ou superior para segurança atual.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1972,
+    materia: "Segurança - OWASP",
+    pergunta: "Segundo o OWASP Top 10, qual vulnerabilidade permite que um atacante injete comandos SQL maliciosos?",
+    opcoes: ["XSS (Cross-Site Scripting)", "SQL Injection", "CSRF (Cross-Site Request Forgery)", "Broken Authentication"],
+    correta: 1,
+    explicacao: "SQL Injection permite executar comandos SQL não autorizados. Prevenir: usar prepared statements, validar inputs.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1973,
+    materia: "Segurança - Firewall",
+    pergunta: "Um firewall Stateful difere do Stateless porque:",
+    opcoes: [
+      "Analisa apenas cabeçalhos IP",
+      "Mantém o estado das conexões ativas",
+      "Bloqueia todo tráfego por padrão",
+      "Funciona apenas em camada 2 (enlace)"
+    ],
+    correta: 1,
+    explicacao: "Stateful rastreia conexões TCP/UDP (estado). Stateless analisa cada pacote isoladamente, sem contexto da conexão.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1974,
+    materia: "Segurança - IDS/IPS",
+    pergunta: "Qual a principal diferença entre IDS e IPS?",
+    opcoes: [
+      "IDS detecta e bloqueia, IPS apenas detecta",
+      "IDS apenas detecta, IPS detecta e pode bloquear",
+      "IDS é hardware, IPS é software",
+      "Não há diferença, são sinônimos"
+    ],
+    correta: 1,
+    explicacao: "IDS (Intrusion Detection System) apenas alerta. IPS (Intrusion Prevention System) pode bloquear automaticamente o ataque.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1975,
+    materia: "Segurança - Pentest",
+    pergunta: "Em um teste de penetração (pentest), a fase de reconnaissance consiste em:",
+    opcoes: [
+      "Explorar vulnerabilidades encontradas",
+      "Coletar informações sobre o alvo",
+      "Manter acesso persistente ao sistema",
+      "Remover rastros da invasão"
+    ],
+    correta: 1,
+    explicacao: "Reconnaissance (reconhecimento) é a coleta de informações: IPs, domínios, tecnologias, funcionários. Fase passiva ou ativa.",
+    dificuldade: "medio"
+  },
+
+  // LINUX E WINDOWS (1976-1983)
+  {
+    id: 1976,
+    materia: "Linux - Shell Script",
+    pergunta: "Em shell script, qual variável especial contém o código de saída do último comando executado?",
+    opcoes: ["$0", "$1", "$?", "$$"],
+    correta: 2,
+    explicacao: "$? armazena o exit code (0 = sucesso, diferente de 0 = erro). $0 = nome do script, $$ = PID do processo.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1977,
+    materia: "Linux - Systemd",
+    pergunta: "Qual comando reinicia um serviço gerenciado pelo systemd?",
+    opcoes: ["service restart nginx", "systemctl restart nginx", "init 6 nginx", "reload nginx"],
+    correta: 1,
+    explicacao: "systemctl restart <serviço> reinicia. systemctl start/stop/status também disponíveis. SysVinit usava 'service'.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1978,
+    materia: "Linux - Cron",
+    pergunta: "No formato cron, o que significa a expressão '0 3 * * *'?",
+    opcoes: [
+      "Executar a cada 3 minutos",
+      "Executar às 3h da manhã todos os dias",
+      "Executar 3 vezes por dia",
+      "Executar no dia 3 de cada mês"
+    ],
+    correta: 1,
+    explicacao: "Formato: min hora dia mês dia-semana. '0 3 * * *' = às 3:00 AM todos os dias. '*/3 * * * *' = a cada 3 minutos.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1979,
+    materia: "Linux - LVM",
+    pergunta: "LVM (Logical Volume Manager) permite:",
+    opcoes: [
+      "Apenas particionar discos físicos",
+      "Criar volumes lógicos flexíveis que podem crescer dinamicamente",
+      "Criptografar partições automaticamente",
+      "Substituir o sistema de arquivos ext4"
+    ],
+    correta: 1,
+    explicacao: "LVM permite redimensionar volumes sem parar o sistema, fazer snapshots, combinar múltiplos discos em um volume.",
+    dificuldade: "dificil"
+  },
+  {
+    id: 1980,
+    materia: "Windows - Active Directory",
+    pergunta: "No Active Directory, uma OU (Organizational Unit) é usada para:",
+    opcoes: [
+      "Organizar usuários e computadores logicamente para aplicar GPOs",
+      "Armazenar arquivos compartilhados da rede",
+      "Criar backups automáticos do domínio",
+      "Gerenciar licenças do Windows Server"
+    ],
+    correta: 0,
+    explicacao: "OU (Unidade Organizacional) organiza objetos (usuários, PCs) e permite aplicar Group Policies (GPOs) específicas.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1981,
+    materia: "Windows - PowerShell",
+    pergunta: "Qual cmdlet do PowerShell lista todos os processos em execução?",
+    opcoes: ["Get-Service", "Get-Process", "List-Process", "Show-Task"],
+    correta: 1,
+    explicacao: "Get-Process lista processos. Get-Service lista serviços. Stop-Process mata processo. Cmdlets seguem padrão Verbo-Substantivo.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1982,
+    materia: "Windows - GPO",
+    pergunta: "Group Policy Objects (GPO) podem ser usadas para:",
+    opcoes: [
+      "Configurar políticas de segurança e configurações em massa",
+      "Instalar aplicativos manualmente em cada PC",
+      "Criar partições de disco nos clientes",
+      "Fazer backup de servidores automaticamente"
+    ],
+    correta: 0,
+    explicacao: "GPOs definem políticas: senhas, restrições, scripts de logon, instalação de software, configurações de segurança, etc.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1983,
+    materia: "Windows - NTFS",
+    pergunta: "Qual permissão NTFS permite ler, escrever, modificar e excluir arquivos, mas NÃO alterar permissões?",
+    opcoes: ["Leitura", "Modificar", "Controle Total", "Gravação"],
+    correta: 1,
+    explicacao: "Modificar = ler + escrever + excluir. Controle Total inclui alterar permissões e tomar posse. Gravação sozinha não permite ler.",
+    dificuldade: "medio"
+  },
+
+  // LGPD (1984-1988)
+  {
+    id: 1984,
+    materia: "LGPD - Lei 13.709/2018",
+    pergunta: "Segundo a LGPD, dados pessoais sensíveis incluem:",
+    opcoes: [
+      "Nome e CPF",
+      "Origem racial, dados de saúde e convicções religiosas",
+      "Endereço e telefone",
+      "Apenas dados biométricos"
+    ],
+    correta: 1,
+    explicacao: "Dados sensíveis (Art. 5º, II): origem racial/étnica, religião, política, saúde, orientação sexual, genéticos, biométricos.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1985,
+    materia: "LGPD - Princípios",
+    pergunta: "O princípio da finalidade na LGPD estabelece que:",
+    opcoes: [
+      "Dados podem ser usados para qualquer propósito",
+      "O tratamento deve ter propósitos legítimos, específicos e informados ao titular",
+      "Os dados devem ser armazenados indefinidamente",
+      "Apenas o controlador pode acessar os dados"
+    ],
+    correta: 1,
+    explicacao: "Finalidade (Art. 6º, I): propósitos legítimos, específicos, explícitos e informados ao titular. Não pode desviar da finalidade.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1986,
+    materia: "LGPD - Bases Legais",
+    pergunta: "Qual NÃO é uma base legal para tratamento de dados segundo a LGPD?",
+    opcoes: [
+      "Consentimento do titular",
+      "Cumprimento de obrigação legal",
+      "Interesse econômico da empresa",
+      "Legítimo interesse do controlador"
+    ],
+    correta: 2,
+    explicacao: "Art. 7º lista 10 bases legais: consentimento, obrigação legal, interesse público, legítimo interesse, etc. Lucro econômico NÃO é base.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1987,
+    materia: "LGPD - Direitos do Titular",
+    pergunta: "Segundo a LGPD, o titular dos dados TEM direito a:",
+    opcoes: [
+      "Solicitar a eliminação de seus dados pessoais",
+      "Vender seus dados para terceiros",
+      "Impedir que órgãos públicos tratem seus dados",
+      "Exigir pagamento por uso de seus dados"
+    ],
+    correta: 0,
+    explicacao: "Art. 18: titular pode pedir confirmação, acesso, correção, anonimização, eliminação, portabilidade, revogação de consentimento.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1988,
+    materia: "LGPD - ANPD",
+    pergunta: "A Autoridade Nacional de Proteção de Dados (ANPD) é responsável por:",
+    opcoes: [
+      "Desenvolver softwares de segurança",
+      "Fiscalizar e aplicar sanções por descumprimento da LGPD",
+      "Vender certificações de conformidade",
+      "Gerenciar bancos de dados do governo"
+    ],
+    correta: 1,
+    explicacao: "ANPD fiscaliza, regulamenta, aplica sanções (multas até 2% do faturamento, limitado a R$ 50 milhões), edita normas.",
+    dificuldade: "facil"
+  },
+
+  // GOVERNANÇA DE TI (1989-1993)
+  {
+    id: 1989,
+    materia: "Governança TI - COBIT",
+    pergunta: "O framework COBIT é focado em:",
+    opcoes: [
+      "Desenvolvimento ágil de software",
+      "Governança e gestão de TI empresarial",
+      "Gerenciamento de projetos",
+      "Testes de software"
+    ],
+    correta: 1,
+    explicacao: "COBIT (Control Objectives for IT) é framework de governança e gestão de TI, alinha TI com objetivos de negócio.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1990,
+    materia: "Governança TI - ITIL",
+    pergunta: "ITIL 4 é um framework de:",
+    opcoes: [
+      "Segurança da informação",
+      "Gerenciamento de serviços de TI (ITSM)",
+      "Desenvolvimento de software",
+      "Auditoria de sistemas"
+    ],
+    correta: 1,
+    explicacao: "ITIL (Information Technology Infrastructure Library) é conjunto de boas práticas para gerenciamento de serviços de TI.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1991,
+    materia: "Governança TI - ISO 27001",
+    pergunta: "A norma ISO/IEC 27001 trata de:",
+    opcoes: [
+      "Qualidade de software",
+      "Gestão de Segurança da Informação (SGSI)",
+      "Gestão de projetos",
+      "Desenvolvimento ágil"
+    ],
+    correta: 1,
+    explicacao: "ISO 27001 especifica requisitos para estabelecer, implementar e manter um Sistema de Gestão de Segurança da Informação (SGSI).",
+    dificuldade: "facil"
+  },
+  {
+    id: 1992,
+    materia: "Governança TI - SLA",
+    pergunta: "SLA (Service Level Agreement) define:",
+    opcoes: [
+      "Salários dos funcionários de TI",
+      "Níveis de serviço acordados entre provedor e cliente",
+      "Licenças de software necessárias",
+      "Políticas de backup automático"
+    ],
+    correta: 1,
+    explicacao: "SLA estabelece métricas de qualidade: disponibilidade, tempo de resposta, resolução de incidentes. É um acordo formal.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1993,
+    materia: "Governança TI - PMBOK",
+    pergunta: "O PMBOK (Project Management Body of Knowledge) é um guia de:",
+    opcoes: [
+      "Programação orientada a objetos",
+      "Boas práticas em gerenciamento de projetos",
+      "Segurança de redes",
+      "Design de interfaces"
+    ],
+    correta: 1,
+    explicacao: "PMBOK é guia do PMI com boas práticas em gestão de projetos: escopo, tempo, custo, qualidade, riscos, comunicação, etc.",
+    dificuldade: "facil"
+  },
+
+  // LEGISLAÇÃO E REGIMENTO ALE-RR (1994-1997)
+  {
+    id: 1994,
+    materia: "Regimento Interno ALE-RR",
+    pergunta: "Segundo o Regimento Interno da ALE-RR, o quórum mínimo para deliberação em sessão ordinária é de:",
+    opcoes: [
+      "Maioria simples dos membros",
+      "Maioria absoluta (metade + 1 do total)",
+      "2/3 dos deputados",
+      "Todos os deputados presentes"
+    ],
+    correta: 1,
+    explicacao: "Maioria absoluta = metade + 1 do TOTAL de membros da Casa (não apenas dos presentes). É diferente de maioria simples.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1995,
+    materia: "Legislação - Ética no Serviço Público",
+    pergunta: "Segundo o Código de Ética do Servidor Público (Decreto 1.171/94), é vedado ao servidor:",
+    opcoes: [
+      "Usar bens públicos para fins particulares",
+      "Estudar durante o expediente",
+      "Atender o público com educação",
+      "Solicitar férias anuais"
+    ],
+    correta: 0,
+    explicacao: "É vedado usar recursos públicos (computador, carro, telefone) para fins particulares. Também proibido aceitar presentes, retardar processos.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1996,
+    materia: "Legislação - Licitações",
+    pergunta: "A Lei 14.133/2021 (Nova Lei de Licitações) estabelece que a modalidade Pregão é usada para:",
+    opcoes: [
+      "Contratação de obras complexas",
+      "Aquisição de bens e serviços comuns",
+      "Alienação de bens públicos",
+      "Concessões de serviços públicos"
+    ],
+    correta: 1,
+    explicacao: "Pregão é para bens/serviços COMUNS (padrão de mercado). Obras usam Concorrência. Dispensa/Inexigibilidade para casos especiais.",
+    dificuldade: "medio"
+  },
+  {
+    id: 1997,
+    materia: "História de Roraima",
+    pergunta: "Roraima foi desmembrado de qual estado para se tornar território federal em 1943?",
+    opcoes: ["Pará", "Amazonas", "Acre", "Amapá"],
+    correta: 1,
+    explicacao: "Rio Branco (hoje Roraima) foi desmembrado do Amazonas em 1943. Virou estado em 1988 com a nova Constituição.",
+    dificuldade: "facil"
+  },
+
+  // PORTUGUÊS (1998-2000)
+  {
+    id: 1998,
+    materia: "Português - Morfologia",
+    pergunta: "Na frase 'A estudante leu ATENTAMENTE o edital', a palavra destacada é:",
+    opcoes: ["Adjetivo", "Advérbio", "Substantivo", "Conjunção"],
+    correta: 1,
+    explicacao: "ATENTAMENTE é advérbio de modo (termina em -mente). Modifica o verbo 'leu'. Adjetivo modificaria substantivo.",
+    dificuldade: "facil"
+  },
+  {
+    id: 1999,
+    materia: "Português - Concordância",
+    pergunta: "Assinale a frase com ERRO de concordância verbal:",
+    opcoes: [
+      "Fazem dois anos que ele passou no concurso.",
+      "Deve haver muitos candidatos inscritos.",
+      "Existem vagas para técnicos em informática.",
+      "Houve várias reclamações sobre a prova."
+    ],
+    correta: 0,
+    explicacao: "ERRADO: 'Fazem' (verbo fazer indicando tempo é IMPESSOAL = singular). CERTO: 'Faz dois anos'. Haver (existir) também é impessoal.",
+    dificuldade: "medio"
+  },
+  {
+    id: 2000,
+    materia: "Português - Interpretação",
+    pergunta: "Em 'A aprovação no concurso é a META de todos os candidatos', a palavra META tem sentido de:",
+    opcoes: ["Obstáculo", "Objetivo", "Resultado", "Impedimento"],
+    correta: 1,
+    explicacao: "META = objetivo, finalidade, alvo a ser alcançado. Sinônimos: propósito, fim, escopo. 'Chegar à meta' = alcançar o objetivo.",
+    dificuldade: "facil"
   }
 ];
 
-// 🏆 TOTAL ATUAL: 1.950 QUESTÕES | Faltam 50 para fechar em 2.000! 🚀
+// 🏆🏆🏆 MISSÃO CUMPRIDA: 2.000 QUESTÕES COMPLETAS! 🏆🏆🏆
+// Sistema pronto para DOMINAR o concurso da ALE-RR - Técnico em Informática
+// Boa sorte na conquista do TOP 1! 🚀✨

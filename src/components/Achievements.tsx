@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowLeft, Trophy, Lock, Star, Zap, Target } from 'lucide-react';
 import { useGame, getXPForLevel } from '../context/GameContext';
 import { useTheme } from '../context/ThemeContext';
@@ -106,8 +106,8 @@ const ALL_BADGES = [
     category: 'Consistência'
   },
   {
-    id: 'top5_ready',
-    name: 'Pronto para o TOP 5',
+    id: 'top1_ready',
+    name: 'Pronto para o TOP 1',
     description: 'Completou 1000 questões com 85% de acerto',
     icon: '🏆',
     target: 1000,
@@ -161,11 +161,11 @@ const ALL_BADGES = [
   },
   {
     id: 'questions_2000',
-    name: 'BANCO DOMINADO',
-    description: 'Respondeu todas as 2.000 questões!',
+    name: 'GLÓRIA - 2000 QUESTÕES',
+    description: 'COMPLETOU TODAS AS 2.000 QUESTÕES DO BANCO! 🎉',
     icon: '👑',
     target: 2000,
-    category: 'Volume'
+    category: 'Elite'
   },
   {
     id: 'daily_20',
@@ -372,8 +372,13 @@ const ALL_BADGES = [
 ];
 
 export function Achievements({ onBack }: AchievementsProps) {
-  const { gameStats } = useGame();
+  const { gameStats, markBadgesAsViewed } = useGame();
   const { isDarkMode } = useTheme();
+  
+  // 🔔 Marcar badges como visualizadas quando o componente é montado
+  useEffect(() => {
+    markBadgesAsViewed();
+  }, []);
 
   const unlockedBadgeIds = gameStats.badges.map(b => b.id);
   const unlockedCount = gameStats.badges.length;
@@ -488,13 +493,19 @@ export function Achievements({ onBack }: AchievementsProps) {
                 {categoryBadges.map(badge => {
                   const isUnlocked = unlockedBadgeIds.includes(badge.id);
                   const unlockedBadge = gameStats.badges.find(b => b.id === badge.id);
+                  
+                  // 🏆 Badge especial GLÓRIA - 2000 QUESTÕES (maior destaque)
+                  const isGloriaBadge = badge.id === 'questions_2000';
+                  const isGloriaTag = isUnlocked && isGloriaBadge;
 
                   return (
                     <div
                       key={badge.id}
                       className={`relative p-4 rounded-xl border-2 transition-all ${
                         isUnlocked
-                          ? 'bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-400 dark:border-yellow-600 shadow-md'
+                          ? isGloriaBadge
+                            ? 'bg-gradient-to-br from-yellow-100 via-orange-100 to-red-100 dark:from-yellow-900/40 dark:via-orange-900/40 dark:to-red-900/40 border-yellow-500 dark:border-yellow-400 shadow-2xl ring-4 ring-yellow-300 dark:ring-yellow-600 animate-pulse'
+                            : 'bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-400 dark:border-yellow-600 shadow-md'
                           : 'bg-slate-50 dark:bg-gray-700 border-slate-200 dark:border-gray-600 opacity-60'
                       }`}
                     >
@@ -503,12 +514,19 @@ export function Achievements({ onBack }: AchievementsProps) {
                           <Lock className="w-4 h-4 text-slate-400 dark:text-gray-500" />
                         </div>
                       )}
+                      
+                      {/* Selo especial GLÓRIA */}
+                      {isUnlocked && isGloriaTag && (
+                        <div className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs px-2 py-1 rounded-full shadow-lg animate-bounce">
+                          ✨ ÉPICO
+                        </div>
+                      )}
 
                       <div className="text-center">
-                        <div className={`text-4xl mb-2 ${!isUnlocked && 'grayscale'}`}>
+                        <div className={`${isGloriaTag ? 'text-5xl' : 'text-4xl'} mb-2 ${!isUnlocked && 'grayscale'}`}>
                           {badge.icon}
                         </div>
-                        <div className="text-sm text-slate-900 dark:text-white mb-1">
+                        <div className={`${isGloriaTag ? 'text-base font-bold' : 'text-sm'} text-slate-900 dark:text-white mb-1`}>
                           {badge.name}
                         </div>
                         <div className="text-xs text-slate-600 dark:text-gray-400 mb-2">
@@ -540,7 +558,7 @@ export function Achievements({ onBack }: AchievementsProps) {
                   Próxima Conquista
                 </h4>
                 <p className="text-xs text-blue-700 dark:text-blue-300">
-                  Continue estudando para desbloquear mais badges! Cada conquista te dá XP extra e mostra seu progresso rumo ao TOP 5.
+                  Continue estudando para desbloquear mais badges! Cada conquista te dá XP extra e mostra seu progresso rumo ao TOP 1.
                 </p>
               </div>
             </div>
@@ -553,7 +571,7 @@ export function Achievements({ onBack }: AchievementsProps) {
             <div className="text-5xl mb-3">🎉</div>
             <h3 className="text-2xl mb-2">Parabéns!</h3>
             <p className="text-yellow-100">
-              Você desbloqueou todas as conquistas! Você está pronto para o TOP 5 da ALE-RR! 🏆
+              Você desbloqueou todas as conquistas! Você está pronto para o TOP 1 da ALE-RR! 🏆
             </p>
           </div>
         )}

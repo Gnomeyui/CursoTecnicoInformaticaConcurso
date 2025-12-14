@@ -33,16 +33,16 @@ const defaultTimes = {
 };
 
 const motivationalMessages = [
-  'Hora de estudar! Cada questão te aproxima do TOP 5! 🚀',
+  'Hora de estudar! Cada questão te aproxima do TOP 1! 🚀',
   'Seus concorrentes estão estudando. E você? 💪',
   'Apenas 10 questões hoje já fazem diferença! 📚',
-  'O TOP 5 não vai se conquistar sozinho! Vamos lá! 🏆',
+  'O TOP 1 não vai se conquistar sozinho! Vamos lá! 🏆',
   'Lembre-se: consistência é a chave do sucesso! 🔑',
   'Sua vaga na ALE-RR está te esperando! 🎯',
   'Cada minuto de estudo conta! Vamos revisar? 📖',
   'Não deixe para amanhã! Responda algumas questões agora! ⚡',
   'Você está mais perto do que imagina! Continue! 🌟',
-  'TOP 5 requer dedicação diária. Está pronto? 💯'
+  'TOP 1 requer dedicação diária. Está pronto? 💯'
 ];
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
@@ -78,33 +78,40 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      // ⚡ CRÍTICO: Verificar versão do Android e solicitar permissões
+      console.log('🔔 Inicializando sistema de notificações nativas...');
+      
       // Criar canal de notificação para Android 8+
       await LocalNotifications.createChannel({
         id: 'study-reminders',
         name: 'Lembretes de Estudo',
-        description: 'Notificações para lembrar de estudar para o concurso',
-        importance: 5,
-        visibility: 1,
+        description: 'Notificações para lembrar de estudar para o concurso ALE-RR',
+        importance: 5, // MAX - Aparece na tela e faz som
+        visibility: 1, // PUBLIC - Mostra conteúdo completo
         sound: 'default',
         vibration: true,
         lights: true,
         lightColor: '#3B82F6'
       });
 
+      console.log('✅ Canal de notificação criado: study-reminders');
+
       // Listener para quando clicar na notificação
       await LocalNotifications.addListener('localNotificationActionPerformed', async (notification) => {
-        console.log('Notificação clicada:', notification);
+        console.log('✅ Notificação clicada:', notification);
+        
         // Vibrar quando abrir
         try {
           await Haptics.impact({ style: ImpactStyle.Medium });
+          console.log('📳 Vibração executada');
         } catch (e) {
-          console.log('Vibração não disponível');
+          console.log('⚠️ Vibração não disponível:', e);
         }
       });
 
-      console.log('✅ Sistema de notificações inicializado (Nativo)');
+      console.log('✅ Sistema de notificações inicializado (Nativo Android)');
     } catch (error) {
-      console.error('Erro ao inicializar notificações nativas:', error);
+      console.error('❌ Erro ao inicializar notificações nativas:', error);
     }
   };
 
@@ -227,8 +234,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         notifications: [
           {
             id: 999,
-            title: '🎉 Bem-vindo ao ALE-RR TOP 5!',
-            body: 'Notificações ativadas! Você receberá lembretes para estudar. Rumo ao TOP 5! 🚀',
+            title: '🎉 Bem-vindo ao ALE-RR TOP 1!',
+            body: 'Notificações ativadas! Você receberá lembretes para estudar. Rumo ao TOP 1! 🚀',
             schedule: { at: new Date(Date.now() + 1000) }, // 1 segundo
             channelId: 'study-reminders',
             sound: 'default',
@@ -251,8 +258,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     if (!hasPermission) return;
 
     try {
-      const notification = new Notification('🎉 Bem-vindo ao ALE-RR TOP 5!', {
-        body: 'Notificações ativadas! Você receberá lembretes para estudar. Rumo ao TOP 5! 🚀',
+      const notification = new Notification('🎉 Bem-vindo ao ALE-RR TOP 1!', {
+        body: 'Notificações ativadas! Você receberá lembretes para estudar. Rumo ao TOP 1! 🚀',
         icon: '/path/to/icon.png' // Substitua pelo caminho do ícone
       });
 
@@ -271,6 +278,9 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     if (isNative) {
       // Android/iOS - Usar Capacitor Local Notifications
       try {
+        // ⚡ CRÍTICO: Garantir que o canal existe antes de agendar
+        await initializeNotifications();
+        
         // Cancelar notificações antigas
         await LocalNotifications.cancel({ notifications: Array.from({ length: 100 }, (_, i) => ({ id: i + 1 })) });
         

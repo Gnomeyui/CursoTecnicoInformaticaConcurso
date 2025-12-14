@@ -19,6 +19,7 @@ export interface GameStats {
   totalQuestionsAnswered: number;
   totalCorrectAnswers: number;
   studyDays: string[];
+  viewedBadgeIds: string[]; // 🔔 NOVO: IDs das badges já visualizadas
 }
 
 interface GameContextType {
@@ -27,6 +28,11 @@ interface GameContextType {
   checkAndUnlockBadges: () => void;
   updateStreak: () => void;
   recordStudyDay: () => void;
+  recordQuestionAnswer: (wasCorrect: boolean) => void;
+  showGloriaCelebration: boolean; // 🎉 NOVO: Mostrar celebração GLÓRIA
+  dismissGloriaCelebration: () => void; // 🎉 NOVO: Fechar celebração
+  markBadgesAsViewed: () => void; // 🔔 NOVO: Marcar badges como visualizadas
+  getNewBadgesCount: () => number; // 🔔 NOVO: Contar badges novas
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -57,8 +63,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     lastStudyDate: '',
     totalQuestionsAnswered: 0,
     totalCorrectAnswers: 0,
-    studyDays: []
+    studyDays: [],
+    viewedBadgeIds: [] // 🔔 NOVO: IDs das badges já visualizadas
   });
+
+  const [showGloriaCelebration, setShowGloriaCelebration] = useState(false);
 
   useEffect(() => {
     loadGameStats();
@@ -183,6 +192,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         target: 1000
       },
       {
+        id: 'questions_2000',
+        name: 'GLÓRIA - 2000 QUESTÕES',
+        description: 'COMPLETOU TODAS AS 2.000 QUESTÕES DO BANCO! 🎉',
+        icon: '👑',
+        target: 2000
+      },
+      {
         id: 'accuracy_80',
         name: 'Precisão',
         description: 'Manteve 80% de acerto em 50 questões',
@@ -225,8 +241,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         target: 60
       },
       {
-        id: 'top5_ready',
-        name: 'Pronto para o TOP 5',
+        id: 'top1_ready',
+        name: 'Pronto para o TOP 1',
         description: 'Completou 1000 questões com 85% de acerto',
         icon: '🏆',
         target: 1000
@@ -262,6 +278,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
           case 'questions_1000':
             shouldUnlock = prev.totalQuestionsAnswered >= 1000;
             break;
+          case 'questions_2000':
+            shouldUnlock = prev.totalQuestionsAnswered >= 2000;
+            break;
           case 'accuracy_80':
             shouldUnlock = prev.totalQuestionsAnswered >= 50 && accuracy >= 80;
             break;
@@ -280,7 +299,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
           case 'study_days_60':
             shouldUnlock = prev.studyDays.length >= 60;
             break;
-          case 'top5_ready':
+          case 'top1_ready':
             shouldUnlock = prev.totalQuestionsAnswered >= 1000 && accuracy >= 85;
             break;
         }
@@ -300,13 +319,52 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const recordQuestionAnswer = (wasCorrect: boolean) => {
+    setGameStats(prev => {
+      const newTotalQuestionsAnswered = prev.totalQuestionsAnswered + 1;
+      const newTotalCorrectAnswers = wasCorrect ? prev.totalCorrectAnswers + 1 : prev.totalCorrectAnswers;
+      
+      // 🎉 VERIFICAR SE ATINGIU 2000 QUESTÕES
+      if (newTotalQuestionsAnswered === 2000 && !prev.badges.find(b => b.id === 'questions_2000')) {
+        setShowGloriaCelebration(true);
+      }
+      
+      return {
+        ...prev,
+        totalQuestionsAnswered: newTotalQuestionsAnswered,
+        totalCorrectAnswers: newTotalCorrectAnswers
+      };
+    });
+  };
+
+  const dismissGloriaCelebration = () => {
+    setShowGloriaCelebration(false);
+  };
+
+  const markBadgesAsViewed = () => {
+    setGameStats(prev => ({
+      ...prev,
+      viewedBadgeIds: prev.badges.map(badge => badge.id)
+    }));
+  };
+
+  const getNewBadgesCount = () => {
+    const newBadges = gameStats.badges.filter(badge => !gameStats.viewedBadgeIds.includes(badge.id));
+    return newBadges.length;
+  };
+
   return (
     <GameContext.Provider value={{ 
       gameStats, 
       addXP, 
       checkAndUnlockBadges, 
       updateStreak,
-      recordStudyDay 
+      recordStudyDay,
+      recordQuestionAnswer,
+      showGloriaCelebration,
+      dismissGloriaCelebration,
+      markBadgesAsViewed,
+      getNewBadgesCount
     }}>
       {children}
     </GameContext.Provider>

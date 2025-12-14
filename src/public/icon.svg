@@ -1,30 +1,99 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
     </linearGradient>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FCD34D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.3"/>
+    </filter>
   </defs>
   
-  <!-- Background -->
-  <rect width="512" height="512" fill="url(#grad)" rx="80"/>
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="256" fill="url(#bgGradient)"/>
   
-  <!-- Trophy Icon -->
-  <g transform="translate(256, 180)">
-    <path d="M-40,-60 L-60,-40 L-60,0 L-40,10 L40,10 L60,0 L60,-40 L40,-60 Z" 
-          fill="#FBBF24" stroke="#F59E0B" stroke-width="4"/>
-    <ellipse cx="0" cy="-70" rx="50" ry="20" fill="#FBBF24" stroke="#F59E0B" stroke-width="4"/>
-    <rect x="-15" y="10" width="30" height="40" fill="#F59E0B"/>
-    <rect x="-40" y="50" width="80" height="15" rx="7" fill="#F59E0B"/>
+  <!-- Assembly Building (Simplified) -->
+  <g filter="url(#shadow)">
+    <!-- Building Base -->
+    <rect x="120" y="280" width="272" height="120" rx="8" fill="#FFFFFF" opacity="0.95"/>
     
-    <!-- Star -->
-    <path d="M0,-90 L7,-70 L27,-70 L12,-58 L18,-38 L0,-50 L-18,-38 L-12,-58 L-27,-70 L-7,-70 Z" 
-          fill="#FCD34D"/>
+    <!-- Columns -->
+    <rect x="140" y="220" width="28" height="60" rx="4" fill="#FFFFFF" opacity="0.95"/>
+    <rect x="198" y="220" width="28" height="60" rx="4" fill="#FFFFFF" opacity="0.95"/>
+    <rect x="256" y="220" width="28" height="60" rx="4" fill="#FFFFFF" opacity="0.95"/>
+    <rect x="314" y="220" width="28" height="60" rx="4" fill="#FFFFFF" opacity="0.95"/>
+    
+    <!-- Roof/Pediment -->
+    <path d="M 100 220 L 256 140 L 412 220 L 380 220 L 256 160 L 132 220 Z" fill="#FFFFFF" opacity="0.95"/>
+    
+    <!-- Stars decoration on building -->
+    <circle cx="256" cy="330" r="6" fill="#3B82F6"/>
+    <circle cx="276" cy="330" r="4" fill="#60A5FA"/>
+    <circle cx="236" cy="330" r="4" fill="#60A5FA"/>
   </g>
   
-  <!-- Text -->
-  <text x="256" y="340" font-family="Arial, sans-serif" font-size="72" font-weight="bold" 
-        text-anchor="middle" fill="white">ALE-RR</text>
-  <text x="256" y="400" font-family="Arial, sans-serif" font-size="48" font-weight="bold" 
-        text-anchor="middle" fill="#FCD34D">TOP 5</text>
+  <!-- Trophy/Medal for TOP 1 -->
+  <g filter="url(#shadow)">
+    <!-- Trophy Base -->
+    <ellipse cx="256" cy="380" rx="35" ry="8" fill="url(#goldGradient)" opacity="0.8"/>
+    <rect x="241" y="360" width="30" height="20" rx="2" fill="url(#goldGradient)"/>
+    
+    <!-- Trophy Cup -->
+    <path d="M 226 310 L 220 340 Q 220 350 230 355 L 256 360 L 282 355 Q 292 350 292 340 L 286 310 Z" 
+          fill="url(#goldGradient)" stroke="#F59E0B" stroke-width="2"/>
+    
+    <!-- Handles -->
+    <path d="M 220 320 Q 210 320 210 330 Q 210 340 220 340" 
+          fill="none" stroke="url(#goldGradient)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 292 320 Q 302 320 302 330 Q 302 340 292 340" 
+          fill="none" stroke="url(#goldGradient)" stroke-width="4" stroke-linecap="round"/>
+    
+    <!-- Number 1 on Trophy -->
+    <text x="256" y="338" font-family="Arial, sans-serif" font-size="32" font-weight="bold" 
+          fill="#1D4ED8" text-anchor="middle">1</text>
+  </g>
+  
+  <!-- Circuit/Tech Elements -->
+  <g opacity="0.3">
+    <circle cx="90" cy="150" r="4" fill="#FFFFFF"/>
+    <circle cx="422" cy="150" r="4" fill="#FFFFFF"/>
+    <circle cx="90" cy="400" r="4" fill="#FFFFFF"/>
+    <circle cx="422" cy="400" r="4" fill="#FFFFFF"/>
+    <line x1="90" y1="150" x2="110" y2="170" stroke="#FFFFFF" stroke-width="2"/>
+    <line x1="422" y1="150" x2="402" y2="170" stroke="#FFFFFF" stroke-width="2"/>
+    <line x1="90" y1="400" x2="110" y2="380" stroke="#FFFFFF" stroke-width="2"/>
+    <line x1="422" y1="400" x2="402" y2="380" stroke="#FFFFFF" stroke-width="2"/>
+  </g>
+  
+  <!-- Badge/Shield Background -->
+  <g filter="url(#shadow)">
+    <path d="M 256 80 L 296 100 Q 310 110 310 130 L 310 180 Q 310 200 290 210 L 256 230 L 222 210 Q 202 200 202 180 L 202 130 Q 202 110 216 100 Z" 
+          fill="#FFFFFF" opacity="0.95"/>
+  </g>
+  
+  <!-- Book/Study Icon in Badge -->
+  <g>
+    <rect x="235" y="125" width="42" height="50" rx="3" fill="#3B82F6"/>
+    <rect x="237" y="127" width="38" height="46" rx="2" fill="#60A5FA"/>
+    <line x1="256" y1="127" x2="256" y2="173" stroke="#3B82F6" stroke-width="2"/>
+    <line x1="245" y1="140" x2="250" y2="140" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="245" y1="150" x2="252" y2="150" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="262" y1="140" x2="267" y2="140" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="262" y1="150" x2="267" y2="150" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Text TOP 1 at bottom -->
+  <text x="256" y="470" font-family="Arial, sans-serif" font-size="42" font-weight="900" 
+        fill="#FFFFFF" text-anchor="middle" letter-spacing="2">TOP 1</text>
+  
+  <!-- Decorative stars -->
+  <g fill="#FCD34D" opacity="0.9">
+    <path d="M 180 95 L 183 105 L 193 105 L 185 111 L 188 121 L 180 115 L 172 121 L 175 111 L 167 105 L 177 105 Z"/>
+    <path d="M 332 95 L 335 105 L 345 105 L 337 111 L 340 121 L 332 115 L 324 121 L 327 111 L 319 105 L 329 105 Z"/>
+  </g>
 </svg>

@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { QUESTIONS, Question } from '../data/questions';
+import { selectSmartQuestions, shuffleQuestionOptions } from '../utils/questionManager';
 
 interface SimulatedExamProps {
   onBack: () => void;
@@ -41,9 +42,8 @@ export function SimulatedExam({ onBack, onComplete }: SimulatedExamProps) {
   }, [examState, timeRemaining]);
 
   const startExam = () => {
-    // Selecionar questões aleatórias
-    const shuffled = [...QUESTIONS].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, questionCount);
+    // Selecionar questões inteligentes
+    const selected = selectSmartQuestions(QUESTIONS, questionCount);
     
     setSelectedQuestions(selected);
     setCurrentQuestionIndex(0);

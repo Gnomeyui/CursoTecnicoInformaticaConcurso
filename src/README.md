@@ -1,104 +1,222 @@
-# 🏆 ALE-RR TOP 5 - App de Estudos
+# 🎓 ALE-RR TOP 5 - App de Estudos para Concurso
 
-Aplicativo de estudos para o concurso da Assembleia Legislativa de Roraima - Técnico em Informática.
+Aplicativo Android nativo para estudo do concurso da Assembleia Legislativa de Roraima (ALE-RR) - Cargo: Técnico em Informática.
 
----
+## 🎯 Objetivo
 
-## 🎨 **ÍCONES PNG - SISTEMA COMPLETO CRIADO!** 
+Alcançar o **TOP 5** no concurso através de um sistema completo de estudos gamificado.
 
-### ⚡ Comece Aqui (Escolha um):
+## ✨ Funcionalidades
 
-| Arquivo | Descrição | Tempo |
-|---------|-----------|-------|
-| 📁 **[public/GERAR_ICONES_PNG.html](public/GERAR_ICONES_PNG.html)** | ⭐ Gerador automático (MAIS RÁPIDO!) | 1 min |
-| 📄 **[START_HERE_ICONS.txt](START_HERE_ICONS.txt)** | Guia de 3 passos | 2 min |
-| 📘 **[COMECE_AQUI_ICONES.md](COMECE_AQUI_ICONES.md)** | Guia completo iniciantes | 5 min |
-| 🏆 **[🏆_GERAR_ICONES_AGORA.txt](🏆_GERAR_ICONES_AGORA.txt)** | Visual com arte ASCII | 3 min |
+### 📚 Sistema de Estudos
+- **Quiz Interativo**: Questões de múltipla escolha com feedback imediato
+- **Flashcards**: Revisão rápida de conceitos importantes
+- **Simulados Cronometrados**: Testes em condições reais de prova
+- **5 Matérias**: Informática, Legislação, Português, LGPD, Governança de TI
 
-### 🔧 Ferramentas de Automação:
-- 🪟 **[REBUILD_COM_ICONES_NOVOS.bat](REBUILD_COM_ICONES_NOVOS.bat)** - Script Windows
-- 🐧 **[REBUILD_COM_ICONES_NOVOS.sh](REBUILD_COM_ICONES_NOVOS.sh)** - Script Linux/Mac
+### 🎮 Gamificação Completa
+- **Sistema XP e Níveis**: Ganhe experiência ao responder questões
+- **Badges e Conquistas**: Desbloqueie conquistas especiais
+- **Streaks**: Mantenha uma sequência diária de estudos
+- **Ranking de Desempenho**: Acompanhe sua evolução
 
-### 📚 Documentação Completa:
-- 📋 **[CHECKLIST_ICONES.md](CHECKLIST_ICONES.md)** - 15 itens passo a passo
-- 📖 **[COMO_GERAR_ICONES.md](COMO_GERAR_ICONES.md)** - Instruções detalhadas
-- 🎨 **[ICONS_GUIDE.md](ICONS_GUIDE.md)** - 4 métodos alternativos
-- ❓ **[FAQ_ICONES.md](FAQ_ICONES.md)** - 40+ perguntas respondidas
-- 📑 **[INDICE_ICONES.md](INDICE_ICONES.md)** - Índice de tudo
-- 📊 **[RESUMO_ICONES.md](RESUMO_ICONES.md)** - Visão técnica
-- 📈 **[RESUMO_EXECUTIVO_ICONES.md](RESUMO_EXECUTIVO_ICONES.md)** - Overview executivo
-- 📋 **[ICONES_SISTEMA_COMPLETO.txt](ICONES_SISTEMA_COMPLETO.txt)** - Lista visual
+### 📊 Estatísticas Avançadas
+- **Gráficos Interativos**: Visualize seu progresso (Recharts)
+- **Dashboard Analítico**: Métricas detalhadas por matéria
+- **Histórico Completo**: Todas suas sessões de estudo
+- **Taxa de Acerto**: Acompanhe sua evolução
 
-**Total:** 17 arquivos criados | Design: Gradiente azul → roxo, troféu dourado | Tamanhos: 192x192 e 512x512
+### 🔔 Notificações Inteligentes
+- **Lembretes Programáveis**: Configure horários personalizados
+- **Mensagens Motivacionais**: Frases inspiradoras aleatórias
+- **3 Frequências**: Baixa (1x), Média (3x), Alta (5x) por dia
+- **Sistema Híbrido**: Funciona em Web e Android nativo
 
----
+### 🎨 Personalização Total
+- **5 Temas Visuais**: Padrão, Escuro, Azul, Verde, Rosa
+- **Layout Customizável**: Ajuste a interface ao seu gosto
+- **Persistência Local**: Todas configurações salvas
 
-## 🔧 Correções Aplicadas
+## 🚀 Como Buildar e Instalar
 
-✅ **vite.config.ts** - Configuração completa com 40+ alias de bibliotecas  
-✅ **AndroidManifest.xml** - Permissão SCHEDULE_EXACT_ALARM removida  
-✅ **styles.xml** - Tema NoActionBar corrigido  
-✅ **MainActivity.java** - Código limpo  
-✅ **splash.xml** - android:drawable ao invés de bitmap  
-✅ **main.tsx** - ErrorBoundary React adicionado  
+### Pré-requisitos
+- Node.js 18+
+- Android Studio (última versão)
+- JDK 17+
+- Um celular Android (API 26+)
 
----
-
-## 🚀 Build Rápido
-
+### Passo 1: Instalar Dependências
 ```bash
-# Limpar
-rm -rf dist android/.gradle android/build
+npm install
+```
 
-# Build
+### Passo 2: Build do Projeto
+```bash
+# Use o script automatizado
+npm run build:android
+
+# Ou manualmente:
 npm run build
-
-# Sync
 npx cap sync android
+```
 
-# Abrir Android Studio
+### Passo 3: Compilar no Android Studio
+```bash
+# Abre o Android Studio
 npx cap open android
 ```
 
 **No Android Studio:**
-1. File → Invalidate Caches → Restart
-2. Build → Rebuild Project
-3. Build → Build APK(s)
+1. Aguarde o Gradle Sync terminar
+2. Build > Clean Project
+3. Build > Rebuild Project
+4. Conecte seu celular via USB
+5. Run (botão verde ▶️)
 
-**No celular:**
-1. Desinstalar versão antiga
-2. Instalar novo APK
+### Script Automatizado (Recomendado)
+
+**Windows:**
+```batch
+COMANDOS_REBUILD_TOTAL.bat
+```
+
+**Linux/Mac:**
+```bash
+chmod +x COMANDOS_REBUILD_TOTAL.sh
+./COMANDOS_REBUILD_TOTAL.sh
+```
+
+## 📱 Estrutura do Projeto
+
+```
+/
+├── components/          # Componentes React
+│   ├── QuizScreen.tsx
+│   ├── Statistics.tsx
+│   ├── Dashboard.tsx
+│   ├── Achievements.tsx
+│   ├── SimulatedExam.tsx
+│   ├── Customization.tsx
+│   ├── NotificationSettings.tsx
+│   └── ui/             # Componentes UI (shadcn)
+├── context/            # Context API
+│   ├── GameContext.tsx
+│   ├── StatsContext.tsx
+│   ├── NotificationContext.tsx
+│   ├── ThemeContext.tsx
+│   └── CustomizationContext.tsx
+├── data/               # Dados do app
+│   ├── questions.ts    # Banco de questões
+│   └── flashcards.ts   # Banco de flashcards
+├── android/            # Projeto Android nativo
+│   └── app/
+│       └── src/main/
+│           ├── AndroidManifest.xml
+│           └── res/    # Recursos Android
+├── public/             # Arquivos estáticos
+└── App.tsx             # Componente principal
+```
+
+## 🔧 Tecnologias Utilizadas
+
+- **React 18** - Framework frontend
+- **TypeScript** - Tipagem estática
+- **Vite** - Build tool
+- **Tailwind CSS** - Estilização
+- **Capacitor** - Framework híbrido Android
+- **Recharts** - Gráficos e estatísticas
+- **Lucide React** - Ícones
+- **Sonner** - Toasts/notificações
+- **LocalStorage** - Persistência de dados
+
+## 📦 Plugins Capacitor
+
+- `@capacitor/local-notifications` - Notificações programadas
+- `@capacitor/haptics` - Feedback tátil
+- `@capacitor/status-bar` - Barra de status
+- `@capacitor/keyboard` - Controle do teclado
+
+## 🎨 Temas Disponíveis
+
+1. **Padrão** - Roxo vibrante (#7C3AED)
+2. **Escuro** - Cinza escuro elegante
+3. **Azul** - Azul profissional
+4. **Verde** - Verde energizante
+5. **Rosa** - Rosa suave
+
+## 📊 Sistema de Gamificação
+
+### Níveis e XP
+- +10 XP por questão correta
+- +5 XP por questão respondida (mesmo errada)
+- 100 XP = 1 nível
+
+### Badges Disponíveis
+- 🏆 **Iniciante** - Complete 10 questões
+- 🔥 **Estudioso** - 7 dias de streak
+- 🎯 **Expert** - 90% de acerto
+- 💯 **Perfeito** - 100% em um simulado
+- 📚 **Dedicado** - 100 questões respondidas
+- ⚡ **Relâmpago** - Complete um simulado em tempo recorde
+
+## 🔔 Sistema de Notificações
+
+### Configuração
+1. Abra o app
+2. Vá em **Configurações**
+3. Ative **Notificações de Estudo**
+4. Escolha a frequência
+5. Aceite a permissão
+
+### Horários Padrão
+- **Baixa**: 09:00
+- **Média**: 09:00, 14:00, 20:00
+- **Alta**: 08:00, 11:00, 14:00, 17:00, 20:00
+
+## 🐛 Troubleshooting
+
+### App não instala no celular?
+1. Verifique se o cabo USB está em modo transferência
+2. Ative a **Depuração USB** no Android
+3. Execute `adb devices` para confirmar conexão
+4. Clean e Rebuild no Android Studio
+
+### Notificações não aparecem?
+1. Verifique permissões: Configurações Android > Apps > ALE-RR TOP 5 > Notificações
+2. Desative otimização de bateria para o app
+3. Veja os logs no Logcat (Android Studio)
+
+### Erro de build Gradle?
+```bash
+# Limpe o cache
+cd android
+./gradlew clean
+
+# Volte para raiz e reconstrua
+cd ..
+npm run build
+npx cap sync android
+```
+
+## 📈 Estatísticas do Projeto
+
+- **8 Componentes Principais**
+- **5 Context Providers**
+- **300+ Questões** (50 por matéria)
+- **100+ Flashcards**
+- **6 Funcionalidades Avançadas**
+- **5 Temas Customizáveis**
+
+## 🏆 Meta: TOP 5
+
+Este app foi desenvolvido especificamente para ajudar você a alcançar uma das **5 melhores colocações** no concurso da ALE-RR.
+
+**Estude consistentemente. Use as ferramentas. Alcance o TOP 5! 🚀**
+
+## 📄 Licença
+
+Este projeto é de uso pessoal para estudo do concurso ALE-RR.
 
 ---
 
-## ✨ Recursos
-
-- 2000+ questões (FGV/Cebraspe)
-- 6 matérias: Informática, Redes, Segurança, Legislação, Português, LGPD
-- Gamificação: XP, níveis, badges, streaks
-- Estatísticas com gráficos (Recharts)
-- Notificações nativas
-- 5 temas visuais
-- 100% offline
-
----
-
-## 🛠️ Tecnologias
-
-- React 18 + TypeScript
-- Vite 5
-- Capacitor 6 (Android)
-- Tailwind CSS 4
-- Recharts
-
----
-
-## 📱 Compatibilidade
-
-- Android 5.1+ (API 22+)
-- ~99% dos dispositivos Android
-
----
-
-**Versão:** 1.0.0  
-**Status:** ✅ Pronto para produção
+**Desenvolvido com dedicação para o TOP 5 da ALE-RR 2024** 💜
