@@ -6,10 +6,10 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useGame } from '../context/GameContext';
+import { useStats } from '../context/StatsContext';
 
 interface DashboardProps {
-  dailyScore: number;
-  totalQuestions: number;
+  // 🔧 CORREÇÃO FINAL: Removido dailyScore e totalQuestions - agora vem do StatsContext
   onStartQuiz: () => void;
   onStartFlashcards: () => void;
   onOpenSettings: () => void;
@@ -22,8 +22,6 @@ interface DashboardProps {
 }
 
 export function Dashboard({ 
-  dailyScore, 
-  totalQuestions, 
   onStartQuiz, 
   onStartFlashcards, 
   onOpenSettings,
@@ -34,7 +32,13 @@ export function Dashboard({
   onOpenCustomization,
   onOpenNotifications
 }: DashboardProps) {
+  // 🔧 CORREÇÃO FINAL: Buscar dados do StatsContext (fonte única de verdade)
+  const { getTodayStats } = useStats();
+  const todayStats = getTodayStats();
+  const dailyScore = todayStats?.correctAnswers || 0;
+  const totalQuestions = todayStats?.questionsAnswered || 0;
   const accuracy = totalQuestions > 0 ? Math.round((dailyScore / totalQuestions) * 100) : 0;
+  
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { gameStats, markBadgesAsViewed, getNewBadgesCount } = useGame();
 

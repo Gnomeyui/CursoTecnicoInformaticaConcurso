@@ -84,7 +84,8 @@ export function StatsProvider({ children }: { children: ReactNode }) {
   };
 
   const recordQuestionAnswer = (subject: string, isCorrect: boolean) => {
-    const today = new Date().toLocaleDateString();
+    // 🔧 CORREÇÃO FINAL: Usar toISOString em vez de toLocaleDateString
+    const today = new Date().toISOString().split('T')[0];
 
     setDetailedStats(prev => {
       // Atualizar estatísticas por matéria
@@ -223,7 +224,8 @@ export function StatsProvider({ children }: { children: ReactNode }) {
   };
 
   const getTodayStats = (): DailyStats | undefined => {
-    const today = new Date().toLocaleDateString();
+    // 🔧 CORREÇÃO FINAL: Usar toISOString em vez de toLocaleDateString
+    const today = new Date().toISOString().split('T')[0];
     return detailedStats.dailyStats.find(d => d.date === today);
   };
 

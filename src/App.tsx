@@ -32,10 +32,12 @@ function AppContent() {
     'statistics' | 'achievements' | 'simulated-exam' | 'customization' | 'notifications' | 'regimento' |
     'difficulty-selector'
   >('dashboard');
-  const [dailyScore, setDailyScore] = useState(0);
-  const [totalQuestions, setTotalQuestions] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('mix');
+  
+  // 🔧 CORREÇÃO FINAL: useRef para evitar recriar listener em cada mudança de view
+  const currentViewRef = React.useRef(currentView);
+  currentViewRef.current = currentView;
 
   useEffect(() => {
     let listener: any;
@@ -43,7 +45,8 @@ function AppContent() {
     const setupListener = async () => {
       try {
         listener = await CapacitorApp.addListener('backButton', ({ canGoBack }) => {
-          if (currentView !== 'dashboard') {
+          // Usar ref em vez de closure do currentView
+          if (currentViewRef.current !== 'dashboard') {
             setCurrentView('dashboard');
           } else {
             CapacitorApp.exitApp();
@@ -65,78 +68,7 @@ function AppContent() {
         }
       }
     };
-  }, [currentView]);
-
-  useEffect(() => {
-    try {
-      loadProgress();
-    } catch (err) {
-      console.error('Error loading progress:', err);
-      setError('Error loading data. Trying again...');
-      try {
-        const corrupted = localStorage.getItem('alerr_progress');
-        if (corrupted) {
-          localStorage.setItem('alerr_progress_corrupted_backup', corrupted);
-          localStorage.removeItem('alerr_progress');
-        }
-        saveProgress(0, 0);
-        setError(null);
-      } catch (clearErr) {
-        console.error('Error clearing localStorage:', clearErr);
-      }
-    }
-  }, []);
-
-  const loadProgress = () => {
-    try {
-      const saved = localStorage.getItem('alerr_progress');
-      if (saved) {
-        const data = JSON.parse(saved);
-        const today = new Date().toISOString().split('T')[0];
-        if (data.date === today) {
-          setDailyScore(data.score || 0);
-          setTotalQuestions(data.total || 0);
-        } else {
-          saveProgress(0, 0);
-        }
-      }
-    } catch (err) {
-      console.error('Error in loadProgress:', err);
-      throw err;
-    }
-  };
-
-  const saveProgress = (score: number, total: number) => {
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      localStorage.setItem('alerr_progress', JSON.stringify({ score, total, date: today }));
-      setDailyScore(score);
-      setTotalQuestions(total);
-    } catch (err) {
-      console.error('Error saving progress:', err);
-    }
-  };
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full text-center">
-          <div className="text-red-500 text-4xl mb-4">⚠️</div>
-          <h2 className="text-xl font-bold mb-2">Erro ao Iniciar</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={() => {
-              setError(null);
-              window.location.reload();
-            }}
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Recarregar App
-          </button>
-        </div>
-      </div>
-    );
-  }
+  }, []); // 🔧 Array vazio = roda só uma vez no mount
 
   const handleOpenRegimento = () => {
     setCurrentView('regimento');
@@ -155,8 +87,6 @@ function AppContent() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
         {currentView === 'dashboard' && (
           <Dashboard 
-            dailyScore={dailyScore} 
-            totalQuestions={totalQuestions}
             onStartQuiz={() => setCurrentView('difficulty-selector')}
             onStartFlashcards={() => setCurrentView('flashcards')}
             onOpenSettings={() => setCurrentView('settings')}
@@ -171,8 +101,6 @@ function AppContent() {
         {currentView === 'flashcards' && (
           <FlashcardScreen 
             onBack={() => setCurrentView('dashboard')}
-            dailyScore={dailyScore}
-            onScoreUpdate={saveProgress}
           />
         )}
         {currentView === 'settings' && (
@@ -181,9 +109,6 @@ function AppContent() {
         {currentView === 'study-session' && (
           <StudySession 
             onBack={() => setCurrentView('dashboard')}
-            dailyScore={dailyScore}
-            totalQuestions={totalQuestions}
-            onScoreUpdate={saveProgress}
             difficulty={selectedDifficulty}
           />
         )}
@@ -196,7 +121,6 @@ function AppContent() {
         {currentView === 'simulated-exam' && (
           <SimulatedExam 
             onBack={() => setCurrentView('dashboard')}
-            onComplete={saveProgress}
           />
         )}
         {currentView === 'customization' && (

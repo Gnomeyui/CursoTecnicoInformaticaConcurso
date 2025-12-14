@@ -5,13 +5,12 @@ import {
   ThumbsUp, ThumbsDown, Zap, ArrowRight, Scale
 } from 'lucide-react';
 
+// 🔧 CORREÇÃO FINAL: Removidas props redundantes - não precisa mais de dailyScore e onScoreUpdate
 interface FlashcardScreenProps {
   onBack: () => void;
-  dailyScore: number;
-  onScoreUpdate: (score: number, total: number) => void;
 }
 
-export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: FlashcardScreenProps) {
+export function FlashcardScreen({ onBack }: FlashcardScreenProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [sessionCorrect, setSessionCorrect] = useState(0);
@@ -36,10 +35,10 @@ export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: Flashcard
     if (wasCorrect) {
       const newScore = sessionCorrect + 1;
       setSessionCorrect(newScore);
-      onScoreUpdate(dailyScore + 1, newTotal);
-    } else {
-      onScoreUpdate(dailyScore, newTotal);
     }
+    
+    // 🔧 CORREÇÃO FINAL: Não precisa mais chamar onScoreUpdate
+    // O StatsContext já rastreia automaticamente via recordQuestionAnswer
 
     // Marcar como revisado
     setReviewedCards(prev => new Set([...prev, currentCard.id]));
@@ -80,10 +79,11 @@ export function FlashcardScreen({ onBack, dailyScore, onScoreUpdate }: Flashcard
               <span className="text-sm">Voltar</span>
             </button>
             
+            {/* 🔧 CORREÇÃO FINAL: Estatísticas da sessão (não mais dailyScore global) */}
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="text-center">
-                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wide">Hoje</div>
-                <div className="text-lg sm:text-xl text-emerald-600 dark:text-emerald-400">{dailyScore}</div>
+                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wide">Sessão</div>
+                <div className="text-lg sm:text-xl text-emerald-600 dark:text-emerald-400">{sessionCorrect}/{sessionTotal}</div>
               </div>
               
               <div className="text-center">

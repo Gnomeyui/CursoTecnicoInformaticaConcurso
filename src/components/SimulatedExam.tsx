@@ -11,10 +11,10 @@ import { selectSmartQuestions, shuffleQuestionOptions } from '../utils/questionM
 
 interface SimulatedExamProps {
   onBack: () => void;
-  onComplete: (score: number, total: number) => void;
+  // 🔧 CORREÇÃO FINAL: Removida prop onComplete - não precisa mais atualizar score manualmente
 }
 
-export function SimulatedExam({ onBack, onComplete }: SimulatedExamProps) {
+export function SimulatedExam({ onBack }: SimulatedExamProps) {
   const { isDarkMode } = useTheme();
   const { recordSimulatedExam } = useGame();
   const [examState, setExamState] = useState<'config' | 'running' | 'finished'>('config');
@@ -115,7 +115,6 @@ export function SimulatedExam({ onBack, onComplete }: SimulatedExamProps) {
 
     setScore(correctCount);
     setExamState('finished');
-    onComplete(correctCount, selectedQuestions.length);
     // 🔧 CORREÇÃO: Registrar simulado completado
     recordSimulatedExam();
   };

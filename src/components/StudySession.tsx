@@ -22,13 +22,11 @@ interface Flashcard {
 
 interface StudySessionProps {
   onBack: () => void;
-  dailyScore: number;
-  totalQuestions?: number; // ✅ ADICIONADO (opcional para compatibilidade)
-  onScoreUpdate: (score: number, total: number) => void;
-  difficulty?: 'facil' | 'medio' | 'dificil' | 'mix'; // ✅ NOVO: Dificuldade selecionada
+  // 🔧 CORREÇÃO FINAL: Removidas props redundantes dailyScore, totalQuestions e onScoreUpdate
+  difficulty?: 'facil' | 'medio' | 'dificil' | 'mix';
 }
 
-export function StudySession({ onBack, dailyScore, totalQuestions = 0, onScoreUpdate, difficulty = 'mix' }: StudySessionProps) {
+export function StudySession({ onBack, difficulty = 'mix' }: StudySessionProps) {
   // 🚀 GameContext para XP e badges
   const { addXP, checkAndUnlockBadges, updateStreak, recordStudyDay, recordQuestionAnswer: recordGameAnswer, gameStats } = useGame();
   // 📊 StatsContext para estatísticas detalhadas
@@ -132,15 +130,9 @@ export function StudySession({ onBack, dailyScore, totalQuestions = 0, onScoreUp
     // Marcar questão como usada
     setUsedQuestionIds(prev => new Set([...prev, currentQuestion.id]));
     
-    // ✅ CORREÇÃO: Usar total acumulado do dia
-    const totalQuestionsNow = totalQuestions + newTotal;
-    
     if (wasCorrect) {
       const newScore = sessionCorrect + 1;
       setSessionCorrect(newScore);
-      onScoreUpdate(dailyScore + 1, totalQuestionsNow);
-    } else {
-      onScoreUpdate(dailyScore, totalQuestionsNow);
     }
 
     // 🚀 NOVO: Adicionar XP e verificar badges

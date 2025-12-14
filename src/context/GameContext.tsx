@@ -53,7 +53,9 @@ export const getXPForLevel = (level: number): number => {
 const getLevelFromXP = (xp: number): number => {
   let level = 1;
   let totalXPNeeded = 0;
-  while (xp >= totalXPNeeded + getXPForLevel(level)) {
+  const MAX_LEVEL = 1000; // 🔧 CORREÇÃO FINAL: Limite de segurança para evitar loops infinitos
+  
+  while (xp >= totalXPNeeded + getXPForLevel(level) && level < MAX_LEVEL) {
     totalXPNeeded += getXPForLevel(level);
     level++;
   }
