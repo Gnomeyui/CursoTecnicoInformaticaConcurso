@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import App from '../App';
 import '../styles/globals.css';
 
@@ -8,7 +8,7 @@ import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { SplashScreen } from '@capacitor/splash-screen';
 
-// Error Boundary Component
+// 1. ERROR BOUNDARY - Proteção contra crashes
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error: Error | null }
@@ -23,57 +23,62 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error Boundary capturou erro:', error, errorInfo);
+    console.error("🔥 ERRO CRÍTICO NO APP:", error, errorInfo);
   }
+
+  handleReset = () => {
+    // Limpa TUDO que pode estar corrompido
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (e) {
+      console.error("Erro ao limpar storage:", e);
+    }
+    window.location.reload();
+  };
 
   render() {
     if (this.state.hasError) {
       return (
         <div style={{
-          minHeight: '100vh',
-          backgroundColor: '#1F2937',
+          height: '100vh',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '1rem'
+          backgroundColor: '#1a1a1a',
+          color: '#fff',
+          padding: '20px',
+          textAlign: 'center',
+          fontFamily: 'system-ui, -apple-system, sans-serif'
         }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '0.5rem',
-            padding: '2rem',
-            maxWidth: '28rem',
-            textAlign: 'center'
+          <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>😕</h1>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', fontWeight: 'bold' }}>
+            Opa, algo deu errado!
+          </h2>
+          <p style={{ 
+            color: '#aaa', 
+            marginBottom: '20px', 
+            maxWidth: '300px',
+            fontSize: '0.875rem' 
           }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💥</div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-              Erro Crítico
-            </h2>
-            <p style={{ color: '#6B7280', marginBottom: '1rem' }}>
-              {this.state.error?.message || 'Algo deu errado'}
-            </p>
-            <button
-              onClick={() => {
-                // Limpar todo localStorage e recarregar
-                try {
-                  localStorage.clear();
-                } catch (e) {
-                  console.error('Erro ao limpar localStorage:', e);
-                }
-                window.location.reload();
-              }}
-              style={{
-                backgroundColor: '#3B82F6',
-                color: 'white',
-                padding: '0.5rem 1.5rem',
-                borderRadius: '0.5rem',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '1rem'
-              }}
-            >
-              Reiniciar App
-            </button>
-          </div>
+            {this.state.error?.message || "Erro desconhecido na inicialização"}
+          </p>
+          <button 
+            onClick={this.handleReset}
+            style={{
+              padding: '12px 24px',
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}
+          >
+            REINICIAR E LIMPAR DADOS
+          </button>
         </div>
       );
     }
@@ -82,45 +87,74 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-// Configurar Capacitor de forma segura
-const initializeApp = async () => {
+// 2. INICIALIZAÇÃO SEGURA DO CAPACITOR
+const initializeCapacitor = async () => {
   try {
     if (Capacitor.isNativePlatform()) {
-      // Configurar Status Bar
+      console.log("📱 Iniciando plugins do Capacitor...");
+      
+      // Status Bar
       try {
         await StatusBar.setStyle({ style: Style.Light });
         await StatusBar.setBackgroundColor({ color: '#3B82F6' });
+        console.log("✓ StatusBar configurado");
       } catch (err) {
-        console.error('Erro ao configurar StatusBar:', err);
+        console.error("❌ Erro no StatusBar:", err);
       }
       
-      // Esconder splash screen
+      // Splash Screen
       try {
         setTimeout(async () => {
           await SplashScreen.hide();
+          console.log("✓ SplashScreen ocultado");
         }, 1500);
       } catch (err) {
-        console.error('Erro ao esconder SplashScreen:', err);
+        console.error("❌ Erro no SplashScreen:", err);
       }
     }
   } catch (err) {
-    console.error('Erro na inicialização do Capacitor:', err);
+    console.error("❌ Erro geral no Capacitor:", err);
   }
 };
 
-// Inicializar app
-initializeApp();
+// 3. RENDERIZAÇÃO SEGURA
+const container = document.getElementById('root');
 
-// Renderizar app com Error Boundary
-const root = document.getElementById('root');
-if (root) {
-  ReactDOM.createRoot(root).render(
+if (!container) {
+  // Se não encontrar #root, mostrar erro direto no body
+  document.body.innerHTML = `
+    <div style="
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a1a1a;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    ">
+      <div>
+        <h1 style="font-size: 3rem; margin-bottom: 1rem;">⚠️</h1>
+        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Erro Fatal</h2>
+        <p style="color: #aaa;">Elemento #root não encontrado no HTML</p>
+      </div>
+    </div>
+  `;
+} else {
+  // Inicializar Capacitor
+  initializeCapacitor();
+  
+  // Criar root e renderizar
+  const root = createRoot(container);
+  
+  root.render(
     <React.StrictMode>
       <ErrorBoundary>
         <App />
       </ErrorBoundary>
     </React.StrictMode>
   );
-} else {
-  console.error('Elemento root não encontrado!');
+  
+  console.log("✅ App renderizado com sucesso!");
 }
