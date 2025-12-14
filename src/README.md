@@ -2,214 +2,53 @@
 
 Aplicativo de estudos para o concurso da Assembleia Legislativa de Roraima - Técnico em Informática.
 
-## 🎉 PARABÉNS! APP ABRIU MAS HTML QUEBRADO? 
+## 🔧 Correções Aplicadas
 
-**👉 LEIA:** [LEIA_AQUI_SUCESSO.txt](LEIA_AQUI_SUCESSO.txt) ⭐ **SOLUÇÃO EM 15 MIN!**
-
-**Execute o script:**
-```bash
-# Windows:
-REBUILD_COMPLETO_HTML.bat
-
-# Linux/Mac:
-./REBUILD_COMPLETO_HTML.sh
-```
-
-**Guia completo:** [SOLUCAO_HTML_QUEBRADO.md](SOLUCAO_HTML_QUEBRADO.md)
+✅ **vite.config.ts** - Configuração completa com 40+ alias de bibliotecas  
+✅ **AndroidManifest.xml** - Permissão SCHEDULE_EXACT_ALARM removida  
+✅ **styles.xml** - Tema NoActionBar corrigido  
+✅ **MainActivity.java** - Código limpo  
+✅ **splash.xml** - android:drawable ao invés de bitmap  
+✅ **main.tsx** - ErrorBoundary React adicionado  
 
 ---
 
-## ⚠️ ATENÇÃO! LEIA ISTO PRIMEIRO! ⚠️
-
-**🔴 SE O APP ESTÁ CRASHANDO:**
-
-Você está olhando os arquivos **ANTIGOS** no seu PC, mas as correções foram aplicadas **AQUI NO FIGMA MAKE**!
-
-**🎯 5 CORREÇÕES CRÍTICAS APLICADAS:**
-
-| # | Erro | Arquivo | Status |
-|---|------|---------|--------|
-| 1 | Permissão `SCHEDULE_EXACT_ALARM` | AndroidManifest.xml | ✅ Removida |
-| 2 | Tema com conflito ActionBar | styles.xml | ✅ Corrigido |
-| 3 | MainActivity com código extra | MainActivity.java | ✅ Limpa |
-| 4 | **Splash.xml usando `<bitmap>`** ⭐ **NOVO!** | splash.xml | ✅ Corrigido |
-| 5 | ErrorBoundary React | main.tsx | ✅ Adicionado |
-
----
-
-**🎉 SE O APP ABRE MAS MOSTRA HTML QUEBRADO:**
-
-O build React não está sincronizado! Execute o script automático:
-
-**Windows:**
-```bash
-cd C:\Users\SEU_USUARIO\Desktop\ale-rr-top5
-REBUILD_COMPLETO_HTML.bat
-```
-
-**Linux/Mac:**
-```bash
-cd ~/Desktop/ale-rr-top5
-chmod +x REBUILD_COMPLETO_HTML.sh
-./REBUILD_COMPLETO_HTML.sh
-```
-
-**📖 Guia completo:** [SOLUCAO_HTML_QUEBRADO.md](SOLUCAO_HTML_QUEBRADO.md) ⭐ **INTERFACE PERFEITA IGUAL FIGMA!**
-
----
-
-**🎯 SOLUÇÃO (SE NÃO ABRE):**
-1. **📥 BAIXAR** a versão atualizada do Figma Make (botão Download/Export)
-2. **✅ VERIFICAR** que `splash.xml` não tem `<bitmap>` (tem `android:drawable`)
-3. **🧹 LIMPAR** build: `rm -rf android/.gradle dist android/build`
-4. **⚛️ REBUILD:** `npm run build && npx cap sync android`
-5. **🔧 ANDROID STUDIO:** Invalidate Caches → Clean → Rebuild → Build APK
-6. **📱 CELULAR:** Desinstalar antiga → Instalar nova
-
-**📖 GUIAS COMPLETOS:**
-
-| Guia | Para quê? |
-|------|-----------|
-| 🔥 [SOLUCAO_HTML_QUEBRADO.md](SOLUCAO_HTML_QUEBRADO.md) | 🆕 **APP ABRE MAS HTML QUEBRADO** ⭐ |
-| 📄 [TODAS_CORRECOES_APLICADAS.md](TODAS_CORRECOES_APLICADAS.md) | Resumo completo das 5 correções |
-| 🔥 [ERRO_SPLASH_BITMAP_CORRIGIDO.md](ERRO_SPLASH_BITMAP_CORRIGIDO.md) | Correção #4 (splash.xml) |
-| 🔥 [CORRECAO_DEFINITIVA_NATIVA.md](CORRECAO_DEFINITIVA_NATIVA.md) | Correções #1, #2, #3 |
-| 📖 [ATENCAO_BAIXAR_VERSAO_NOVA.md](ATENCAO_BAIXAR_VERSAO_NOVA.md) | Como baixar versão atualizada |
-| ✅ [CHECKLIST_RAPIDO.md](CHECKLIST_RAPIDO.md) | Passo a passo completo |
-
-**🎯 RESULTADO ESPERADO:**
-- ✅ **98% de chance:** App funciona perfeitamente com interface igual Figma! 🎉
-- ✅ **1,9% de chance:** HTML quebrado (executar script resolve)
-- ❌ **0,1% de chance:** Outro problema (ver logs e me enviar)
-
----
-
-## 🚀 Quick Start
-
-### **📖 GUIAS ESSENCIAIS (3 arquivos principais)**
-
-1. **🚀 [GUIA_MASTER_UNICO.md](GUIA_MASTER_UNICO.md)** ⭐ **TUDO EM UM SÓ LUGAR!**
-   - Do zero ao APK em 15 minutos
-   - Instalação completa
-   - Solução de TODOS os erros
-
-2. **📋 [AUDITORIA_COMPLETA.md](AUDITORIA_COMPLETA.md)** ✅ **CÓDIGO VERIFICADO!**
-   - Projeto auditado linha por linha
-   - 16 arquivos inúteis deletados
-   - Zero duplicações, zero código morto
-
-3. **❓ [FAQ_DUVIDAS_COMUNS.md](FAQ_DUVIDAS_COMUNS.md)** 💡 **PERGUNTAS FREQUENTES**
-   - Respostas rápidas
-   - Troubleshooting
-
----
-
-## ⚡ COMPILAR AGORA (3 comandos)
+## 🚀 Build Rápido
 
 ```bash
-cd C:\Users\SEU_USUARIO\Desktop\ale-rr-top5
-npm install
-npm run android:rebuild
+# Limpar
+rm -rf dist android/.gradle android/build
+
+# Build
+npm run build
+
+# Sync
+npx cap sync android
+
+# Abrir Android Studio
+npx cap open android
 ```
 
-**No Android Studio:** `Build → Build APK(s)`
+**No Android Studio:**
+1. File → Invalidate Caches → Restart
+2. Build → Rebuild Project
+3. Build → Build APK(s)
 
-**PRONTO!** 🎉
-
----
-
-## 🆘 SOLUÇÕES PARA ERROS ESPECÍFICOS
-
-### **Erro: "Adaptive-icon elements require SDK 26" (NOVO!)**
-
-**✅ JÁ CORRIGIDO!** Ícones adaptados para API 22+.
-
-**Solução:** [ERRO_ADAPTIVE_ICON_CORRIGIDO.md](ERRO_ADAPTIVE_ICON_CORRIGIDO.md) 🎨
-
----
-
-### **Erro: "HTML todo quebrado no celular"**
-
-**✅ JÁ CORRIGIDO!** Baixe o projeto atualizado.
-
-**Solução:** [ERRO_INSTALACAO_CELULAR.md](ERRO_INSTALACAO_CELULAR.md) 📱
-
----
-
-### **Erro: "resource mipmap/ic_launcher not found"**
-
-**✅ JÁ CORRIGIDO!** Ícones criados.
-
-**Solução:** [ERRO_IC_LAUNCHER.md](ERRO_IC_LAUNCHER.md) 🎨
-
----
-
-### **Erro: "Duplicate resources (ic_launcher.png e ic_launcher.xml)"**
-
-**Causa:** Existem DOIS arquivos ic_launcher na mesma pasta (PNG antigo + XML novo)
-
-**✅ SOLUÇÃO RÁPIDA:** Execute o script para deletar PNGs duplicados:
-
-**Solução:** [ERRO_RECURSOS_DUPLICADOS.md](ERRO_RECURSOS_DUPLICADOS.md) 🗑️
-
-**Comando rápido:**
-```bash
-# No seu projeto local:
-cd C:\Users\Gnomo\Desktop\ale-rr-top5
-
-# Execute o script:
-DELETAR_ICONES_PNG.bat
-
-# Ou delete manualmente todos os arquivos PNG das pastas mipmap-*:
-# - ic_launcher.png
-# - ic_launcher_round.png
-
-# Depois rebuilde:
-# Android Studio: Invalidate Caches → Rebuild Project
-```
-
-**⚠️ IMPORTANTE:** Mantenha apenas os arquivos .xml, delete todos os .png!
-
----
-
-### **Erro: "Could not initialize native services" (Gradle)**
-
-**Causa:** Cache do Gradle corrompido
-
-**Solução:** [ERRO_GRADLE_NATIVE_SERVICES.md](ERRO_GRADLE_NATIVE_SERVICES.md) ou [SOLUCOES_GRADLE.md](SOLUCOES_GRADLE.md) 🔧
-
----
-
-## 📚 DOCUMENTAÇÃO COMPLETA
-
-### **Guias de Início:**
-- 🚀 [COMECE_AQUI_AGORA.md](COMECE_AQUI_AGORA.md) - Quick start
-- 📖 [GUIA_COMPILACAO_CORRETO.md](GUIA_COMPILACAO_CORRETO.md) - Passo a passo detalhado
-
-### **Solução de Problemas:**
-- 🔧 [SOLUCOES_GRADLE.md](SOLUCOES_GRADLE.md) - Todos os erros do Gradle
-- 📱 [ERRO_INSTALACAO_CELULAR.md](ERRO_INSTALACAO_CELULAR.md) - App quebrado no celular
-- 🎨 [ERRO_IC_LAUNCHER.md](ERRO_IC_LAUNCHER.md) - Problemas com ícones
-- 🗑️ [ERRO_RECURSOS_DUPLICADOS.md](ERRO_RECURSOS_DUPLICADOS.md) - Recursos duplicados
-
-### **Informações do Projeto:**
-- ✅ [AUDITORIA_COMPLETA.md](AUDITORIA_COMPLETA.md) - Código verificado linha por linha
-- 📜 [Attributions.md](Attributions.md) - Créditos e licenças
+**No celular:**
+1. Desinstalar versão antiga
+2. Instalar novo APK
 
 ---
 
 ## ✨ Recursos
 
-- ✅ **2000+ questões** de concursos (FGV/Cebraspe)
-- ✅ **6 matérias:** Informática, Redes, Segurança, Legislação, Português, LGPD
-- ✅ **Sistema inteligente** anti-repetição de questões
-- ✅ **Gamificação completa:** XP, níveis, badges, streaks
-- ✅ **Estatísticas detalhadas** com gráficos (Recharts)
-- ✅ **Notificações nativas** Android
-- ✅ **Flashcards** de aquecimento antes das questões
-- ✅ **Modo simulado** cronometrado
-- ✅ **5 temas visuais** personalizáveis
-- ✅ **100% offline** após instalação
+- 2000+ questões (FGV/Cebraspe)
+- 6 matérias: Informática, Redes, Segurança, Legislação, Português, LGPD
+- Gamificação: XP, níveis, badges, streaks
+- Estatísticas com gráficos (Recharts)
+- Notificações nativas
+- 5 temas visuais
+- 100% offline
 
 ---
 
@@ -217,51 +56,18 @@ DELETAR_ICONES_PNG.bat
 
 - React 18 + TypeScript
 - Vite 5
-- Capacitor 6 (Android Native)
+- Capacitor 6 (Android)
 - Tailwind CSS 4
-- Recharts (gráficos)
-- LocalStorage (persistência)
+- Recharts
 
 ---
 
 ## 📱 Compatibilidade
 
-- **Android:** 5.1+ (API 22+)
-- **Cobertura:** ~99% dos dispositivos Android
-- **Tamanho APK:** 15-25 MB (debug) / 8-15 MB (release)
-
----
-
-## 🚀 Build Rápido
-
-**Se você tem experiência:**
-
-```bash
-npm run android:build
-```
-
-Este comando faz tudo automaticamente!
-
----
-
-## 🎓 Objetivo
-
-**TOP 5 na ALE-RR - Técnico em Informática**
-
-Com 2000+ questões, sistema inteligente, gamificação e notificações, você tem todas as ferramentas para alcançar o TOP 5! 🏆
-
----
-
-## 📞 Precisa de Ajuda?
-
-- **Primeira vez?** → [INSTRUCOES_FINAIS.md](INSTRUCOES_FINAIS.md)
-- **Problemas de build?** → [SOLUCOES_GRADLE.md](SOLUCOES_GRADLE.md)
-- **APK não instala?** → [ERRO_INSTALACAO_CELULAR.md](ERRO_INSTALACAO_CELULAR.md)
+- Android 5.1+ (API 22+)
+- ~99% dos dispositivos Android
 
 ---
 
 **Versão:** 1.0.0  
-**Status:** ✅ Pronto para produção  
-**Última atualização:** Dezembro 2024
-
-**🎯 BOA SORTE E BONS ESTUDOS! 🏆📱🚀**
+**Status:** ✅ Pronto para produção
