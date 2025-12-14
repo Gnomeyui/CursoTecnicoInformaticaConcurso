@@ -5,10 +5,15 @@ import {
 } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
 import { useTheme } from '../context/ThemeContext';
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Capacitor } from '@capacitor/core';
 
 interface NotificationSettingsProps {
   onBack: () => void;
 }
+
+const isNative = Capacitor.isNativePlatform();
 
 export function NotificationSettings({ onBack }: NotificationSettingsProps) {
   const { settings, updateSettings, requestPermission, hasPermission, scheduleNotifications } = useNotifications();
@@ -26,39 +31,110 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
       const granted = await requestPermission();
       if (granted) {
         updateSettings({ enabled: true });
+        if (isNative) {
+          try {
+            await Haptics.impact({ style: ImpactStyle.Medium });
+          } catch (e) {
+            console.log('Vibração não disponível');
+          }
+        }
       } else {
-        alert('Permissão de notificação negada. Por favor, habilite nas configurações do navegador.');
+        alert('❌ Permissão negada! Por favor, ative as notificações nas configurações do dispositivo.');
       }
     } else {
       updateSettings({ enabled: !settings.enabled });
+      if (isNative) {
+        try {
+          await Haptics.impact({ style: ImpactStyle.Light });
+        } catch (e) {
+          console.log('Vibração não disponível');
+        }
+      }
     }
   };
 
-  const handleFrequencyChange = (frequency: 'low' | 'medium' | 'high') => {
+  const handleFrequencyChange = async (frequency: 'low' | 'medium' | 'high') => {
     updateSettings({ frequency });
-  };
-
-  const addCustomTime = () => {
-    if (!settings.times.includes(customTime)) {
-      updateSettings({ 
-        times: [...settings.times, customTime].sort(),
-        frequency: settings.frequency // Manter a frequência
-      });
+    if (isNative) {
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      } catch (e) {
+        console.log('Vibração não disponível');
+      }
     }
   };
 
-  const removeTime = (time: string) => {
-    updateSettings({ 
-      times: settings.times.filter(t => t !== time) 
-    });
+  const handleAddTime = async () => {
+    if (customTime && !settings.times.includes(customTime)) {
+      updateSettings({ times: [...settings.times, customTime].sort() });
+      setCustomTime('09:00');
+      if (isNative) {
+        try {
+          await Haptics.impact({ style: ImpactStyle.Medium });
+        } catch (e) {
+          console.log('Vibração não disponível');
+        }
+      }
+    }
   };
 
-  const testNotification = () => {
-    if (hasPermission) {
+  const handleRemoveTime = async (time: string) => {
+    updateSettings({ times: settings.times.filter(t => t !== time) });
+    if (isNative) {
+      try {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      } catch (e) {
+        console.log('Vibração não disponível');
+      }
+    }
+  };
+
+  const testNotification = async () => {
+    if (!hasPermission) {
+      alert('❌ Você precisa permitir notificações primeiro.');
+      return;
+    }
+
+    if (isNative) {
+      // Android/iOS - Usar Capacitor
+      try {
+        // Vibrar primeiro
+        try {
+          await Haptics.vibrate({ duration: 500 });
+        } catch (e) {
+          console.log('Vibração não disponível');
+        }
+
+        // Enviar notificação de teste IMEDIATA
+        await LocalNotifications.schedule({
+          notifications: [
+            {
+              id: 9999,
+              title: '🧪 Teste de Notificação',
+              body: 'Tudo funcionando perfeitamente! Você receberá lembretes nos horários configurados. 🚀',
+              schedule: { at: new Date(Date.now() + 500) }, // 0.5 segundos
+              channelId: 'study-reminders',
+              sound: 'default',
+              smallIcon: 'ic_launcher',
+              extra: { type: 'test' }
+            }
+          ]
+        });
+
+        console.log('✅ Notificação de teste enviada! (Nativo)');
+        
+        // Feedback visual
+        alert('✅ Notificação enviada! Verifique a barra de notificações.');
+      } catch (error) {
+        console.error('Erro ao testar notificação:', error);
+        alert('❌ Erro ao testar notificação. Verifique as permissões do dispositivo.');
+      }
+    } else {
+      // Web - Usar Notification API
       try {
         const notification = new Notification('🧪 Teste de Notificação', {
           body: 'Tudo funcionando perfeitamente! Você receberá lembretes nos horários configurados. 🚀',
-          icon: '/icon-192.png',
+          icon: '/icon.svg',
           tag: 'test'
         });
 
@@ -71,12 +147,12 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
           window.focus();
           notification.close();
         };
+
+        console.log('✅ Notificação de teste enviada! (Web)');
       } catch (error) {
         console.error('Erro ao testar notificação:', error);
-        alert('Erro ao testar notificação. Verifique as permissões do navegador.');
+        alert('❌ Erro ao testar notificação. Verifique as permissões do navegador.');
       }
-    } else {
-      alert('Você precisa permitir notificações primeiro.');
     }
   };
 
@@ -255,7 +331,7 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
                   </span>
                 </div>
                 <button
-                  onClick={() => removeTime(time)}
+                  onClick={() => handleRemoveTime(time)}
                   disabled={!settings.enabled}
                   className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -274,7 +350,7 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
               className="flex-1 px-4 py-2 border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-slate-900 dark:text-white rounded-lg disabled:opacity-50"
             />
             <button
-              onClick={addCustomTime}
+              onClick={handleAddTime}
               disabled={!settings.enabled}
               className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >

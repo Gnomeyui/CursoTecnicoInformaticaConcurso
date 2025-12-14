@@ -5,6 +5,8 @@
       "private": true,
       "dependencies": {
           "@capacitor/core": "*",
+          "@capacitor/haptics": "*",
+          "@capacitor/local-notifications": "*",
           "@capacitor/splash-screen": "*",
           "@capacitor/status-bar": "*",
           "@radix-ui/react-accordion": "^1.2.3",
