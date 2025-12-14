@@ -30,20 +30,33 @@ function AppContent() {
   const [error, setError] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('mix');
 
-  // 🔧 CORREÇÃO CRÍTICA: Listener do Botão Voltar (Android)
   useEffect(() => {
-    const backButtonListener = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
-      if (currentView !== 'dashboard') {
-        // Se não estiver na home, volta para home
-        setCurrentView('dashboard');
-      } else {
-        // Se estiver na home, fecha o app
-        CapacitorApp.exitApp();
+    let listener: any;
+    
+    const setupListener = async () => {
+      try {
+        listener = await CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+          if (currentView !== 'dashboard') {
+            setCurrentView('dashboard');
+          } else {
+            CapacitorApp.exitApp();
+          }
+        });
+      } catch (error) {
+        console.log('Back button listener not available');
       }
-    });
+    };
+
+    setupListener();
 
     return () => {
-      backButtonListener.remove();
+      if (listener && typeof listener.remove === 'function') {
+        try {
+          listener.remove();
+        } catch (error) {
+          console.log('Error removing listener');
+        }
+      }
     };
   }, [currentView]);
 
@@ -51,14 +64,18 @@ function AppContent() {
     try {
       loadProgress();
     } catch (err) {
-      console.error('Erro ao carregar progresso:', err);
-      setError('Erro ao carregar dados. Tentando novamente...');
+      console.error('Error loading progress:', err);
+      setError('Error loading data. Trying again...');
       try {
-        localStorage.removeItem('alerr_progress');
+        const corrupted = localStorage.getItem('alerr_progress');
+        if (corrupted) {
+          localStorage.setItem('alerr_progress_corrupted_backup', corrupted);
+          localStorage.removeItem('alerr_progress');
+        }
         saveProgress(0, 0);
         setError(null);
       } catch (clearErr) {
-        console.error('Erro ao limpar localStorage:', clearErr);
+        console.error('Error clearing localStorage:', clearErr);
       }
     }
   }, []);
@@ -68,7 +85,7 @@ function AppContent() {
       const saved = localStorage.getItem('alerr_progress');
       if (saved) {
         const data = JSON.parse(saved);
-        const today = new Date().toLocaleDateString();
+        const today = new Date().toISOString().split('T')[0];
         if (data.date === today) {
           setDailyScore(data.score || 0);
           setTotalQuestions(data.total || 0);
@@ -77,19 +94,19 @@ function AppContent() {
         }
       }
     } catch (err) {
-      console.error('Erro em loadProgress:', err);
+      console.error('Error in loadProgress:', err);
       throw err;
     }
   };
 
   const saveProgress = (score: number, total: number) => {
     try {
-      const today = new Date().toLocaleDateString();
+      const today = new Date().toISOString().split('T')[0];
       localStorage.setItem('alerr_progress', JSON.stringify({ score, total, date: today }));
       setDailyScore(score);
       setTotalQuestions(total);
     } catch (err) {
-      console.error('Erro ao salvar progresso:', err);
+      console.error('Error saving progress:', err);
     }
   };
 
@@ -114,6 +131,18 @@ function AppContent() {
     );
   }
 
+  const handleOpenRegimento = () => {
+    setCurrentView('regimento');
+  };
+
+  const handleOpenCustomization = () => {
+    setCurrentView('customization');
+  };
+
+  const handleOpenNotifications = () => {
+    setCurrentView('notifications');
+  };
+
   return (
     <>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
@@ -127,9 +156,9 @@ function AppContent() {
             onOpenStatistics={() => setCurrentView('statistics')}
             onOpenAchievements={() => setCurrentView('achievements')}
             onOpenSimulatedExam={() => setCurrentView('simulated-exam')}
-            onOpenRegimento={() => setCurrentView('regimento')}
-            onOpenCustomization={() => setCurrentView('customization')}
-            onOpenNotifications={() => setCurrentView('notifications')}
+            onOpenRegimento={handleOpenRegimento}
+            onOpenCustomization={handleOpenCustomization}
+            onOpenNotifications={handleOpenNotifications}
           />
         )}
         {currentView === 'flashcards' && (
@@ -183,7 +212,6 @@ function AppContent() {
         )}
       </div>
       
-      {/* Celebração GLÓRIA - 2000 Questões */}
       {showGloriaCelebration && (
         <ConfettiCelebration
           show={showGloriaCelebration}

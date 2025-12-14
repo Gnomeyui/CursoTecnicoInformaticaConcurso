@@ -220,8 +220,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const updateStreak = () => {
-    const today = new Date().toLocaleDateString();
-    const yesterday = new Date(Date.now() - 86400000).toLocaleDateString();
+    // 🔧 CORREÇÃO: Usar ISO date (yyyy-mm-dd) em vez de toLocaleDateString
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     
     setGameStats(prev => {
       if (prev.lastStudyDate === today) {
@@ -245,7 +246,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const recordStudyDay = () => {
-    const today = new Date().toLocaleDateString();
+    // 🔧 CORREÇÃO: Usar ISO date (yyyy-mm-dd) em vez de toLocaleDateString
+    const today = new Date().toISOString().split('T')[0];
     setGameStats(prev => {
       if (!prev.studyDays.includes(today)) {
         return {

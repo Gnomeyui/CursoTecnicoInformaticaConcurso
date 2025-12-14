@@ -117,6 +117,14 @@ export function SimulatedExam({ onBack, onComplete }: SimulatedExamProps) {
   };
 
   const selectAnswer = (answerIndex: number) => {
+    // 🔧 CORREÇÃO: Adicionar feedback tátil ao selecionar resposta
+    try {
+      Haptics.impact({ style: 'light' });
+    } catch (error) {
+      // Haptics pode não estar disponível no navegador
+      console.log('Haptics não disponível');
+    }
+    
     setAnswers(prev => ({
       ...prev,
       [currentQuestionIndex]: answerIndex
@@ -158,6 +166,7 @@ export function SimulatedExam({ onBack, onComplete }: SimulatedExamProps) {
             <div className="flex items-center gap-4">
               <button 
                 onClick={onBack}
+                aria-label="Voltar para o menu principal"
                 className="p-2 hover:bg-slate-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
               >
                 <ArrowLeft className="w-6 h-6 text-slate-700 dark:text-gray-300" />
