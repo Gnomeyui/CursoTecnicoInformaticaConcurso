@@ -23,11 +23,11 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("🔥 ERRO CRÍTICO NO APP:", error, errorInfo);
+    console.error("🔥 ERRO CRÍTICO CAPTURADO:", error, errorInfo);
   }
 
   handleReset = () => {
-    // Limpa TUDO que pode estar corrompido
+    // Limpa dados que podem estar travando o app
     try {
       localStorage.clear();
       sessionStorage.clear();
@@ -46,43 +46,42 @@ class ErrorBoundary extends React.Component<
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#1a1a1a',
+          backgroundColor: '#111827',
           color: '#fff',
           padding: '20px',
-          textAlign: 'center',
-          fontFamily: 'system-ui, -apple-system, sans-serif'
+          textAlign: 'center'
         }}>
-          <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>😕</h1>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', fontWeight: 'bold' }}>
-            Opa, algo deu errado!
+          <h1 style={{ fontSize: '3rem', marginBottom: '10px' }}>⚠️</h1>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+            Algo deu errado na inicialização
           </h2>
           <p style={{ 
-            color: '#aaa', 
-            marginBottom: '20px', 
-            maxWidth: '300px',
-            fontSize: '0.875rem' 
+            color: '#9CA3AF', 
+            margin: '20px 0', 
+            fontSize: '0.9rem', 
+            maxWidth: '300px', 
+            wordBreak: 'break-word' 
           }}>
-            {this.state.error?.message || "Erro desconhecido na inicialização"}
+            {this.state.error?.message || "Erro desconhecido"}
           </p>
           <button 
             onClick={this.handleReset}
             style={{
               padding: '12px 24px',
-              backgroundColor: '#3b82f6',
+              backgroundColor: '#3B82F6',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
-              fontSize: '1rem',
               fontWeight: 'bold',
+              fontSize: '1rem',
               cursor: 'pointer'
             }}
           >
-            REINICIAR E LIMPAR DADOS
+            LIMPAR DADOS E REINICIAR
           </button>
         </div>
       );
     }
-
     return this.props.children;
   }
 }
@@ -128,7 +127,7 @@ if (!container) {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #1a1a1a;
+      background: #111827;
       color: white;
       font-family: sans-serif;
       text-align: center;
@@ -137,7 +136,7 @@ if (!container) {
       <div>
         <h1 style="font-size: 3rem; margin-bottom: 1rem;">⚠️</h1>
         <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Erro Fatal</h2>
-        <p style="color: #aaa;">Elemento #root não encontrado no HTML</p>
+        <p style="color: #9CA3AF;">Elemento #root não encontrado no HTML</p>
       </div>
     </div>
   `;
@@ -145,7 +144,7 @@ if (!container) {
   // Inicializar Capacitor
   initializeCapacitor();
   
-  // Criar root e renderizar
+  // Criar root e renderizar com ErrorBoundary
   const root = createRoot(container);
   
   root.render(

@@ -2,50 +2,21 @@
 
 Aplicativo de estudos para o concurso da Assembleia Legislativa de Roraima - Técnico em Informática.
 
-## 🆘 APP CRASHANDO? (LEIA PRIMEIRO!)
+## ⚠️ ATENÇÃO! LEIA ISTO PRIMEIRO! ⚠️
 
-**Sintoma:** App abre e fecha rapidamente (crash loop)
+**🔴 SE O APP ESTÁ CRASHANDO:**
 
-**🤖 ANÁLISE GEMINI - 3 ERROS NATIVOS CRÍTICOS IDENTIFICADOS:**
+Você está olhando os arquivos **ANTIGOS** no seu PC, mas as correções foram aplicadas **AQUI NO FIGMA MAKE**!
 
-O Gemini descobriu que o crash acontece **ANTES** do React iniciar! São erros de **configuração Android nativa** que matam o processo no boot:
+**🎯 SOLUÇÃO:**
+1. **📥 BAIXAR** a versão atualizada do Figma Make (botão Download/Export)
+2. **✅ VERIFICAR** que `src/main.tsx` tem ErrorBoundary (classe completa)
+3. **🧹 LIMPAR** build: `rm -rf android/.gradle dist android/build`
+4. **⚛️ REBUILD:** `npm run build && npx cap sync android`
+5. **🔧 ANDROID STUDIO:** Invalidate Caches → Clean → Rebuild → Build APK
+6. **📱 CELULAR:** Desinstalar antiga → Instalar nova
 
-| # | Erro | Arquivo | Correção |
-|---|------|---------|----------|
-| 1 | Permissão `SCHEDULE_EXACT_ALARM` | AndroidManifest.xml | ✅ Removida |
-| 2 | Tema com conflito ActionBar | styles.xml | ✅ Mudado para NoActionBar |
-| 3 | MainActivity com código extra | MainActivity.java | ✅ Limpa e minimalista |
-
-**✅ TODAS AS CORREÇÕES JÁ APLICADAS:**
-- ✅ Permissão perigosa removida (não bloqueia mais no Android 12+)
-- ✅ Tema corrigido (herança consistente de estilos)
-- ✅ MainActivity limpa (sem código desnecessário)
-- ✅ ErrorBoundary visual no React (proteção extra)
-- ✅ Logs detalhados para debug
-
-**🚀 SOLUÇÃO RÁPIDA (20-30 minutos):**
-
-1. **📥 Baixar projeto atualizado** (Figma Make → Download)
-2. **🧹 Limpar build:** `rm -rf android/.gradle` + build folders
-3. **⚛️ Rebuild:** `npm run build && npx cap sync android`
-4. **🔧 Android Studio:** Invalidate Caches → Clean → Rebuild → Build APK
-5. **📱 Celular:** Desinstalar antiga → Limpar dados → Instalar nova
-
-**📚 GUIAS COMPLETOS (escolha um):**
-
-| Guia | Quando usar |
-|------|-------------|
-| 📄 [RESUMO_1_PAGINA.txt](RESUMO_1_PAGINA.txt) | ⚡ **Visão geral rápida (1 min)** |
-| ✅ [CHECKLIST_RAPIDO.md](CHECKLIST_RAPIDO.md) | 📋 **Passo a passo detalhado** |
-| 🔥 [CORRECAO_DEFINITIVA_NATIVA.md](CORRECAO_DEFINITIVA_NATIVA.md) | 🎓 **Explicação técnica completa** |
-| 📋 [SOLUCAO_CRASH_FINAL.txt](SOLUCAO_CRASH_FINAL.txt) | 👁️ **Resumo visual** |
-| 🚀 [COMANDOS_REBUILD_TOTAL.bat](COMANDOS_REBUILD_TOTAL.bat) | 🤖 **Script automatizado (Windows)** |
-| 🚀 [COMANDOS_REBUILD_TOTAL.sh](COMANDOS_REBUILD_TOTAL.sh) | 🤖 **Script automatizado (Linux/Mac)** |
-
-**🎯 RESULTADO ESPERADO:**
-- ✅ **95% de chance:** App funciona perfeitamente! 🎉
-- ✅ **4% de chance:** Tela de erro aparece (clicar botão resolve)
-- ❌ **1% de chance:** Outro problema (ver logs e me enviar)
+**📖 GUIA COMPLETO:** [ATENCAO_BAIXAR_VERSAO_NOVA.md](ATENCAO_BAIXAR_VERSAO_NOVA.md) ⭐ **LEIA ESTE!**
 
 ---
 
