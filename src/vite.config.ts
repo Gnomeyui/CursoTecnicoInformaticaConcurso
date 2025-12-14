@@ -4,6 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  base: './', // IMPORTANTE: Usar paths relativos para Capacitor
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './'),

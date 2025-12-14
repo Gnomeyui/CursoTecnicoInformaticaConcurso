@@ -1,70 +1,132 @@
 # 🏆 ALE-RR TOP 5 - App de Estudos
 
-**Aplicativo Android nativo para estudar para o concurso da Assembleia Legislativa de Roraima - Técnico em Informática**
+Aplicativo de estudos para o concurso da Assembleia Legislativa de Roraima - Técnico em Informática.
+
+## 🆘 APP CRASHANDO? (LEIA PRIMEIRO!)
+
+**Sintoma:** App abre e fecha rapidamente
+
+**Solução Rápida:**
+1. Desinstale o app completamente
+2. Limpe dados: `Configurações → Apps → ALE-RR TOP 5 → Limpar dados`
+3. Reinstale o APK
+4. Se não resolver: [SOLUCAO_RAPIDA_CRASH.md](SOLUCAO_RAPIDA_CRASH.md)
+
+**Diagnóstico Completo:** [DIAGNOSTICO_CRASH.md](DIAGNOSTICO_CRASH.md)
 
 ---
 
-## ⚠️ ALERTA: NÃO USE GUIAS GENÉRICOS!
+## 🚀 Quick Start
 
-**🔴 NÃO EXECUTE:** `npx cap add android`  
-**✅ USE:** `npx cap sync android`
+### **📖 GUIAS ESSENCIAIS (3 arquivos principais)**
 
-A pasta `/android` **JÁ EXISTE** e está configurada! Executar `cap add` vai sobrescrever todas as correções.
+1. **🚀 [GUIA_MASTER_UNICO.md](GUIA_MASTER_UNICO.md)** ⭐ **TUDO EM UM SÓ LUGAR!**
+   - Do zero ao APK em 15 minutos
+   - Instalação completa
+   - Solução de TODOS os erros
 
-**📖 Leia:** [COMPARACAO_GUIAS.md](COMPARACAO_GUIAS.md) para entender a diferença.
+2. **📋 [AUDITORIA_COMPLETA.md](AUDITORIA_COMPLETA.md)** ✅ **CÓDIGO VERIFICADO!**
+   - Projeto auditado linha por linha
+   - 16 arquivos inúteis deletados
+   - Zero duplicações, zero código morto
 
----
-
-## 🎉 PROJETO 100% PRONTO!
-
-✅ **Correções aplicadas** → AndroidManifest, MainActivity, Capacitor  
-✅ **Projeto limpo** → 41 arquivos desnecessários removidos  
-✅ **Documentação focada** → Apenas 8 guias essenciais  
-✅ **Pronto para compilar** → Zero erros  
-
-**📖 Leia agora:** [INSTRUCOES_FINAIS.md](INSTRUCOES_FINAIS.md) ⚡
+3. **❓ [FAQ_DUVIDAS_COMUNS.md](FAQ_DUVIDAS_COMUNS.md)** 💡 **PERGUNTAS FREQUENTES**
+   - Respostas rápidas
+   - Troubleshooting
 
 ---
 
-## 🚀 INÍCIO RÁPIDO (25 minutos)
+## ⚡ COMPILAR AGORA (3 comandos)
 
-### **1. Limpar e Rebuildar (3 min)**
 ```bash
-# Linux/Mac:
-rm -rf android/app/build android/build android/.gradle dist && npm run build && npx cap sync android
-
-# Windows:
-rmdir /s /q android\app\build android\build android\.gradle dist && npm run build && npx cap sync android
+cd C:\Users\SEU_USUARIO\Desktop\ale-rr-top5
+npm install
+npm run android:rebuild
 ```
 
-### **2. Android Studio (20 min)**
-```bash
-npx cap open android
-```
-Depois: `File → Invalidate Caches → Restart` → `Build → Rebuild Project` → `Build → Build APK(s)`
+**No Android Studio:** `Build → Build APK(s)`
 
-### **3. Instalar no Celular (2 min)**
-Copiar `android/app/build/outputs/apk/debug/app-debug.apk` para celular e instalar!
-
-**✅ PRONTO! COMEÇAR A ESTUDAR!** 🎯
+**PRONTO!** 🎉
 
 ---
 
-## 📚 DOCUMENTAÇÃO (8 arquivos essenciais)
+## 🆘 SOLUÇÕES PARA ERROS ESPECÍFICOS
 
-| Arquivo | Descrição | Prioridade |
-|---------|-----------|------------|
-| [INSTRUCOES_FINAIS.md](INSTRUCOES_FINAIS.md) | 🎯 Resumo completo | ⭐⭐⭐ |
-| [COMECE_AQUI_AGORA.md](COMECE_AQUI_AGORA.md) | 🚀 Guia rápido em 3 passos | ⭐⭐⭐ |
-| [TESTE_RAPIDO.md](TESTE_RAPIDO.md) | ⚡ Comandos detalhados | ⭐⭐⭐ |
-| [ERRO_INSTALACAO_CELULAR.md](ERRO_INSTALACAO_CELULAR.md) | 🔴 Troubleshooting completo | ⭐⭐ |
-| [SOLUCOES_GRADLE.md](SOLUCOES_GRADLE.md) | 🔧 Soluções Gradle | ⭐⭐ |
-| [ANDROID_STUDIO_DIRETO.md](ANDROID_STUDIO_DIRETO.md) | 🎯 Guia Android Studio | ⭐ |
-| [CORRECOES_REALIZADAS.md](CORRECOES_REALIZADAS.md) | ✅ Correções aplicadas | ⭐ |
-| [COMPARACAO_GUIAS.md](COMPARACAO_GUIAS.md) | 📝 Comparação de guias | ⭐ |
+### **Erro: "Adaptive-icon elements require SDK 26" (NOVO!)**
 
-**Extras:**
-- [LIMPEZA_CONCLUIDA.md](LIMPEZA_CONCLUIDA.md) → Arquivos removidos
+**✅ JÁ CORRIGIDO!** Ícones adaptados para API 22+.
+
+**Solução:** [ERRO_ADAPTIVE_ICON_CORRIGIDO.md](ERRO_ADAPTIVE_ICON_CORRIGIDO.md) 🎨
+
+---
+
+### **Erro: "HTML todo quebrado no celular"**
+
+**✅ JÁ CORRIGIDO!** Baixe o projeto atualizado.
+
+**Solução:** [ERRO_INSTALACAO_CELULAR.md](ERRO_INSTALACAO_CELULAR.md) 📱
+
+---
+
+### **Erro: "resource mipmap/ic_launcher not found"**
+
+**✅ JÁ CORRIGIDO!** Ícones criados.
+
+**Solução:** [ERRO_IC_LAUNCHER.md](ERRO_IC_LAUNCHER.md) 🎨
+
+---
+
+### **Erro: "Duplicate resources (ic_launcher.png e ic_launcher.xml)"**
+
+**Causa:** Existem DOIS arquivos ic_launcher na mesma pasta (PNG antigo + XML novo)
+
+**✅ SOLUÇÃO RÁPIDA:** Execute o script para deletar PNGs duplicados:
+
+**Solução:** [ERRO_RECURSOS_DUPLICADOS.md](ERRO_RECURSOS_DUPLICADOS.md) 🗑️
+
+**Comando rápido:**
+```bash
+# No seu projeto local:
+cd C:\Users\Gnomo\Desktop\ale-rr-top5
+
+# Execute o script:
+DELETAR_ICONES_PNG.bat
+
+# Ou delete manualmente todos os arquivos PNG das pastas mipmap-*:
+# - ic_launcher.png
+# - ic_launcher_round.png
+
+# Depois rebuilde:
+# Android Studio: Invalidate Caches → Rebuild Project
+```
+
+**⚠️ IMPORTANTE:** Mantenha apenas os arquivos .xml, delete todos os .png!
+
+---
+
+### **Erro: "Could not initialize native services" (Gradle)**
+
+**Causa:** Cache do Gradle corrompido
+
+**Solução:** [ERRO_GRADLE_NATIVE_SERVICES.md](ERRO_GRADLE_NATIVE_SERVICES.md) ou [SOLUCOES_GRADLE.md](SOLUCOES_GRADLE.md) 🔧
+
+---
+
+## 📚 DOCUMENTAÇÃO COMPLETA
+
+### **Guias de Início:**
+- 🚀 [COMECE_AQUI_AGORA.md](COMECE_AQUI_AGORA.md) - Quick start
+- 📖 [GUIA_COMPILACAO_CORRETO.md](GUIA_COMPILACAO_CORRETO.md) - Passo a passo detalhado
+
+### **Solução de Problemas:**
+- 🔧 [SOLUCOES_GRADLE.md](SOLUCOES_GRADLE.md) - Todos os erros do Gradle
+- 📱 [ERRO_INSTALACAO_CELULAR.md](ERRO_INSTALACAO_CELULAR.md) - App quebrado no celular
+- 🎨 [ERRO_IC_LAUNCHER.md](ERRO_IC_LAUNCHER.md) - Problemas com ícones
+- 🗑️ [ERRO_RECURSOS_DUPLICADOS.md](ERRO_RECURSOS_DUPLICADOS.md) - Recursos duplicados
+
+### **Informações do Projeto:**
+- ✅ [AUDITORIA_COMPLETA.md](AUDITORIA_COMPLETA.md) - Código verificado linha por linha
+- 📜 [Attributions.md](Attributions.md) - Créditos e licenças
 
 ---
 

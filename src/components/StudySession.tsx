@@ -42,7 +42,7 @@ export function StudySession({ onBack, dailyScore, onScoreUpdate }: StudySession
     const flashcardsPerSession = settings 
       ? JSON.parse(settings).flashcardsPerSession ?? 2
       : 2;
-    const questionsPerSession = settings 
+    const questionsPerSession = settings
       ? JSON.parse(settings).questionsPerSession || 10
       : 10;
 

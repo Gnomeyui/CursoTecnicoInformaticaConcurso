@@ -8,6 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "android:build": "npm run build && npx cap sync android && npx cap open android",
+    "android:clean": "npm run build && npx cap copy android && npx cap sync android",
+    "android:rebuild": "npm run build && npx cap sync android && npx cap open android",
     "android:run": "npx cap run android",
     "android:sync": "npx cap sync android"
   },
