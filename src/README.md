@@ -1,222 +1,213 @@
-# 🎓 ALE-RR TOP 5 - App de Estudos para Concurso
+# ALE-RR TOP 1 - Aplicativo de Estudos
 
-Aplicativo Android nativo para estudo do concurso da Assembleia Legislativa de Roraima (ALE-RR) - Cargo: Técnico em Informática.
+Aplicativo web completo para estudos do concurso da **ALE-RR (Assembleia Legislativa de Roraima)** para o cargo de **Técnico em Informática**.
 
 ## 🎯 Objetivo
 
-Alcançar o **TOP 5** no concurso através de um sistema completo de estudos gamificado.
+Preparar candidatos para alcançar o **TOP 1** no concurso através de um sistema gamificado e completo de estudos.
 
-## ✨ Funcionalidades
+## ✨ Funcionalidades Implementadas
 
-### 📚 Sistema de Estudos
-- **Quiz Interativo**: Questões de múltipla escolha com feedback imediato
-- **Flashcards**: Revisão rápida de conceitos importantes
-- **Simulados Cronometrados**: Testes em condições reais de prova
-- **5 Matérias**: Informática, Legislação, Português, LGPD, Governança de TI
+### 📚 Sistema de Quiz
+- **5 matérias completas**: Informática, Legislação, Português, LGPD e Governança de TI
+- **3 níveis de dificuldade**: Fácil (+5 XP), Médio (+10 XP), Difícil (+20 XP)
+- **Modo misto**: Todas as dificuldades em uma sessão
+- **Explicações detalhadas**: Cada questão possui explicação após resposta
+- **20 questões** no banco de dados (expansível)
 
 ### 🎮 Gamificação Completa
-- **Sistema XP e Níveis**: Ganhe experiência ao responder questões
-- **Badges e Conquistas**: Desbloqueie conquistas especiais
-- **Streaks**: Mantenha uma sequência diária de estudos
-- **Ranking de Desempenho**: Acompanhe sua evolução
+- **Sistema de XP**: Ganhe pontos por acertos
+- **Sistema de Níveis**: 100 níveis disponíveis (100 XP por nível)
+- **Celebrações animadas**: Level Up e conquistas especiais
+- **Proteção contra loop infinito**: Segurança implementada no cálculo de níveis
 
-### 📊 Estatísticas Avançadas
-- **Gráficos Interativos**: Visualize seu progresso (Recharts)
-- **Dashboard Analítico**: Métricas detalhadas por matéria
-- **Histórico Completo**: Todas suas sessões de estudo
-- **Taxa de Acerto**: Acompanhe sua evolução
+### 🏆 Sistema de Conquistas
+- **12 conquistas desbloqueáveis**:
+  - Primeiros Passos (1 questão)
+  - Novato (50 questões)
+  - Estudante (200 questões)
+  - Especialista (500 questões)
+  - Mestre (1000 questões)
+  - Precisão Perfeita (90% de acerto)
+  - Dedicação (7 dias de sequência)
+  - Disciplina Total (30 dias)
+  - E mais...
+- **Barra de progresso** para cada conquista
 
-### 🔔 Notificações Inteligentes
-- **Lembretes Programáveis**: Configure horários personalizados
-- **Mensagens Motivacionais**: Frases inspiradoras aleatórias
-- **3 Frequências**: Baixa (1x), Média (3x), Alta (5x) por dia
-- **Sistema Híbrido**: Funciona em Web e Android nativo
+### 📊 Dashboard Analítico
+- **Estatísticas em tempo real**:
+  - Questões respondidas hoje
+  - Taxa de acerto diária
+  - Sequência de dias (streak)
+  - Total de questões
+  - Precisão geral
+- **Cartões visuais** com ícones e cores
+
+### 📈 Estatísticas Avançadas
+- **3 visualizações**:
+  - Visão Geral
+  - Progresso Diário (últimos 7 dias)
+  - Desempenho por Matéria
+- **Gráficos interativos** (Recharts):
+  - Gráfico de linha (progresso diário)
+  - Gráfico de barras (precisão por matéria)
+  - Gráfico de pizza (distribuição de questões)
 
 ### 🎨 Personalização Total
-- **5 Temas Visuais**: Padrão, Escuro, Azul, Verde, Rosa
-- **Layout Customizável**: Ajuste a interface ao seu gosto
-- **Persistência Local**: Todas configurações salvas
+- **5 temas de cores**:
+  - Padrão (Azul)
+  - Floresta (Verde)
+  - Oceano (Ciano)
+  - Pôr do Sol (Laranja)
+  - Noite (Roxo)
+- **Modo escuro/claro** com toggle
+- **Preview em tempo real**
 
-## 🚀 Como Buildar e Instalar
+### 💾 Persistência de Dados
+- **localStorage** para salvar:
+  - Progresso de XP e níveis
+  - Estatísticas detalhadas por dia
+  - Desempenho por matéria
+  - Tema e preferências
+- **Fonte única da verdade**: StatsContext gerencia todos os dados
 
-### Pré-requisitos
-- Node.js 18+
-- Android Studio (última versão)
-- JDK 17+
-- Um celular Android (API 26+)
+## 🏗️ Arquitetura Profissional
 
-### Passo 1: Instalar Dependências
-```bash
-npm install
+### ✅ Boas Práticas Implementadas
+
+#### 1. **Ciclo de Vida do App**
+```typescript
+// Detecta quando o usuário volta do background
+document.addEventListener('visibilitychange', handleVisibilityChange);
+```
+- Verifica mudança de data ao retomar o app
+- Força atualização dos contadores diários
+- **Resolve o bug do "dia seguinte"**
+
+#### 2. **Fonte Única da Verdade**
+```typescript
+// Estado derivado - não há redundância
+const today = new Date().toISOString().split('T')[0];
+const todayStats = detailedStats.dailyStats.find(d => d.date === today);
+const dailyScore = todayStats ? todayStats.correctAnswers : 0;
+```
+- Todos os dados vêm do **StatsContext**
+- Eliminação de estados duplicados
+- Previne dessincronização
+
+#### 3. **Segurança contra Loop Infinito**
+```typescript
+const getLevelFromXP = (currentXP: number): number => {
+  let calculatedLevel = 1;
+  let remainingXP = currentXP;
+  
+  while (remainingXP >= XP_PER_LEVEL && calculatedLevel < MAX_LEVEL) {
+    remainingXP -= XP_PER_LEVEL;
+    calculatedLevel++;
+  }
+  
+  return calculatedLevel;
+};
+```
+- **MAX_LEVEL = 100**: Limite de segurança
+- Protege contra XP corrompido
+
+#### 4. **Safe Area CSS**
+```css
+body {
+  padding-top: var(--safe-area-top);
+  padding-bottom: var(--safe-area-bottom);
+  padding-left: var(--safe-area-left);
+  padding-right: var(--safe-area-right);
+}
+```
+- Funciona em dispositivos com notch
+- Layout não fica escondido
+
+#### 5. **Meta Theme Color**
+```typescript
+// Sincroniza cor da barra de status com tema
+const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+metaThemeColor.setAttribute('content', colors[currentTheme]);
+```
+- Experiência nativa em dispositivos móveis
+
+## 🛠️ Tecnologias Utilizadas
+
+- **React 18**: Framework principal
+- **TypeScript**: Tipagem estática
+- **Tailwind CSS 4**: Estilização
+- **Recharts**: Gráficos interativos
+- **Lucide React**: Ícones modernos
+- **Context API**: Gerenciamento de estado
+- **localStorage**: Persistência de dados
+
+## 📱 Responsividade
+
+- Design mobile-first
+- Otimizado para telas pequenas
+- Funciona em desktop também
+
+## 🚀 Como Usar
+
+1. Acesse o aplicativo
+2. Clique em **"Iniciar Quiz"**
+3. Escolha a **dificuldade**
+4. Responda as questões
+5. Ganhe **XP** e **conquistas**
+6. Acompanhe seu progresso nas **Estatísticas**
+7. Personalize o tema em **Personalização**
+
+## 📊 Estrutura de Dados
+
+### StatsContext
+```typescript
+interface DetailedStats {
+  dailyStats: DailyStat[];           // Histórico diário
+  subjectStats: SubjectStat[];       // Por matéria
+  totalQuestionsAnswered: number;    // Total geral
+  totalCorrectAnswers: number;       // Acertos totais
+  overallAccuracy: number;           // Precisão %
+  currentStreak: number;             // Dias consecutivos
+  longestStreak: number;             // Recorde
+  totalStudyTime: number;            // Tempo em minutos
+}
 ```
 
-### Passo 2: Build do Projeto
-```bash
-# Use o script automatizado
-npm run build:android
-
-# Ou manualmente:
-npm run build
-npx cap sync android
+### GameContext
+```typescript
+interface GameContext {
+  xp: number;                        // Experiência total
+  level: number;                     // Nível atual (1-100)
+  addXP: (amount: number) => void;   // Adicionar XP
+  getLevelProgress: () => number;    // Progresso %
+}
 ```
 
-### Passo 3: Compilar no Android Studio
-```bash
-# Abre o Android Studio
-npx cap open android
-```
+## 🎯 Próximas Expansões Possíveis
 
-**No Android Studio:**
-1. Aguarde o Gradle Sync terminar
-2. Build > Clean Project
-3. Build > Rebuild Project
-4. Conecte seu celular via USB
-5. Run (botão verde ▶️)
+- [ ] Mais questões (expandir banco de dados)
+- [ ] Sistema de favoritos em questões
+- [ ] Modo simulado cronometrado
+- [ ] Comentários em questões
+- [ ] Compartilhamento de conquistas
+- [ ] Ranking de usuários (com backend)
+- [ ] Notificações de estudo
+- [ ] Leitura do Regimento Interno
 
-### Script Automatizado (Recomendado)
+## ✅ Status do Projeto
 
-**Windows:**
-```batch
-COMANDOS_REBUILD_TOTAL.bat
-```
+**PRODUÇÃO - 100% FUNCIONAL**
 
-**Linux/Mac:**
-```bash
-chmod +x COMANDOS_REBUILD_TOTAL.sh
-./COMANDOS_REBUILD_TOTAL.sh
-```
-
-## 📱 Estrutura do Projeto
-
-```
-/
-├── components/          # Componentes React
-│   ├── QuizScreen.tsx
-│   ├── Statistics.tsx
-│   ├── Dashboard.tsx
-│   ├── Achievements.tsx
-│   ├── SimulatedExam.tsx
-│   ├── Customization.tsx
-│   ├── NotificationSettings.tsx
-│   └── ui/             # Componentes UI (shadcn)
-├── context/            # Context API
-│   ├── GameContext.tsx
-│   ├── StatsContext.tsx
-│   ├── NotificationContext.tsx
-│   ├── ThemeContext.tsx
-│   └── CustomizationContext.tsx
-├── data/               # Dados do app
-│   ├── questions.ts    # Banco de questões
-│   └── flashcards.ts   # Banco de flashcards
-├── android/            # Projeto Android nativo
-│   └── app/
-│       └── src/main/
-│           ├── AndroidManifest.xml
-│           └── res/    # Recursos Android
-├── public/             # Arquivos estáticos
-└── App.tsx             # Componente principal
-```
-
-## 🔧 Tecnologias Utilizadas
-
-- **React 18** - Framework frontend
-- **TypeScript** - Tipagem estática
-- **Vite** - Build tool
-- **Tailwind CSS** - Estilização
-- **Capacitor** - Framework híbrido Android
-- **Recharts** - Gráficos e estatísticas
-- **Lucide React** - Ícones
-- **Sonner** - Toasts/notificações
-- **LocalStorage** - Persistência de dados
-
-## 📦 Plugins Capacitor
-
-- `@capacitor/local-notifications` - Notificações programadas
-- `@capacitor/haptics` - Feedback tátil
-- `@capacitor/status-bar` - Barra de status
-- `@capacitor/keyboard` - Controle do teclado
-
-## 🎨 Temas Disponíveis
-
-1. **Padrão** - Roxo vibrante (#7C3AED)
-2. **Escuro** - Cinza escuro elegante
-3. **Azul** - Azul profissional
-4. **Verde** - Verde energizante
-5. **Rosa** - Rosa suave
-
-## 📊 Sistema de Gamificação
-
-### Níveis e XP
-- +10 XP por questão correta
-- +5 XP por questão respondida (mesmo errada)
-- 100 XP = 1 nível
-
-### Badges Disponíveis
-- 🏆 **Iniciante** - Complete 10 questões
-- 🔥 **Estudioso** - 7 dias de streak
-- 🎯 **Expert** - 90% de acerto
-- 💯 **Perfeito** - 100% em um simulado
-- 📚 **Dedicado** - 100 questões respondidas
-- ⚡ **Relâmpago** - Complete um simulado em tempo recorde
-
-## 🔔 Sistema de Notificações
-
-### Configuração
-1. Abra o app
-2. Vá em **Configurações**
-3. Ative **Notificações de Estudo**
-4. Escolha a frequência
-5. Aceite a permissão
-
-### Horários Padrão
-- **Baixa**: 09:00
-- **Média**: 09:00, 14:00, 20:00
-- **Alta**: 08:00, 11:00, 14:00, 17:00, 20:00
-
-## 🐛 Troubleshooting
-
-### App não instala no celular?
-1. Verifique se o cabo USB está em modo transferência
-2. Ative a **Depuração USB** no Android
-3. Execute `adb devices` para confirmar conexão
-4. Clean e Rebuild no Android Studio
-
-### Notificações não aparecem?
-1. Verifique permissões: Configurações Android > Apps > ALE-RR TOP 5 > Notificações
-2. Desative otimização de bateria para o app
-3. Veja os logs no Logcat (Android Studio)
-
-### Erro de build Gradle?
-```bash
-# Limpe o cache
-cd android
-./gradlew clean
-
-# Volte para raiz e reconstrua
-cd ..
-npm run build
-npx cap sync android
-```
-
-## 📈 Estatísticas do Projeto
-
-- **8 Componentes Principais**
-- **5 Context Providers**
-- **300+ Questões** (50 por matéria)
-- **100+ Flashcards**
-- **6 Funcionalidades Avançadas**
-- **5 Temas Customizáveis**
-
-## 🏆 Meta: TOP 5
-
-Este app foi desenvolvido especificamente para ajudar você a alcançar uma das **5 melhores colocações** no concurso da ALE-RR.
-
-**Estude consistentemente. Use as ferramentas. Alcance o TOP 5! 🚀**
-
-## 📄 Licença
-
-Este projeto é de uso pessoal para estudo do concurso ALE-RR.
+Todas as boas práticas de arquitetura foram implementadas:
+- ✅ Ciclo de vida gerenciado
+- ✅ Estado centralizado
+- ✅ Segurança implementada
+- ✅ Persistência funcionando
+- ✅ UI/UX polida
+- ✅ Responsivo
+- ✅ Acessível
 
 ---
 
-**Desenvolvido com dedicação para o TOP 5 da ALE-RR 2024** 💜
+**Desenvolvido com 💙 para candidatos ao TOP 1 da ALE-RR**

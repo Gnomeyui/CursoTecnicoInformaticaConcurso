@@ -1,248 +1,83 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ALL_BADGES, Badge as BadgeDefinition } from '../data/badges';
 
-export interface Badge {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  unlockedAt?: string;
-  progress?: number;
-  target?: number;
-}
+const MAX_LEVEL = 100;
+const XP_PER_LEVEL = 100;
 
-export interface GameStats {
-  xp: number;
-  level: number;
-  badges: Badge[];
-  streak: number;
-  lastStudyDate: string;
-  totalQuestionsAnswered: number;
-  totalCorrectAnswers: number;
-  studyDays: string[];
-  viewedBadgeIds: string[];
-  simulatedExamsCompleted: number;
+interface LevelUpInfo {
+  oldLevel: number;
+  newLevel: number;
 }
 
 interface GameContextType {
-  gameStats: GameStats;
+  xp: number;
+  level: number;
   addXP: (amount: number) => void;
-  checkAndUnlockBadges: () => void;
-  updateStreak: () => void;
-  recordStudyDay: () => void;
-  recordQuestionAnswer: (wasCorrect: boolean) => void;
-  recordSimulatedExam: () => void;
   showGloriaCelebration: boolean;
   dismissGloriaCelebration: () => void;
-  markBadgesAsViewed: () => void;
-  getNewBadgesCount: () => number;
   showLevelUpCelebration: boolean;
   dismissLevelUpCelebration: () => void;
-  levelUpInfo: { oldLevel: number; newLevel: number } | null;
+  levelUpInfo: LevelUpInfo | null;
+  getLevelProgress: () => number;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'alerr_game_stats';
-
-// Sistema de níveis: cada nível requer 100 XP a mais que o anterior
-export const getXPForLevel = (level: number): number => {
-  return level * 100;
-};
-
-const getLevelFromXP = (xp: number): number => {
-  let level = 1;
-  let totalXPNeeded = 0;
-  const MAX_LEVEL = 1000; // 🔧 CORREÇÃO FINAL: Limite de segurança para evitar loops infinitos
-  
-  while (xp >= totalXPNeeded + getXPForLevel(level) && level < MAX_LEVEL) {
-    totalXPNeeded += getXPForLevel(level);
-    level++;
-  }
-  return level;
-};
-
 export function GameProvider({ children }: { children: ReactNode }) {
-  const [gameStats, setGameStats] = useState<GameStats>({
-    xp: 0,
-    level: 1,
-    badges: [],
-    streak: 0,
-    lastStudyDate: '',
-    totalQuestionsAnswered: 0,
-    totalCorrectAnswers: 0,
-    studyDays: [],
-    viewedBadgeIds: [],
-    simulatedExamsCompleted: 0,
-  });
-
+  const [xp, setXP] = useState(0);
+  const [level, setLevel] = useState(1);
   const [showGloriaCelebration, setShowGloriaCelebration] = useState(false);
   const [showLevelUpCelebration, setShowLevelUpCelebration] = useState(false);
-  const [levelUpInfo, setLevelUpInfo] = useState<{ oldLevel: number; newLevel: number } | null>(null);
+  const [levelUpInfo, setLevelUpInfo] = useState<LevelUpInfo | null>(null);
 
+  // Carregar dados salvos
   useEffect(() => {
-    loadGameStats();
+    const saved = localStorage.getItem('alerr_game_data');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        setXP(data.xp || 0);
+        setLevel(data.level || 1);
+      } catch (e) {
+        console.error('Erro ao carregar dados do jogo:', e);
+      }
+    }
   }, []);
 
+  // Salvar dados
   useEffect(() => {
-    saveGameStats();
-  }, [gameStats]);
+    localStorage.setItem('alerr_game_data', JSON.stringify({ xp, level }));
+  }, [xp, level]);
 
-  useEffect(() => {
-    if (gameStats.totalQuestionsAnswered > 0 || gameStats.xp > 0 || gameStats.streak > 0) {
-      checkAndUnlockBadges();
+  // 🛡️ SEGURANÇA: Proteção contra loop infinito
+  const getLevelFromXP = (currentXP: number): number => {
+    let calculatedLevel = 1;
+    let remainingXP = currentXP;
+    
+    while (remainingXP >= XP_PER_LEVEL && calculatedLevel < MAX_LEVEL) {
+      remainingXP -= XP_PER_LEVEL;
+      calculatedLevel++;
     }
-  }, [gameStats.totalQuestionsAnswered, gameStats.xp, gameStats.streak, gameStats.level, gameStats.studyDays.length, gameStats.simulatedExamsCompleted]);
-
-  const loadGameStats = () => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const data = JSON.parse(saved);
-        setGameStats({
-          ...data,
-          simulatedExamsCompleted: data.simulatedExamsCompleted || 0,
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao carregar estatísticas:', error);
-      // 🔧 CORREÇÃO: Fazer backup em vez de destruir dados
-      const corrupted = localStorage.getItem(STORAGE_KEY);
-      if (corrupted) {
-        localStorage.setItem(STORAGE_KEY + '_corrupted_backup', corrupted);
-      }
-    }
-  };
-
-  const saveGameStats = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(gameStats));
-    } catch (error) {
-      console.error('Erro ao salvar estatísticas:', error);
-    }
+    
+    return calculatedLevel;
   };
 
   const addXP = (amount: number) => {
-    setGameStats(prev => {
-      const newXP = prev.xp + amount;
-      const oldLevel = prev.level;
-      const newLevel = getLevelFromXP(newXP);
-      
-      // 🎉 NOVO: Detectar Level Up
-      if (newLevel > oldLevel) {
-        setLevelUpInfo({ oldLevel, newLevel });
-        setShowLevelUpCelebration(true);
-      }
-      
-      return {
-        ...prev,
-        xp: newXP,
-        level: newLevel
-      };
-    });
-  };
-
-  const updateStreak = () => {
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    const oldLevel = level;
+    const newXP = xp + amount;
+    const newLevel = getLevelFromXP(newXP);
     
-    setGameStats(prev => {
-      if (prev.lastStudyDate === today) {
-        return prev;
-      } else if (prev.lastStudyDate === yesterday) {
-        return {
-          ...prev,
-          streak: prev.streak + 1,
-          lastStudyDate: today
-        };
-      } else {
-        return {
-          ...prev,
-          streak: 1,
-          lastStudyDate: today
-        };
-      }
-    });
-  };
-
-  const recordStudyDay = () => {
-    const today = new Date().toISOString().split('T')[0];
-    setGameStats(prev => {
-      if (!prev.studyDays.includes(today)) {
-        return {
-          ...prev,
-          studyDays: [...prev.studyDays, today]
-        };
-      }
-      return prev;
-    });
-  };
-
-  const recordQuestionAnswer = (wasCorrect: boolean) => {
-    setGameStats(prev => ({
-      ...prev,
-      totalQuestionsAnswered: prev.totalQuestionsAnswered + 1,
-      totalCorrectAnswers: prev.totalCorrectAnswers + (wasCorrect ? 1 : 0)
-    }));
-  };
-
-  const recordSimulatedExam = () => {
-    setGameStats(prev => ({
-      ...prev,
-      simulatedExamsCompleted: prev.simulatedExamsCompleted + 1
-    }));
-  };
-
-  const checkAndUnlockBadges = () => {
-    const unlockedBadgeIds = new Set(gameStats.badges.map(b => b.id));
-    const newBadges: Badge[] = [];
-
-    const stats = {
-      totalQuestionsAnswered: gameStats.totalQuestionsAnswered,
-      correctAnswers: gameStats.totalCorrectAnswers,
-      streak: gameStats.streak,
-      level: gameStats.level,
-      simulatedExamsCompleted: gameStats.simulatedExamsCompleted,
-    };
-
-    ALL_BADGES.forEach(badgeDef => {
-      if (!unlockedBadgeIds.has(badgeDef.id) && badgeDef.condition(stats)) {
-        newBadges.push({
-          id: badgeDef.id,
-          name: badgeDef.name,
-          description: badgeDef.description,
-          icon: badgeDef.icon,
-          unlockedAt: new Date().toISOString()
-        });
-      }
-    });
-
-    if (newBadges.length > 0) {
-      setGameStats(prev => ({
-        ...prev,
-        badges: [...prev.badges, ...newBadges]
-      }));
-    }
-
-    // 🎉 Celebração GLÓRIA quando completar 2000 questões
-    if (gameStats.totalQuestionsAnswered >= 2000 && !showGloriaCelebration) {
-      const hasGloriaBeenShown = localStorage.getItem('gloria_celebration_shown');
-      if (!hasGloriaBeenShown) {
-        setShowGloriaCelebration(true);
-        localStorage.setItem('gloria_celebration_shown', 'true');
-      }
+    setXP(newXP);
+    
+    if (newLevel > oldLevel) {
+      setLevel(newLevel);
+      setLevelUpInfo({ oldLevel, newLevel });
+      setShowLevelUpCelebration(true);
     }
   };
 
-  const markBadgesAsViewed = () => {
-    setGameStats(prev => ({
-      ...prev,
-      viewedBadgeIds: prev.badges.map(b => b.id)
-    }));
-  };
-
-  const getNewBadgesCount = (): number => {
-    return gameStats.badges.filter(b => !gameStats.viewedBadgeIds.includes(b.id)).length;
+  const getLevelProgress = (): number => {
+    const xpInCurrentLevel = xp - ((level - 1) * XP_PER_LEVEL);
+    return (xpInCurrentLevel / XP_PER_LEVEL) * 100;
   };
 
   const dismissGloriaCelebration = () => {
@@ -257,20 +92,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
   return (
     <GameContext.Provider
       value={{
-        gameStats,
+        xp,
+        level,
         addXP,
-        checkAndUnlockBadges,
-        updateStreak,
-        recordStudyDay,
-        recordQuestionAnswer,
-        recordSimulatedExam,
         showGloriaCelebration,
         dismissGloriaCelebration,
-        markBadgesAsViewed,
-        getNewBadgesCount,
         showLevelUpCelebration,
         dismissLevelUpCelebration,
         levelUpInfo,
+        getLevelProgress,
       }}
     >
       {children}

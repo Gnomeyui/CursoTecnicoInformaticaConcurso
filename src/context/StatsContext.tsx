@@ -1,241 +1,220 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export interface SubjectStats {
-  subject: string;
-  totalQuestions: number;
+interface DailyStat {
+  date: string; // ISO format: YYYY-MM-DD
+  questionsAnswered: number;
   correctAnswers: number;
   wrongAnswers: number;
-  accuracy: number;
+  studyTime: number; // em minutos
 }
 
-export interface DailyStats {
-  date: string;
+interface SubjectStat {
+  subject: string;
   questionsAnswered: number;
   correctAnswers: number;
   accuracy: number;
-  xpEarned: number;
 }
 
-export interface DetailedStats {
-  subjectStats: SubjectStats[];
-  dailyStats: DailyStats[];
-  weeklyProgress: {
-    week: string;
-    questionsAnswered: number;
-    accuracy: number;
-  }[];
-  monthlyProgress: {
-    month: string;
-    questionsAnswered: number;
-    accuracy: number;
-  }[];
-  strongestSubjects: SubjectStats[];
-  weakestSubjects: SubjectStats[];
+interface DetailedStats {
+  dailyStats: DailyStat[];
+  subjectStats: SubjectStat[];
+  totalQuestionsAnswered: number;
+  totalCorrectAnswers: number;
+  overallAccuracy: number;
+  currentStreak: number;
+  longestStreak: number;
+  totalStudyTime: number; // em minutos
 }
 
 interface StatsContextType {
   detailedStats: DetailedStats;
-  recordQuestionAnswer: (subject: string, isCorrect: boolean) => void;
-  getSubjectStats: (subject: string) => SubjectStats | undefined;
-  getTodayStats: () => DailyStats | undefined;
+  recordAnswer: (subject: string, isCorrect: boolean) => void;
+  recordStudyTime: (minutes: number) => void;
+  getSubjectAccuracy: (subject: string) => number;
+  getTodayStats: () => DailyStat;
 }
 
 const StatsContext = createContext<StatsContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'alerr_detailed_stats';
+const defaultStats: DetailedStats = {
+  dailyStats: [],
+  subjectStats: [],
+  totalQuestionsAnswered: 0,
+  totalCorrectAnswers: 0,
+  overallAccuracy: 0,
+  currentStreak: 0,
+  longestStreak: 0,
+  totalStudyTime: 0,
+};
 
 export function StatsProvider({ children }: { children: ReactNode }) {
-  const [detailedStats, setDetailedStats] = useState<DetailedStats>({
-    subjectStats: [],
-    dailyStats: [],
-    weeklyProgress: [],
-    monthlyProgress: [],
-    strongestSubjects: [],
-    weakestSubjects: []
-  });
+  const [detailedStats, setDetailedStats] = useState<DetailedStats>(defaultStats);
 
+  // Carregar dados salvos
   useEffect(() => {
-    loadStats();
-  }, []);
-
-  useEffect(() => {
-    saveStats();
-    calculateDerivedStats();
-  }, [detailedStats.subjectStats, detailedStats.dailyStats]);
-
-  const loadStats = () => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
+    const saved = localStorage.getItem('alerr_stats');
+    if (saved) {
+      try {
         const data = JSON.parse(saved);
         setDetailedStats(data);
+      } catch (e) {
+        console.error('Erro ao carregar estatísticas:', e);
       }
-    } catch (error) {
-      console.error('Erro ao carregar estatísticas detalhadas:', error);
     }
-  };
+  }, []);
 
-  const saveStats = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(detailedStats));
-    } catch (error) {
-      console.error('Erro ao salvar estatísticas detalhadas:', error);
-    }
-  };
+  // Salvar dados (usando toISOString para evitar problemas de timezone)
+  useEffect(() => {
+    localStorage.setItem('alerr_stats', JSON.stringify(detailedStats));
+  }, [detailedStats]);
 
-  const recordQuestionAnswer = (subject: string, isCorrect: boolean) => {
-    // 🔧 CORREÇÃO FINAL: Usar toISOString em vez de toLocaleDateString
+  const getTodayStats = (): DailyStat => {
     const today = new Date().toISOString().split('T')[0];
+    const todayStat = detailedStats.dailyStats.find(d => d.date === today);
+    
+    if (todayStat) {
+      return todayStat;
+    }
+    
+    return {
+      date: today,
+      questionsAnswered: 0,
+      correctAnswers: 0,
+      wrongAnswers: 0,
+      studyTime: 0,
+    };
+  };
 
+  const recordAnswer = (subject: string, isCorrect: boolean) => {
     setDetailedStats(prev => {
-      // Atualizar estatísticas por matéria
-      const subjectIndex = prev.subjectStats.findIndex(s => s.subject === subject);
-      let newSubjectStats = [...prev.subjectStats];
-
-      if (subjectIndex >= 0) {
-        const subjectStat = newSubjectStats[subjectIndex];
-        newSubjectStats[subjectIndex] = {
-          ...subjectStat,
-          totalQuestions: subjectStat.totalQuestions + 1,
-          correctAnswers: subjectStat.correctAnswers + (isCorrect ? 1 : 0),
-          wrongAnswers: subjectStat.wrongAnswers + (isCorrect ? 0 : 1),
-          accuracy: ((subjectStat.correctAnswers + (isCorrect ? 1 : 0)) / (subjectStat.totalQuestions + 1)) * 100
-        };
-      } else {
-        newSubjectStats.push({
-          subject,
-          totalQuestions: 1,
-          correctAnswers: isCorrect ? 1 : 0,
-          wrongAnswers: isCorrect ? 0 : 1,
-          accuracy: isCorrect ? 100 : 0
-        });
-      }
-
+      const today = new Date().toISOString().split('T')[0];
+      
       // Atualizar estatísticas diárias
-      const dailyIndex = prev.dailyStats.findIndex(d => d.date === today);
-      let newDailyStats = [...prev.dailyStats];
-
-      if (dailyIndex >= 0) {
-        const dailyStat = newDailyStats[dailyIndex];
-        newDailyStats[dailyIndex] = {
-          ...dailyStat,
-          questionsAnswered: dailyStat.questionsAnswered + 1,
-          correctAnswers: dailyStat.correctAnswers + (isCorrect ? 1 : 0),
-          accuracy: ((dailyStat.correctAnswers + (isCorrect ? 1 : 0)) / (dailyStat.questionsAnswered + 1)) * 100,
-          xpEarned: dailyStat.xpEarned + (isCorrect ? 10 : 5)
+      const dailyStats = [...prev.dailyStats];
+      const todayIndex = dailyStats.findIndex(d => d.date === today);
+      
+      if (todayIndex >= 0) {
+        dailyStats[todayIndex] = {
+          ...dailyStats[todayIndex],
+          questionsAnswered: dailyStats[todayIndex].questionsAnswered + 1,
+          correctAnswers: dailyStats[todayIndex].correctAnswers + (isCorrect ? 1 : 0),
+          wrongAnswers: dailyStats[todayIndex].wrongAnswers + (isCorrect ? 0 : 1),
         };
       } else {
-        newDailyStats.push({
+        dailyStats.push({
           date: today,
           questionsAnswered: 1,
           correctAnswers: isCorrect ? 1 : 0,
-          accuracy: isCorrect ? 100 : 0,
-          xpEarned: isCorrect ? 10 : 5
+          wrongAnswers: isCorrect ? 0 : 1,
+          studyTime: 0,
         });
       }
-
-      // Manter apenas últimos 90 dias
-      if (newDailyStats.length > 90) {
-        newDailyStats = newDailyStats.slice(-90);
+      
+      // Atualizar estatísticas por matéria
+      const subjectStats = [...prev.subjectStats];
+      const subjectIndex = subjectStats.findIndex(s => s.subject === subject);
+      
+      if (subjectIndex >= 0) {
+        const current = subjectStats[subjectIndex];
+        const newCorrect = current.correctAnswers + (isCorrect ? 1 : 0);
+        const newTotal = current.questionsAnswered + 1;
+        
+        subjectStats[subjectIndex] = {
+          ...current,
+          questionsAnswered: newTotal,
+          correctAnswers: newCorrect,
+          accuracy: (newCorrect / newTotal) * 100,
+        };
+      } else {
+        subjectStats.push({
+          subject,
+          questionsAnswered: 1,
+          correctAnswers: isCorrect ? 1 : 0,
+          accuracy: isCorrect ? 100 : 0,
+        });
       }
-
+      
+      // Calcular estatísticas gerais
+      const totalQuestionsAnswered = prev.totalQuestionsAnswered + 1;
+      const totalCorrectAnswers = prev.totalCorrectAnswers + (isCorrect ? 1 : 0);
+      const overallAccuracy = (totalCorrectAnswers / totalQuestionsAnswered) * 100;
+      
+      // Calcular streak
+      const sortedDays = [...dailyStats].sort((a, b) => b.date.localeCompare(a.date));
+      let currentStreak = 0;
+      let longestStreak = prev.longestStreak;
+      
+      for (let i = 0; i < sortedDays.length; i++) {
+        const expectedDate = new Date();
+        expectedDate.setDate(expectedDate.getDate() - i);
+        const expectedDateStr = expectedDate.toISOString().split('T')[0];
+        
+        if (sortedDays[i].date === expectedDateStr && sortedDays[i].questionsAnswered > 0) {
+          currentStreak++;
+        } else {
+          break;
+        }
+      }
+      
+      longestStreak = Math.max(longestStreak, currentStreak);
+      
       return {
-        ...prev,
-        subjectStats: newSubjectStats,
-        dailyStats: newDailyStats
+        dailyStats,
+        subjectStats,
+        totalQuestionsAnswered,
+        totalCorrectAnswers,
+        overallAccuracy,
+        currentStreak,
+        longestStreak,
+        totalStudyTime: prev.totalStudyTime,
       };
     });
   };
 
-  const calculateDerivedStats = () => {
+  const recordStudyTime = (minutes: number) => {
     setDetailedStats(prev => {
-      // Calcular matérias mais fortes e mais fracas
-      const sortedByAccuracy = [...prev.subjectStats]
-        .filter(s => s.totalQuestions >= 5) // Mínimo 5 questões
-        .sort((a, b) => b.accuracy - a.accuracy);
-
-      const strongestSubjects = sortedByAccuracy.slice(0, 5);
-      const weakestSubjects = sortedByAccuracy.slice(-5).reverse();
-
-      // Calcular progresso semanal
-      const weeklyProgress = calculateWeeklyProgress(prev.dailyStats);
-
-      // Calcular progresso mensal
-      const monthlyProgress = calculateMonthlyProgress(prev.dailyStats);
-
+      const today = new Date().toISOString().split('T')[0];
+      const dailyStats = [...prev.dailyStats];
+      const todayIndex = dailyStats.findIndex(d => d.date === today);
+      
+      if (todayIndex >= 0) {
+        dailyStats[todayIndex] = {
+          ...dailyStats[todayIndex],
+          studyTime: dailyStats[todayIndex].studyTime + minutes,
+        };
+      } else {
+        dailyStats.push({
+          date: today,
+          questionsAnswered: 0,
+          correctAnswers: 0,
+          wrongAnswers: 0,
+          studyTime: minutes,
+        });
+      }
+      
       return {
         ...prev,
-        strongestSubjects,
-        weakestSubjects,
-        weeklyProgress,
-        monthlyProgress
+        dailyStats,
+        totalStudyTime: prev.totalStudyTime + minutes,
       };
     });
   };
 
-  const calculateWeeklyProgress = (dailyStats: DailyStats[]) => {
-    const weeks: { [key: string]: { questions: number; correct: number } } = {};
-
-    dailyStats.forEach(day => {
-      const date = new Date(day.date);
-      const weekStart = new Date(date);
-      weekStart.setDate(date.getDate() - date.getDay());
-      const weekKey = weekStart.toLocaleDateString();
-
-      if (!weeks[weekKey]) {
-        weeks[weekKey] = { questions: 0, correct: 0 };
-      }
-
-      weeks[weekKey].questions += day.questionsAnswered;
-      weeks[weekKey].correct += day.correctAnswers;
-    });
-
-    return Object.entries(weeks).map(([week, data]) => ({
-      week,
-      questionsAnswered: data.questions,
-      accuracy: data.questions > 0 ? (data.correct / data.questions) * 100 : 0
-    })).slice(-12); // Últimas 12 semanas
-  };
-
-  const calculateMonthlyProgress = (dailyStats: DailyStats[]) => {
-    const months: { [key: string]: { questions: number; correct: number } } = {};
-
-    dailyStats.forEach(day => {
-      const date = new Date(day.date);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-
-      if (!months[monthKey]) {
-        months[monthKey] = { questions: 0, correct: 0 };
-      }
-
-      months[monthKey].questions += day.questionsAnswered;
-      months[monthKey].correct += day.correctAnswers;
-    });
-
-    return Object.entries(months).map(([month, data]) => ({
-      month,
-      questionsAnswered: data.questions,
-      accuracy: data.questions > 0 ? (data.correct / data.questions) * 100 : 0
-    })).slice(-6); // Últimos 6 meses
-  };
-
-  const getSubjectStats = (subject: string): SubjectStats | undefined => {
-    return detailedStats.subjectStats.find(s => s.subject === subject);
-  };
-
-  const getTodayStats = (): DailyStats | undefined => {
-    // 🔧 CORREÇÃO FINAL: Usar toISOString em vez de toLocaleDateString
-    const today = new Date().toISOString().split('T')[0];
-    return detailedStats.dailyStats.find(d => d.date === today);
+  const getSubjectAccuracy = (subject: string): number => {
+    const subjectStat = detailedStats.subjectStats.find(s => s.subject === subject);
+    return subjectStat ? subjectStat.accuracy : 0;
   };
 
   return (
-    <StatsContext.Provider value={{ 
-      detailedStats, 
-      recordQuestionAnswer, 
-      getSubjectStats,
-      getTodayStats 
-    }}>
+    <StatsContext.Provider
+      value={{
+        detailedStats,
+        recordAnswer,
+        recordStudyTime,
+        getSubjectAccuracy,
+        getTodayStats,
+      }}
+    >
       {children}
     </StatsContext.Provider>
   );

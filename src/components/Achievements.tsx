@@ -1,218 +1,266 @@
-import React, { useEffect } from 'react';
-import { ArrowLeft, Trophy, Lock, Star, Zap, Target } from 'lucide-react';
-import { useGame, getXPForLevel } from '../context/GameContext';
-import { useTheme } from '../context/ThemeContext';
-import { ALL_BADGES } from '../data/badges';
+import React from 'react';
+import { ArrowLeft, Trophy, Target, Flame, Star, Award, Zap, Crown } from 'lucide-react';
+import { useGame } from '../context/GameContext';
+import { useStats } from '../context/StatsContext';
 
 interface AchievementsProps {
   onBack: () => void;
 }
 
+interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  color: string;
+  requirement: (stats: any, game: any) => boolean;
+  progress?: (stats: any, game: any) => { current: number; total: number };
+}
+
 export function Achievements({ onBack }: AchievementsProps) {
-  const { gameStats, markBadgesAsViewed } = useGame();
-  const { isDarkMode } = useTheme();
-  
-  // 🔔 Marcar badges como visualizadas quando o componente é montado
-  useEffect(() => {
-    markBadgesAsViewed();
-  }, []);
+  const { xp, level } = useGame();
+  const { detailedStats } = useStats();
 
-  const unlockedBadgeIds = gameStats.badges.map(b => b.id);
-  const unlockedCount = gameStats.badges.length;
-  const totalCount = ALL_BADGES.length;
-  const completionPercentage = Math.round((unlockedCount / totalCount) * 100);
+  const achievements: Achievement[] = [
+    {
+      id: 'first_steps',
+      title: 'Primeiros Passos',
+      description: 'Responda sua primeira questão',
+      icon: Star,
+      color: 'from-blue-500 to-blue-600',
+      requirement: (stats) => stats.totalQuestionsAnswered >= 1,
+      progress: (stats) => ({ current: Math.min(stats.totalQuestionsAnswered, 1), total: 1 }),
+    },
+    {
+      id: 'rookie',
+      title: 'Novato',
+      description: 'Responda 50 questões',
+      icon: Target,
+      color: 'from-green-500 to-green-600',
+      requirement: (stats) => stats.totalQuestionsAnswered >= 50,
+      progress: (stats) => ({ current: Math.min(stats.totalQuestionsAnswered, 50), total: 50 }),
+    },
+    {
+      id: 'student',
+      title: 'Estudante',
+      description: 'Responda 200 questões',
+      icon: Award,
+      color: 'from-yellow-500 to-yellow-600',
+      requirement: (stats) => stats.totalQuestionsAnswered >= 200,
+      progress: (stats) => ({ current: Math.min(stats.totalQuestionsAnswered, 200), total: 200 }),
+    },
+    {
+      id: 'expert',
+      title: 'Especialista',
+      description: 'Responda 500 questões',
+      icon: Trophy,
+      color: 'from-purple-500 to-purple-600',
+      requirement: (stats) => stats.totalQuestionsAnswered >= 500,
+      progress: (stats) => ({ current: Math.min(stats.totalQuestionsAnswered, 500), total: 500 }),
+    },
+    {
+      id: 'master',
+      title: 'Mestre',
+      description: 'Responda 1000 questões',
+      icon: Crown,
+      color: 'from-red-500 to-red-600',
+      requirement: (stats) => stats.totalQuestionsAnswered >= 1000,
+      progress: (stats) => ({ current: Math.min(stats.totalQuestionsAnswered, 1000), total: 1000 }),
+    },
+    {
+      id: 'accurate',
+      title: 'Precisão Perfeita',
+      description: 'Alcance 90% de precisão geral',
+      icon: Target,
+      color: 'from-emerald-500 to-emerald-600',
+      requirement: (stats) => stats.overallAccuracy >= 90,
+      progress: (stats) => ({ current: Math.min(Math.round(stats.overallAccuracy), 90), total: 90 }),
+    },
+    {
+      id: 'streak_7',
+      title: 'Dedicação',
+      description: 'Mantenha 7 dias de sequência',
+      icon: Flame,
+      color: 'from-orange-500 to-orange-600',
+      requirement: (stats) => stats.currentStreak >= 7,
+      progress: (stats) => ({ current: Math.min(stats.currentStreak, 7), total: 7 }),
+    },
+    {
+      id: 'streak_30',
+      title: 'Disciplina Total',
+      description: 'Mantenha 30 dias de sequência',
+      icon: Flame,
+      color: 'from-red-500 to-red-600',
+      requirement: (stats) => stats.longestStreak >= 30,
+      progress: (stats) => ({ current: Math.min(stats.longestStreak, 30), total: 30 }),
+    },
+    {
+      id: 'level_10',
+      title: 'Em Ascensão',
+      description: 'Alcance o nível 10',
+      icon: Zap,
+      color: 'from-cyan-500 to-cyan-600',
+      requirement: (stats, game) => game.level >= 10,
+      progress: (stats, game) => ({ current: Math.min(game.level, 10), total: 10 }),
+    },
+    {
+      id: 'level_25',
+      title: 'Veterano',
+      description: 'Alcance o nível 25',
+      icon: Zap,
+      color: 'from-indigo-500 to-indigo-600',
+      requirement: (stats, game) => game.level >= 25,
+      progress: (stats, game) => ({ current: Math.min(game.level, 25), total: 25 }),
+    },
+    {
+      id: 'level_50',
+      title: 'Lenda Viva',
+      description: 'Alcance o nível 50',
+      icon: Crown,
+      color: 'from-pink-500 to-pink-600',
+      requirement: (stats, game) => game.level >= 50,
+      progress: (stats, game) => ({ current: Math.min(game.level, 50), total: 50 }),
+    },
+    {
+      id: 'all_subjects',
+      title: 'Polímata',
+      description: 'Responda questões de todas as 5 matérias',
+      icon: Award,
+      color: 'from-violet-500 to-violet-600',
+      requirement: (stats) => stats.subjectStats.length >= 5,
+      progress: (stats) => ({ current: stats.subjectStats.length, total: 5 }),
+    },
+  ];
 
-  // Agrupar badges por categoria
-  const categories = ['Iniciante', 'Dedicação', 'Volume', 'Desempenho', 'Progressão', 'Consistência', 'Elite'];
+  const unlockedAchievements = achievements.filter(ach => 
+    ach.requirement(detailedStats, { level, xp })
+  );
 
-  // XP necessário para próximo nível
-  const xpForNextLevel = getXPForLevel(gameStats.level);
-  const currentLevelTotalXP = gameStats.level > 1 
-    ? Array.from({ length: gameStats.level - 1 }).reduce((sum, _, i) => sum + getXPForLevel(i + 1), 0)
-    : 0;
-  const xpInCurrentLevel = gameStats.xp - currentLevelTotalXP;
-  const xpProgress = (xpInCurrentLevel / xpForNextLevel) * 100;
+  const lockedAchievements = achievements.filter(ach => 
+    !ach.requirement(detailedStats, { level, xp })
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-emerald-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen p-6 pb-24">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-slate-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className="px-4 sm:px-6 py-4">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={onBack}
-              className="p-2 hover:bg-slate-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
-            >
-              <ArrowLeft className="w-6 h-6 text-slate-700 dark:text-gray-300" />
-            </button>
-            <div>
-              <h1 className="text-2xl text-slate-900 dark:text-white">Conquistas</h1>
-              <p className="text-sm text-slate-600 dark:text-gray-400">
-                {unlockedCount} de {totalCount} desbloqueadas ({completionPercentage}%)
-              </p>
-            </div>
-          </div>
+      <div className="flex items-center gap-4 mb-6">
+        <button
+          onClick={onBack}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+        >
+          <ArrowLeft className="size-6" />
+        </button>
+        <div>
+          <h1 className="text-2xl">Conquistas</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {unlockedAchievements.length} de {achievements.length} desbloqueadas
+          </p>
         </div>
       </div>
 
-      <div className="px-4 sm:px-6 py-6 max-w-6xl mx-auto space-y-6">
-        {/* Card de Nível e XP */}
-        <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                <Star className="w-8 h-8" />
-              </div>
-              <div>
-                <div className="text-3xl">Nível {gameStats.level}</div>
-                <div className="text-sm text-purple-100">
-                  {xpInCurrentLevel} / {xpForNextLevel} XP
+      {/* Progress Overview */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm text-gray-600 dark:text-gray-400">Progresso Geral</span>
+          <span className="text-lg">
+            {Math.round((unlockedAchievements.length / achievements.length) * 100)}%
+          </span>
+        </div>
+        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+            style={{ width: `${(unlockedAchievements.length / achievements.length) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Unlocked Achievements */}
+      {unlockedAchievements.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-xl mb-4 flex items-center gap-2">
+            <Trophy className="size-6 text-yellow-500" />
+            Desbloqueadas
+          </h2>
+          <div className="space-y-3">
+            {unlockedAchievements.map((achievement) => (
+              <div
+                key={achievement.id}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${achievement.color} flex-shrink-0`}>
+                    <achievement.icon className="size-8 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg mb-1">{achievement.title}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {achievement.description}
+                    </p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="h-2 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div className="h-full bg-green-500 w-full" />
+                      </div>
+                      <span className="text-xs text-green-500">✓</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl">{gameStats.xp}</div>
-              <div className="text-sm text-purple-100">XP Total</div>
-            </div>
-          </div>
-          <div className="w-full bg-white/20 rounded-full h-3 backdrop-blur-sm">
-            <div 
-              className="bg-white h-3 rounded-full transition-all duration-500"
-              style={{ width: `${xpProgress}%` }}
-            />
-          </div>
-          <div className="mt-2 text-sm text-purple-100 text-center">
-            {Math.round(xpProgress)}% para o próximo nível
+            ))}
           </div>
         </div>
+      )}
 
-        {/* Stats Rápidas */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg text-center">
-            <div className="text-3xl mb-1">🔥</div>
-            <div className="text-2xl text-slate-900 dark:text-white">{gameStats.streak}</div>
-            <div className="text-sm text-slate-600 dark:text-gray-400">Dias Seguidos</div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg text-center">
-            <div className="text-3xl mb-1">📚</div>
-            <div className="text-2xl text-slate-900 dark:text-white">{gameStats.studyDays.length}</div>
-            <div className="text-sm text-slate-600 dark:text-gray-400">Dias de Estudo</div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg text-center">
-            <div className="text-3xl mb-1">🎯</div>
-            <div className="text-2xl text-slate-900 dark:text-white">
-              {gameStats.totalQuestionsAnswered > 0 
-                ? Math.round((gameStats.totalCorrectAnswers / gameStats.totalQuestionsAnswered) * 100)
-                : 0}%
-            </div>
-            <div className="text-sm text-slate-600 dark:text-gray-400">Taxa de Acerto</div>
-          </div>
-        </div>
+      {/* Locked Achievements */}
+      {lockedAchievements.length > 0 && (
+        <div>
+          <h2 className="text-xl mb-4 flex items-center gap-2">
+            <Target className="size-6 text-gray-500" />
+            Bloqueadas
+          </h2>
+          <div className="space-y-3">
+            {lockedAchievements.map((achievement) => {
+              const progress = achievement.progress 
+                ? achievement.progress(detailedStats, { level, xp })
+                : null;
+              const progressPercentage = progress 
+                ? (progress.current / progress.total) * 100 
+                : 0;
 
-        {/* Badges por Categoria */}
-        {categories.map(category => {
-          const categoryBadges = ALL_BADGES.filter(b => b.category === category);
-          const unlockedInCategory = categoryBadges.filter(b => unlockedBadgeIds.includes(b.id)).length;
-
-          return (
-            <div key={category} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                  <Trophy className="w-5 h-5" />
-                  {category}
-                </h3>
-                <span className="text-sm text-slate-600 dark:text-gray-400">
-                  {unlockedInCategory}/{categoryBadges.length}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {categoryBadges.map(badge => {
-                  const isUnlocked = unlockedBadgeIds.includes(badge.id);
-                  const unlockedBadge = gameStats.badges.find(b => b.id === badge.id);
-                  
-                  // 🏆 Badge especial GLÓRIA - 2000 QUESTÕES (maior destaque)
-                  const isGloriaBadge = badge.id === 'legend_student'; // Badge de 2000 questões
-                  const isGloriaTag = isUnlocked && isGloriaBadge;
-
-                  return (
-                    <div
-                      key={badge.id}
-                      className={`relative p-4 rounded-xl border-2 transition-all ${
-                        isUnlocked
-                          ? isGloriaBadge
-                            ? 'bg-gradient-to-br from-yellow-100 via-orange-100 to-red-100 dark:from-yellow-900/40 dark:via-orange-900/40 dark:to-red-900/40 border-yellow-500 dark:border-yellow-400 shadow-2xl ring-4 ring-yellow-300 dark:ring-yellow-600 animate-pulse'
-                            : 'bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-400 dark:border-yellow-600 shadow-md'
-                          : 'bg-slate-50 dark:bg-gray-700 border-slate-200 dark:border-gray-600 opacity-60'
-                      }`}
-                    >
-                      {!isUnlocked && (
-                        <div className="absolute top-2 right-2">
-                          <Lock className="w-4 h-4 text-slate-400 dark:text-gray-500" />
-                        </div>
-                      )}
-                      
-                      {/* Selo especial GLÓRIA */}
-                      {isUnlocked && isGloriaTag && (
-                        <div className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs px-2 py-1 rounded-full shadow-lg animate-bounce">
-                          ✨ ÉPICO
-                        </div>
-                      )}
-
-                      <div className="text-center">
-                        <div className={`${isGloriaTag ? 'text-5xl' : 'text-4xl'} mb-2 ${!isUnlocked && 'grayscale'}`}>
-                          {badge.icon}
-                        </div>
-                        <div className={`${isGloriaTag ? 'text-base font-bold' : 'text-sm'} text-slate-900 dark:text-white mb-1`}>
-                          {badge.name}
-                        </div>
-                        <div className="text-xs text-slate-600 dark:text-gray-400 mb-2">
-                          {badge.description}
-                        </div>
-
-                        {isUnlocked && unlockedBadge?.unlockedAt && (
-                          <div className="text-xs text-green-600 dark:text-green-400 flex items-center justify-center gap-1">
-                            <Zap className="w-3 h-3" />
-                            {new Date(unlockedBadge.unlockedAt).toLocaleDateString('pt-BR')}
-                          </div>
-                        )}
-                      </div>
+              return (
+                <div
+                  key={achievement.id}
+                  className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md opacity-60"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-gray-200 dark:bg-gray-700 flex-shrink-0">
+                      <achievement.icon className="size-8 text-gray-500" />
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Dica de Progresso */}
-        {unlockedCount < totalCount && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4">
-            <div className="flex items-start gap-3">
-              <Target className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-sm text-blue-900 dark:text-blue-200 mb-1">
-                  Próxima Conquista
-                </h4>
-                <p className="text-xs text-blue-700 dark:text-blue-300">
-                  Continue estudando para desbloquear mais badges! Cada conquista te dá XP extra e mostra seu progresso rumo ao TOP 1.
-                </p>
-              </div>
-            </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg mb-1">{achievement.title}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {achievement.description}
+                      </p>
+                      {progress && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <div className="h-2 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-blue-500 transition-all"
+                              style={{ width: `${progressPercentage}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {progress.current}/{progress.total}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
-
-        {/* Tudo Desbloqueado */}
-        {unlockedCount === totalCount && (
-          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-6 text-center text-white shadow-lg">
-            <div className="text-5xl mb-3">🎉</div>
-            <h3 className="text-2xl mb-2">Parabéns!</h3>
-            <p className="text-yellow-100">
-              Você desbloqueou todas as conquistas! Você está pronto para o TOP 1 da ALE-RR! 🏆
-            </p>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
