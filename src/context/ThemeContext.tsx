@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type Theme = 'default' | 'dark' | 'forest' | 'ocean' | 'sunset';
+type Theme = 'default' | 'forest' | 'ocean' | 'sunset' | 'purple';
 
 interface ThemeContextType {
   currentTheme: Theme;
@@ -29,19 +29,29 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Aplicar tema
+  // Aplicar tema ao HTML
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', currentTheme);
+    const html = document.documentElement;
+    const body = document.body;
+    
+    html.setAttribute('data-theme', currentTheme);
+    body.setAttribute('data-theme', currentTheme);
     localStorage.setItem('alerr_theme', currentTheme);
   }, [currentTheme]);
 
-  // Aplicar dark mode
+  // Aplicar dark mode ao HTML
   useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    
     if (isDarkMode) {
-      document.documentElement.classList.add('dark');
+      html.classList.add('dark');
+      body.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      html.classList.remove('dark');
+      body.classList.remove('dark');
     }
+    
     localStorage.setItem('alerr_dark_mode', String(isDarkMode));
   }, [isDarkMode]);
 

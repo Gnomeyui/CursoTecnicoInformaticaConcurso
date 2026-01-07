@@ -1,12 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  ArrowLeft, Clock, AlertCircle, CheckCircle, XCircle, 
-  Flag, Play, Trophy, Target, Award
-} from 'lucide-react';
 import { Haptics, NotificationType } from '@capacitor/haptics';
 import { useTheme } from '../context/ThemeContext';
 import { useGame } from '../context/GameContext';
-import { QUESTIONS, Question } from '../data/questions';
+import { questions, Question } from '../data/questions';
 import { selectSmartQuestions, shuffleQuestionOptions } from '../utils/questionManager';
 
 interface SimulatedExamProps {
@@ -94,7 +89,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
 
   const startExam = () => {
     // Selecionar questões inteligentes
-    const selected = selectSmartQuestions(QUESTIONS, questionCount);
+    const selected = selectSmartQuestions(questions, questionCount);
     
     setSelectedQuestions(selected);
     setCurrentQuestionIndex(0);
@@ -108,7 +103,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
     // Calcular pontuação
     let correctCount = 0;
     selectedQuestions.forEach((question, index) => {
-      if (answers[index] === question.correta) {
+      if (answers[index] === question.correctAnswer) {
         correctCount++;
       }
     });
@@ -311,7 +306,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
               {/* Categoria e Marcar */}
               <div className="flex items-center justify-between mb-4">
                 <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-sm">
-                  {currentQuestion.materia}
+                  {currentQuestion.subject}
                 </span>
                 <button
                   onClick={toggleFlag}
@@ -327,12 +322,12 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
 
               {/* Pergunta */}
               <h3 className="text-lg text-slate-900 dark:text-white mb-6">
-                {currentQuestion.pergunta}
+                {currentQuestion.question}
               </h3>
 
               {/* Opções */}
               <div className="space-y-3">
-                {currentQuestion.opcoes.map((opcao, index) => {
+                {currentQuestion.options.map((opcao, index) => {
                   const isSelected = answers[currentQuestionIndex] === index;
                   
                   return (
@@ -499,7 +494,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {selectedQuestions.map((question, index) => {
                   const userAnswer = answers[index];
-                  const isCorrect = userAnswer === question.correta;
+                  const isCorrect = userAnswer === question.correctAnswer;
                   const wasAnswered = userAnswer !== undefined;
 
                   return (
@@ -519,18 +514,18 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
                         </div>
                         <div className="flex-1">
                           <div className="text-sm text-slate-600 dark:text-gray-400 mb-1">
-                            Questão {index + 1} - {question.materia}
+                            Questão {index + 1} - {question.subject}
                           </div>
                           <div className="text-sm text-slate-900 dark:text-white mb-2">
-                            {question.pergunta}
+                            {question.question}
                           </div>
                           {wasAnswered && !isCorrect && (
                             <div className="text-xs space-y-1">
                               <div className="text-red-600 dark:text-red-400">
-                                Sua resposta: {question.opcoes[userAnswer]}
+                                Sua resposta: {question.options[userAnswer]}
                               </div>
                               <div className="text-green-600 dark:text-green-400">
-                                Correta: {question.opcoes[question.correta]}
+                                Correta: {question.options[question.correctAnswer]}
                               </div>
                             </div>
                           )}

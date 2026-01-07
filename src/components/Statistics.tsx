@@ -44,13 +44,13 @@ export function Statistics({ onBack }: StatisticsProps) {
           onClick={onBack}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
         >
-          <ArrowLeft className="size-6" />
+          <ArrowLeft className="size-6 text-gray-700 dark:text-gray-300" />
         </button>
-        <h1 className="text-2xl">Estatísticas</h1>
+        <h1 className="text-2xl text-gray-900 dark:text-gray-100">Estatísticas</h1>
       </div>
 
       {/* View Selector */}
-      <div className="flex gap-2 mb-6 overflow-x-auto">
+      <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide">
         <button
           onClick={() => setView('overview')}
           className={`px-4 py-2 rounded-lg transition-colors whitespace-nowrap ${
@@ -93,8 +93,8 @@ export function Statistics({ onBack }: StatisticsProps) {
                 <Target className="size-5 text-blue-500" />
                 <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
               </div>
-              <p className="text-2xl mb-1">{detailedStats.totalQuestionsAnswered}</p>
-              <p className="text-xs text-gray-500">questões</p>
+              <p className="text-2xl mb-1 text-gray-900 dark:text-gray-100">{detailedStats.totalQuestionsAnswered}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">questões</p>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md">
@@ -102,8 +102,8 @@ export function Statistics({ onBack }: StatisticsProps) {
                 <Award className="size-5 text-green-500" />
                 <p className="text-sm text-gray-600 dark:text-gray-400">Precisão</p>
               </div>
-              <p className="text-2xl mb-1">{Math.round(detailedStats.overallAccuracy)}%</p>
-              <p className="text-xs text-gray-500">média</p>
+              <p className="text-2xl mb-1 text-gray-900 dark:text-gray-100">{Math.round(detailedStats.overallAccuracy)}%</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">média</p>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md">
@@ -111,8 +111,8 @@ export function Statistics({ onBack }: StatisticsProps) {
                 <TrendingUp className="size-5 text-orange-500" />
                 <p className="text-sm text-gray-600 dark:text-gray-400">Sequência</p>
               </div>
-              <p className="text-2xl mb-1">{detailedStats.currentStreak}</p>
-              <p className="text-xs text-gray-500">dias</p>
+              <p className="text-2xl mb-1 text-gray-900 dark:text-gray-100">{detailedStats.currentStreak}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">dias</p>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md">
@@ -120,15 +120,15 @@ export function Statistics({ onBack }: StatisticsProps) {
                 <Clock className="size-5 text-purple-500" />
                 <p className="text-sm text-gray-600 dark:text-gray-400">Tempo</p>
               </div>
-              <p className="text-2xl mb-1">{Math.round(detailedStats.totalStudyTime / 60)}</p>
-              <p className="text-xs text-gray-500">horas</p>
+              <p className="text-2xl mb-1 text-gray-900 dark:text-gray-100">{Math.round(detailedStats.totalStudyTime / 60)}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">horas</p>
             </div>
           </div>
 
           {/* Distribution Chart */}
           {pieData.length > 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md">
-              <h3 className="text-lg mb-4">Distribuição por Matéria</h3>
+              <h3 className="text-lg mb-4 text-gray-900 dark:text-gray-100">Distribuição por Matéria</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -158,7 +158,7 @@ export function Statistics({ onBack }: StatisticsProps) {
         <div className="space-y-6">
           {last7Days.length > 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md">
-              <h3 className="text-lg mb-4">Últimos 7 Dias</h3>
+              <h3 className="text-lg mb-4 text-gray-900 dark:text-gray-100">Últimos 7 Dias</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={last7Days}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -193,7 +193,7 @@ export function Statistics({ onBack }: StatisticsProps) {
             <>
               {/* Bar Chart */}
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md">
-                <h3 className="text-lg mb-4">Desempenho por Matéria</h3>
+                <h3 className="text-lg mb-4 text-gray-900 dark:text-gray-100">Desempenho por Matéria</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={subjectData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -218,8 +218,8 @@ export function Statistics({ onBack }: StatisticsProps) {
                 {detailedStats.subjectStats.map((stat, index) => (
                   <div key={stat.subject} className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-lg">{stat.subject}</h4>
-                      <span className="text-2xl">{Math.round(stat.accuracy)}%</span>
+                      <h4 className="text-lg text-gray-900 dark:text-gray-100">{stat.subject}</h4>
+                      <span className="text-2xl text-gray-900 dark:text-gray-100">{Math.round(stat.accuracy)}%</span>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                       <span>{stat.questionsAnswered} questões</span>

@@ -31,14 +31,14 @@ export function Customization({ onBack }: CustomizationProps) {
     {
       id: 'sunset' as const,
       name: 'Pôr do Sol',
-      colors: 'from-orange-500 to-orange-600',
-      preview: 'bg-orange-500',
+      colors: 'from-red-500 to-orange-500',
+      preview: 'bg-gradient-to-r from-red-500 to-orange-500',
     },
     {
-      id: 'dark' as const,
-      name: 'Noite',
-      colors: 'from-purple-500 to-purple-600',
-      preview: 'bg-purple-500',
+      id: 'purple' as const,
+      name: 'Roxo',
+      colors: 'from-purple-500 to-pink-500',
+      preview: 'bg-gradient-to-r from-purple-500 to-pink-500',
     },
   ];
 
@@ -50,7 +50,7 @@ export function Customization({ onBack }: CustomizationProps) {
           onClick={onBack}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
         >
-          <ArrowLeft className="size-6" />
+          <ArrowLeft className="size-6 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
           <h1 className="text-2xl">Personalização</h1>

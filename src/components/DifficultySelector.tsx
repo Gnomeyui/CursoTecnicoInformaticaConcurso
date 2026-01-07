@@ -56,10 +56,10 @@ export function DifficultySelector({ onSelectDifficulty, onBack }: DifficultySel
           onClick={onBack}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
         >
-          <ArrowLeft className="size-6" />
+          <ArrowLeft className="size-6 text-gray-700 dark:text-gray-300" />
         </button>
         <div>
-          <h1 className="text-2xl">Escolha a Dificuldade</h1>
+          <h1 className="text-2xl text-gray-900 dark:text-gray-100">Escolha a Dificuldade</h1>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Quanto maior a dificuldade, maior o XP
           </p>
@@ -80,7 +80,7 @@ export function DifficultySelector({ onSelectDifficulty, onBack }: DifficultySel
               </div>
               
               <div className="flex-1">
-                <h3 className="text-xl mb-1">{diff.name}</h3>
+                <h3 className="text-xl mb-1 text-gray-900 dark:text-gray-100">{diff.name}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                   {diff.description}
                 </p>

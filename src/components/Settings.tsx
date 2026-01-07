@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Target, Trash2 } from 'lucide-react';
+import { ChevronLeft, Target, Trash2, User } from 'lucide-react';
+import { SmartNotificationSettings } from './SmartNotificationSettings';
 
 interface SettingsProps {
   onBack: () => void;
@@ -172,6 +173,15 @@ export function Settings({ onBack }: SettingsProps) {
           >
             Resetar Progresso
           </button>
+        </div>
+
+        {/* Smart Notification Settings */}
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 sm:p-6 shadow-md mb-4 sm:mb-6 border border-slate-200 dark:border-gray-700">
+          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+            <User className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
+            <h2 className="text-lg sm:text-xl text-slate-900 dark:text-white">Configurações de Notificação Inteligente</h2>
+          </div>
+          <SmartNotificationSettings />
         </div>
       </div>
     </div>

@@ -6,7 +6,26 @@ export interface Question {
   options: string[];
   correctAnswer: number;
   explanation: string;
+  // Novos campos para rastreamento de origem
+  banca?: string; // Ex: "CESPE", "FCC", "VUNESP", "IBFC", "FGV", etc.
+  ano?: number; // Ex: 2024, 2023, etc.
+  concurso?: string; // Ex: "ALE-RR - Técnico em Informática", "TRE-RO - Analista"
 }
+
+// Lista de bancas organizadoras comuns
+export const bancas = [
+  'CESPE/CEBRASPE',
+  'FCC',
+  'FGV',
+  'VUNESP',
+  'IBFC',
+  'AOCP',
+  'IDECAN',
+  'QUADRIX',
+  'IADES',
+  'CONSULPLAN',
+  'Outra'
+] as const;
 
 export const questions: Question[] = [
   // INFORMÁTICA - Easy
@@ -22,7 +41,10 @@ export const questions: Question[] = [
       'Navegar na internet'
     ],
     correctAnswer: 1,
-    explanation: 'O sistema operacional gerencia todos os recursos do computador, incluindo hardware e software.'
+    explanation: 'O sistema operacional gerencia todos os recursos do computador, incluindo hardware e software.',
+    banca: 'CESPE/CEBRASPE',
+    ano: 2023,
+    concurso: 'TRE-RO - Técnico Judiciário'
   },
   {
     id: 2,
@@ -36,7 +58,10 @@ export const questions: Question[] = [
       'Computer Processing Utility'
     ],
     correctAnswer: 0,
-    explanation: 'CPU significa Central Processing Unit (Unidade Central de Processamento).'
+    explanation: 'CPU significa Central Processing Unit (Unidade Central de Processamento).',
+    banca: 'FCC',
+    ano: 2024,
+    concurso: 'TJ-RR - Analista de Sistemas'
   },
 
   // INFORMÁTICA - Medium

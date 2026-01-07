@@ -1,7 +1,8 @@
 import React from 'react';
-import { Trophy, Target, TrendingUp, Settings, Award, BarChart3 } from 'lucide-react';
+import { Trophy, Target, TrendingUp, Settings, Award, BarChart3, Clock, CreditCard, BookOpen, User } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 import { useStats } from '../context/StatsContext';
+import { useConcursoProfile } from '../context/ConcursoProfileContext';
 
 interface DashboardProps {
   dailyScore: number;
@@ -10,6 +11,11 @@ interface DashboardProps {
   onOpenStatistics: () => void;
   onOpenAchievements: () => void;
   onOpenCustomization: () => void;
+  onOpenSimulatedExam?: () => void;
+  onOpenFlashcards?: () => void;
+  onOpenRegimento?: () => void;
+  onOpenSettings?: () => void;
+  onOpenProfiles?: () => void;
 }
 
 export function Dashboard({
@@ -19,20 +25,46 @@ export function Dashboard({
   onOpenStatistics,
   onOpenAchievements,
   onOpenCustomization,
+  onOpenSimulatedExam,
+  onOpenFlashcards,
+  onOpenRegimento,
+  onOpenSettings,
+  onOpenProfiles,
 }: DashboardProps) {
   const { xp, level, getLevelProgress } = useGame();
-  const { detailedStats } = useStats();
+  const { detailedStats, getTodayStats } = useStats();
+  const { activeProfile } = useConcursoProfile();
   
   const progressPercentage = getLevelProgress();
-  const accuracy = totalQuestions > 0 ? (dailyScore / totalQuestions) * 100 : 0;
+  
+  // Pegar dados reais de hoje
+  const todayStats = getTodayStats();
+  const todayQuestionsAnswered = todayStats.questionsAnswered;
+  const todayCorrectAnswers = todayStats.correctAnswers;
+  const todayAccuracy = todayQuestionsAnswered > 0 
+    ? (todayCorrectAnswers / todayQuestionsAnswered) * 100 
+    : 0;
 
   return (
     <div className="min-h-screen p-6 pb-24">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl mb-2">ALE-RR TOP 1</h1>
-          <p className="text-gray-600 dark:text-gray-400">Técnico em Informática</p>
+        <div className="flex-1">
+          <h1 className="text-3xl mb-2 text-gray-900 dark:text-gray-100">Gabaritoo</h1>
+          {activeProfile ? (
+            <div>
+              <p className="text-gray-900 dark:text-gray-100">{activeProfile.nome}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{activeProfile.orgao}</p>
+            </div>
+          ) : (
+            <button
+              onClick={onOpenProfiles}
+              className="text-blue-500 hover:text-blue-600 text-sm flex items-center gap-1"
+            >
+              <User className="size-4" />
+              Escolher perfil de concurso
+            </button>
+          )}
         </div>
         <button
           onClick={onOpenCustomization}
@@ -75,9 +107,9 @@ export function Dashboard({
             <Target className="size-5 text-green-500" />
             <p className="text-sm text-gray-600 dark:text-gray-400">Hoje</p>
           </div>
-          <p className="text-2xl mb-1">{dailyScore}/{totalQuestions}</p>
+          <p className="text-2xl mb-1 text-gray-900 dark:text-gray-100">{todayCorrectAnswers}/{todayQuestionsAnswered}</p>
           <p className="text-xs text-gray-500 dark:text-gray-500">
-            {totalQuestions > 0 ? `${Math.round(accuracy)}% acerto` : 'Comece a estudar!'}
+            {todayQuestionsAnswered > 0 ? `${Math.round(todayAccuracy)}% acerto` : 'Comece a estudar!'}
           </p>
         </div>
 
@@ -87,7 +119,7 @@ export function Dashboard({
             <TrendingUp className="size-5 text-orange-500" />
             <p className="text-sm text-gray-600 dark:text-gray-400">Sequência</p>
           </div>
-          <p className="text-2xl mb-1">{detailedStats.currentStreak} dias</p>
+          <p className="text-2xl mb-1 text-gray-900 dark:text-gray-100">{detailedStats.currentStreak} dias</p>
           <p className="text-xs text-gray-500 dark:text-gray-500">
             Recorde: {detailedStats.longestStreak} dias
           </p>
@@ -99,7 +131,7 @@ export function Dashboard({
             <BarChart3 className="size-5 text-purple-500" />
             <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
           </div>
-          <p className="text-2xl mb-1">{detailedStats.totalQuestionsAnswered}</p>
+          <p className="text-2xl mb-1 text-gray-900 dark:text-gray-100">{detailedStats.totalQuestionsAnswered}</p>
           <p className="text-xs text-gray-500 dark:text-gray-500">questões</p>
         </div>
 
@@ -109,7 +141,7 @@ export function Dashboard({
             <Award className="size-5 text-yellow-500" />
             <p className="text-sm text-gray-600 dark:text-gray-400">Precisão</p>
           </div>
-          <p className="text-2xl mb-1">
+          <p className="text-2xl mb-1 text-gray-900 dark:text-gray-100">
             {detailedStats.totalQuestionsAnswered > 0 
               ? Math.round(detailedStats.overallAccuracy) 
               : 0}%
@@ -137,7 +169,7 @@ export function Dashboard({
             className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md hover:shadow-lg transition-all"
           >
             <BarChart3 className="size-6 text-purple-500 mb-2" />
-            <p className="text-sm">Estatísticas</p>
+            <p className="text-sm text-gray-900 dark:text-gray-100">Estatísticas</p>
           </button>
 
           <button
@@ -145,8 +177,58 @@ export function Dashboard({
             className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md hover:shadow-lg transition-all"
           >
             <Award className="size-6 text-yellow-500 mb-2" />
-            <p className="text-sm">Conquistas</p>
+            <p className="text-sm text-gray-900 dark:text-gray-100">Conquistas</p>
           </button>
+
+          {onOpenSimulatedExam && (
+            <button
+              onClick={onOpenSimulatedExam}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md hover:shadow-lg transition-all"
+            >
+              <Clock className="size-6 text-red-500 mb-2" />
+              <p className="text-sm text-gray-900 dark:text-gray-100">Simulado</p>
+            </button>
+          )}
+
+          {onOpenFlashcards && (
+            <button
+              onClick={onOpenFlashcards}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md hover:shadow-lg transition-all"
+            >
+              <CreditCard className="size-6 text-cyan-500 mb-2" />
+              <p className="text-sm text-gray-900 dark:text-gray-100">Flashcards</p>
+            </button>
+          )}
+
+          {onOpenRegimento && (
+            <button
+              onClick={onOpenRegimento}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md hover:shadow-lg transition-all"
+            >
+              <BookOpen className="size-6 text-indigo-500 mb-2" />
+              <p className="text-sm text-gray-900 dark:text-gray-100">Regimento</p>
+            </button>
+          )}
+
+          {onOpenSettings && (
+            <button
+              onClick={onOpenSettings}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md hover:shadow-lg transition-all"
+            >
+              <Settings className="size-6 text-gray-500 mb-2" />
+              <p className="text-sm text-gray-900 dark:text-gray-100">Configurações</p>
+            </button>
+          )}
+
+          {onOpenProfiles && (
+            <button
+              onClick={onOpenProfiles}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md hover:shadow-lg transition-all"
+            >
+              <User className="size-6 text-gray-500 mb-2" />
+              <p className="text-sm text-gray-900 dark:text-gray-100">Perfis</p>
+            </button>
+          )}
         </div>
       </div>
     </div>
