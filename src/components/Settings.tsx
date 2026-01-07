@@ -166,7 +166,8 @@ export function Settings({
           <Card className="border-none shadow-sm">
             <CardContent className="p-0 divide-y dark:divide-gray-700">
               
-              {/* Botão de Tema (Dark Mode) */}
+              {/* ❌ DARK MODE DESATIVADO - Toggle removido */}
+              {/* 
               <div className="flex items-center justify-between p-4 rounded-t-xl">
                 <div className="flex items-center gap-3">
                   <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-full text-purple-600 dark:text-purple-400">
@@ -182,12 +183,13 @@ export function Settings({
                   onCheckedChange={toggleDarkMode} 
                 />
               </div>
+              */}
 
               {/* Botão para Personalização Avançada */}
               {onOpenCustomization && (
                 <button 
                   onClick={onOpenCustomization}
-                  className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left rounded-b-xl"
+                  className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left rounded-xl"
                 >
                   <div className="flex items-center gap-3">
                     <div className="bg-pink-100 dark:bg-pink-900/30 p-2 rounded-full text-pink-600 dark:text-pink-400">

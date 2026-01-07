@@ -13,20 +13,22 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [currentTheme, setCurrentTheme] = useState<Theme>('default');
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);  // ✅ Sempre false (desativado)
 
   // Carregar tema salvo
   useEffect(() => {
     const savedTheme = localStorage.getItem('alerr_theme') as Theme | null;
-    const savedDarkMode = localStorage.getItem('alerr_dark_mode');
+    // ❌ DARK MODE DESATIVADO - Comentado
+    // const savedDarkMode = localStorage.getItem('alerr_dark_mode');
     
     if (savedTheme) {
       setCurrentTheme(savedTheme);
     }
     
-    if (savedDarkMode === 'true') {
-      setIsDarkMode(true);
-    }
+    // ❌ DARK MODE DESATIVADO - Sempre Light
+    // if (savedDarkMode === 'true') {
+    //   setIsDarkMode(true);
+    // }
   }, []);
 
   // Aplicar tema ao HTML
@@ -44,15 +46,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const html = document.documentElement;
     const body = document.body;
     
-    if (isDarkMode) {
-      html.classList.add('dark');
-      body.classList.add('dark');
-    } else {
-      html.classList.remove('dark');
-      body.classList.remove('dark');
-    }
+    // ❌ DARK MODE DESATIVADO - Sempre remove a classe 'dark'
+    html.classList.remove('dark');
+    body.classList.remove('dark');
     
-    localStorage.setItem('alerr_dark_mode', String(isDarkMode));
+    // ❌ COMENTADO: Lógica de dark mode
+    // if (isDarkMode) {
+    //   html.classList.add('dark');
+    //   body.classList.add('dark');
+    // } else {
+    //   html.classList.remove('dark');
+    //   body.classList.remove('dark');
+    // }
+    
+    localStorage.setItem('alerr_dark_mode', 'false');  // ✅ Sempre salva como false
   }, [isDarkMode]);
 
   const setTheme = (theme: Theme) => {
@@ -60,7 +67,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+    // ❌ DARK MODE DESATIVADO - Função não faz nada
+    // setIsDarkMode(!isDarkMode);
+    console.log('Dark Mode está temporariamente desativado');
   };
 
   return (
