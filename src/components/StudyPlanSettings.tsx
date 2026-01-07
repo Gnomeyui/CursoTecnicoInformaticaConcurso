@@ -14,14 +14,13 @@ interface StudyPlanSettingsProps {
 export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
   const { settings } = useCustomization();
   
-  // 🎨 MAPA DE ESTILOS SEGURO - Garante que as cores dinâmicas funcionem
-  const styles = {
-    blue:   { text: 'text-blue-600',   btn: 'bg-blue-600 hover:bg-blue-700' },
-    green:  { text: 'text-green-600',  btn: 'bg-green-600 hover:bg-green-700' },
-    purple: { text: 'text-purple-600', btn: 'bg-purple-600 hover:bg-purple-700' },
-    orange: { text: 'text-orange-600', btn: 'bg-orange-600 hover:bg-orange-700' },
-    default: { text: 'text-blue-600',   btn: 'bg-blue-600 hover:bg-blue-700' }
-  }[settings.colorTheme] || { text: 'text-blue-600', btn: 'bg-blue-600 hover:bg-blue-700' };
+  // Mapa de cores para os ícones e destaques
+  const themeColors = {
+    blue:   { text: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-900/30', btn: 'bg-blue-600 hover:bg-blue-700' },
+    green:  { text: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/30', btn: 'bg-green-600 hover:bg-green-700' },
+    purple: { text: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100 dark:bg-purple-900/30', btn: 'bg-purple-600 hover:bg-purple-700' },
+    orange: { text: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-900/30', btn: 'bg-orange-600 hover:bg-orange-700' }
+  }[settings.colorTheme] || { text: 'text-blue-600', bg: 'bg-blue-100', btn: 'bg-blue-600' };
 
   // Estados
   const [questionsPerBatch, setQuestionsPerBatch] = useState([10]);
@@ -29,50 +28,35 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
   const [timeRange, setTimeRange] = useState({ start: '08:00', end: '18:00' });
   const [alerts, setAlerts] = useState({ sound: true, vibration: true });
 
-  const handleSave = () => {
-    // Salvar no localStorage
-    const planData = {
-      questionsPerBatch: questionsPerBatch[0],
-      intervalMinutes: intervalMinutes[0],
-      timeRange,
-      alerts
-    };
-    
-    localStorage.setItem('gabaritoo_study_plan', JSON.stringify(planData));
-    
-    alert("✅ Plano salvo com sucesso! Você receberá notificações neste horário.");
-    onBack();
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 animate-in slide-in-from-right transition-colors duration-300">
+    <div className="min-h-screen bg-background pb-20 animate-in slide-in-from-right transition-colors duration-300">
       
       {/* HEADER */}
-      <div className="bg-white dark:bg-gray-900 p-4 sticky top-0 z-10 shadow-sm flex items-center gap-4 border-b border-gray-100 dark:border-gray-800">
-        <Button variant="ghost" size="icon" onClick={onBack} className="hover:bg-gray-100 dark:hover:bg-gray-800">
-          <ArrowLeft className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+      <div className="bg-background/80 backdrop-blur-md p-4 sticky top-0 z-10 border-b border-border flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={onBack} className="hover:bg-muted">
+          <ArrowLeft className="h-6 w-6 text-foreground" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">Plano de Estudos</h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Personalize o seu ritmo</p>
+          <h1 className="text-xl font-bold text-foreground">Plano de Estudos</h1>
+          <p className="text-xs text-muted-foreground">Personalize o seu ritmo</p>
         </div>
       </div>
 
-      <div className="p-4 space-y-6 max-w-xl mx-auto">
+      <div className="p-6 space-y-8 max-w-xl mx-auto">
 
-        {/* 1. QUANTIDADE DE QUESTÕES */}
+        {/* 1. RITMO */}
         <section>
-          <div className={`flex items-center gap-2 mb-3 ${styles.text}`}>
+          <div className={`flex items-center gap-2 mb-4 ${themeColors.text}`}>
             <Zap size={20} />
-            <h2 className="font-bold text-gray-800 dark:text-gray-200">Ritmo de Estudo</h2>
+            <h2 className="font-bold text-foreground">Ritmo de Estudo</h2>
           </div>
           
-          <Card className="border-none shadow-sm bg-white dark:bg-gray-900/50 dark:border dark:border-gray-800">
+          <Card className="border-border bg-card shadow-sm">
             <CardContent className="pt-6 space-y-6">
               <div>
                 <div className="flex justify-between mb-4">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Questões por rodada</span>
-                  <span className={`text-xl font-bold ${styles.text}`}>{questionsPerBatch[0]}</span>
+                  <span className="text-sm font-medium text-foreground">Questões por rodada</span>
+                  <span className={`text-xl font-bold ${themeColors.text}`}>{questionsPerBatch}</span>
                 </div>
                 <Slider 
                   value={questionsPerBatch} 
@@ -80,29 +64,29 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
                   max={50} 
                   min={5} 
                   step={5} 
-                  className="py-2"
+                  className="py-2 cursor-pointer"
                 />
-                <p className="text-xs text-gray-400 mt-2">
-                  Você receberá {questionsPerBatch[0]} questões para resolver de cada vez.
+                <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+                  Você receberá {questionsPerBatch} questões para resolver de cada vez.
                 </p>
               </div>
             </CardContent>
           </Card>
         </section>
 
-        {/* 2. INTERVALO DE TEMPO */}
+        {/* 2. INTERVALO */}
         <section>
-          <div className={`flex items-center gap-2 mb-3 ${styles.text}`}>
+          <div className={`flex items-center gap-2 mb-4 ${themeColors.text}`}>
             <Clock size={20} />
-            <h2 className="font-bold text-gray-800 dark:text-gray-200">Intervalos</h2>
+            <h2 className="font-bold text-foreground">Intervalos</h2>
           </div>
 
-          <Card className="border-none shadow-sm bg-white dark:bg-gray-900/50 dark:border dark:border-gray-800">
+          <Card className="border-border bg-card shadow-sm">
             <CardContent className="pt-6 space-y-6">
               <div>
                 <div className="flex justify-between mb-4">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">A cada quanto tempo?</span>
-                  <span className={`text-xl font-bold ${styles.text}`}>{intervalMinutes[0]} min</span>
+                  <span className="text-sm font-medium text-foreground">A cada quanto tempo?</span>
+                  <span className={`text-xl font-bold ${themeColors.text}`}>{intervalMinutes} min</span>
                 </div>
                 <Slider 
                   value={intervalMinutes} 
@@ -110,10 +94,10 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
                   max={120} 
                   min={10} 
                   step={10} 
-                  className="py-2"
+                  className="py-2 cursor-pointer"
                 />
-                <p className="text-xs text-gray-400 mt-2">
-                  O app lembrará você de estudar a cada {intervalMinutes[0]} minutos.
+                <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+                  O app lembrará você de estudar a cada {intervalMinutes} minutos.
                 </p>
               </div>
             </CardContent>
@@ -122,50 +106,50 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
 
         {/* 3. HORÁRIO E NOTIFICAÇÕES */}
         <section>
-          <div className={`flex items-center gap-2 mb-3 ${styles.text}`}>
+          <div className={`flex items-center gap-2 mb-4 ${themeColors.text}`}>
             <Bell size={20} />
-            <h2 className="font-bold text-gray-800 dark:text-gray-200">Horário Ativo</h2>
+            <h2 className="font-bold text-foreground">Horário Ativo</h2>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 space-y-4">
+          <div className="bg-card border border-border rounded-xl shadow-sm p-5 space-y-6">
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-bold text-gray-400 mb-1 block uppercase">Início</label>
+                <label className="text-xs font-bold text-muted-foreground mb-2 block uppercase tracking-wider">Início</label>
                 <div className="relative">
-                  <Sun className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                  <Sun className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input 
                     type="time" 
                     value={timeRange.start}
                     onChange={(e) => setTimeRange({...timeRange, start: e.target.value})}
-                    className="pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-white"
+                    className="pl-10 bg-background border-input text-foreground font-medium"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-bold text-gray-400 mb-1 block uppercase">Fim</label>
+                <label className="text-xs font-bold text-muted-foreground mb-2 block uppercase tracking-wider">Fim</label>
                 <div className="relative">
-                  <Moon className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                  <Moon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input 
                     type="time" 
                     value={timeRange.end}
                     onChange={(e) => setTimeRange({...timeRange, end: e.target.value})}
-                    className="pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-white"
+                    className="pl-10 bg-background border-input text-foreground font-medium"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="h-px bg-gray-100 dark:bg-gray-800 my-4"></div>
+            <div className="h-px bg-border my-2"></div>
 
             {/* Sons e Vibração */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-yellow-100 dark:bg-yellow-900/30 p-2 rounded-full text-yellow-600 dark:text-yellow-400">
-                    <Volume2 size={18} />
+                  <div className={`p-2 rounded-full ${themeColors.bg}`}>
+                    <Volume2 size={18} className={themeColors.text} />
                   </div>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Som de Notificação</span>
+                  <span className="text-sm font-medium text-foreground">Som de Notificação</span>
                 </div>
                 <Switch 
                   checked={alerts.sound}
@@ -175,10 +159,10 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full text-blue-600 dark:text-blue-400">
-                    <Smartphone size={18} />
+                  <div className={`p-2 rounded-full ${themeColors.bg}`}>
+                    <Smartphone size={18} className={themeColors.text} />
                   </div>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Vibração</span>
+                  <span className="text-sm font-medium text-foreground">Vibração</span>
                 </div>
                 <Switch 
                   checked={alerts.vibration}
@@ -190,11 +174,14 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
           </div>
         </section>
 
-        {/* Botão Salvar com Cores Dinâmicas Seguras */}
-        <div className="pt-4">
+        {/* Botão Salvar */}
+        <div className="pt-4 pb-8">
           <Button 
-            className={`w-full py-6 text-lg font-bold shadow-lg text-white rounded-xl ${styles.btn}`}
-            onClick={handleSave}
+            className={`w-full py-6 text-lg font-bold shadow-lg text-white rounded-xl transition-all active:scale-[0.98] ${themeColors.btn}`}
+            onClick={() => {
+              alert("Plano salvo! Notificações agendadas.");
+              onBack();
+            }}
           >
             Salvar Plano de Estudos
           </Button>

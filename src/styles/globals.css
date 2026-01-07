@@ -1,73 +1,87 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+ 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    /* ============================================
+       LIGHT MODE: FUNDO BRANCO = TEXTO PRETO
+       ============================================ */
+    
+    /* Fundos: Branco puro */
+    --background: 0 0% 100%;           /* #ffffff - Branco puro */
+    --card: 0 0% 98%;                  /* #fafafa - Branco suave (separação) */
+    --popover: 0 0% 100%;              /* #ffffff */
+    
+    /* Textos: PRETO para máximo contraste */
+    --foreground: 0 0% 0%;             /* #000000 - Preto puro */
+    --card-foreground: 0 0% 0%;        /* #000000 - Preto puro */
+    --popover-foreground: 0 0% 0%;     /* #000000 - Preto puro */
+    
+    /* Textos Secundários: Cinza ESCURO (70% contraste) */
+    --muted: 0 0% 96%;                 /* #f5f5f5 - Fundo muted */
+    --muted-foreground: 0 0% 30%;      /* #4d4d4d - Cinza escuro legível */
+    
+    /* Elementos Interativos */
+    --primary: 221.2 83.2% 53.3%;      /* Azul vibrante */
+    --primary-foreground: 0 0% 100%;   /* Branco no azul */
+    
+    --secondary: 0 0% 96%;             /* Cinza claro */
+    --secondary-foreground: 0 0% 0%;   /* Preto no cinza claro */
+    
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 0%;
+    
+    --destructive: 0 84.2% 60.2%;      /* Vermelho */
+    --destructive-foreground: 0 0% 100%; /* Branco no vermelho */
+    
+    /* Bordas e Inputs: Cinza médio VISÍVEL */
+    --border: 0 0% 85%;                /* #d9d9d9 - Visível em branco */
+    --input: 0 0% 85%;
     --ring: 221.2 83.2% 53.3%;
-
-    --radius: 1rem; /* Bordas arredondadas modernas */
+ 
+    --radius: 1rem;
   }
-
+ 
   .dark {
-    /* Fundo: Slate 950 (Azul muito escuro, quase preto - melhor para os olhos) */
-    --background: 222.2 84% 4.9%; 
-    --foreground: 210 40% 98%;
-
-    /* Cartões: Slate 900 (Ligeiramente mais claro que o fundo) */
-    --card: 222.2 84% 6.5%; 
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 75.1%; /* Texto mudo mais legível */
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* ============================================
+       DARK MODE: FUNDO PRETO = TEXTO BRANCO
+       ============================================ */
+    
+    /* Fundos: Preto profundo */
+    --background: 220 30% 5%;          /* #0a0f1a - Preto azulado profundo */
+    --card: 220 25% 10%;               /* #151b2b - Slate escuro (separação) */
+    --popover: 220 30% 5%;             /* #0a0f1a */
+    
+    /* Textos: BRANCO para máximo contraste */
+    --foreground: 0 0% 100%;           /* #ffffff - Branco puro */
+    --card-foreground: 0 0% 100%;      /* #ffffff - Branco puro */
+    --popover-foreground: 0 0% 100%;   /* #ffffff - Branco puro */
+    
+    /* Textos Secundários: Cinza CLARO (85% luminosidade) */
+    --muted: 220 25% 15%;              /* #1e2738 - Fundo muted escuro */
+    --muted-foreground: 0 0% 85%;      /* #d9d9d9 - Cinza claro legível */
+    
+    /* Elementos Interativos */
+    --primary: 217.2 91.2% 59.8%;      /* Azul claro */
+    --primary-foreground: 0 0% 0%;     /* Preto no azul claro */
+    
+    --secondary: 220 25% 15%;          /* Slate escuro */
+    --secondary-foreground: 0 0% 100%; /* Branco no slate */
+    
+    --accent: 220 25% 15%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 62.8% 50%;        /* Vermelho médio */
+    --destructive-foreground: 0 0% 100%; /* Branco no vermelho */
+    
+    /* Bordas e Inputs: Cinza médio VISÍVEL */
+    --border: 220 20% 25%;             /* #3a4556 - Visível em preto */
+    --input: 220 20% 20%;              /* #2d3846 */
+    --ring: 217.2 91.2% 59.8%;
   }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
@@ -75,13 +89,58 @@
   body {
     @apply bg-background text-foreground transition-colors duration-300 ease-in-out;
   }
+  
+  /* ============================================
+     GARANTIA DE CONTRASTE EM HEADINGS
+     ============================================ */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground font-bold;
+  }
+  
+  /* ============================================
+     GARANTIA DE LEGIBILIDADE EM PARÁGRAFOS
+     ============================================ */
+  p {
+    @apply text-foreground;
+  }
+  
+  /* ============================================
+     PLACEHOLDERS VISÍVEIS
+     ============================================ */
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-muted-foreground opacity-75;
+  }
 }
 
-/* Animações Suaves */
-.animate-in {
-  animation: animate-in 0.5s ease-out;
+/* ============================================
+   UTILITÁRIOS PERSONALIZADOS
+   ============================================ */
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
-@keyframes animate-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .7; }
 }
+
+/* ============================================
+   CLASSES DE TEXTO GARANTIDAS
+   ============================================ */
+.text-primary-readable {
+  @apply text-foreground;
+}
+
+.text-secondary-readable {
+  @apply text-muted-foreground;
+}
+
+/* ============================================
+   DEBUGGING: Remover em produção
+   ============================================ */
+/* 
+.debug-contrast * {
+  outline: 1px solid red !important;
+}
+*/
