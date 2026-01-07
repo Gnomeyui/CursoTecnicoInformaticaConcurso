@@ -10,12 +10,41 @@ export function Customization({ onBack }: CustomizationProps) {
   const { currentTheme, setTheme, isDarkMode, toggleDarkMode } = useTheme();
 
   const themes = [
+    // --- APP PADRÃO ---
     {
       id: 'default' as const,
-      name: 'Padrão',
+      name: 'Clássico',
       colors: 'from-blue-500 to-blue-600',
       preview: 'bg-blue-500',
     },
+    {
+      id: 'modern' as const,
+      name: 'Moderno (Premium)',
+      colors: 'from-indigo-500 to-indigo-600',
+      preview: 'bg-indigo-500',
+    },
+    
+    // --- MODOS DE ESTUDO ---
+    {
+      id: 'focus' as const,
+      name: 'Foco Total',
+      colors: 'from-amber-500 to-amber-600',
+      preview: 'bg-amber-500',
+    },
+    {
+      id: 'calm' as const,
+      name: 'Anti-Ansiedade',
+      colors: 'from-teal-500 to-teal-600',
+      preview: 'bg-teal-500',
+    },
+    {
+      id: 'reading' as const,
+      name: 'Leitura Suave',
+      colors: 'from-slate-500 to-slate-600',
+      preview: 'bg-slate-500',
+    },
+
+    // --- OUTROS ---
     {
       id: 'forest' as const,
       name: 'Floresta',
@@ -36,7 +65,7 @@ export function Customization({ onBack }: CustomizationProps) {
     },
     {
       id: 'purple' as const,
-      name: 'Roxo',
+      name: 'Criativo',
       colors: 'from-purple-500 to-pink-500',
       preview: 'bg-gradient-to-r from-purple-500 to-pink-500',
     },

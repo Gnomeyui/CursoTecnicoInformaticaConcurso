@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type Theme = 'default' | 'forest' | 'ocean' | 'sunset' | 'purple';
+type Theme = 'default' | 'forest' | 'ocean' | 'sunset' | 'purple' | 'modern' | 'focus' | 'calm' | 'reading';
 
 interface ThemeContextType {
   currentTheme: Theme;
