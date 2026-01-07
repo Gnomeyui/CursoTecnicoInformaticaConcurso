@@ -23,6 +23,7 @@ export function SmartQuizSession({
     handleAnswer,
     getCurrentQuestion,
     resetSession,
+    nextQuestion,
     currentMode,
     isLoading,
     sessionStats,
@@ -65,6 +66,7 @@ export function SmartQuizSession({
     setTimeout(() => {
       setShowFeedback(false);
       setSelectedOption(null);
+      nextQuestion();
     }, 2000);
   };
 

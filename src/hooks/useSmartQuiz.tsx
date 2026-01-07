@@ -145,14 +145,14 @@ export function useSmartQuiz({
         setMistakesQueue(prev => [...prev, remixedQuestion]);
       }
 
-      // Avança para próxima questão
-      setCurrentQuestionIndex(prev => prev + 1);
+      // REMOVIDO: Não avança automaticamente - deixa o UI controlar
+      // setCurrentQuestionIndex(prev => prev + 1);
     } else {
       // Modo Review (O Loop de 30%): Só sai se acertar
       if (isCorrect) {
         // Remove da fila de erros
         setMistakesQueue(prev => prev.filter(q => q.id !== question.id));
-        setCurrentQuestionIndex(prev => prev + 1);
+        // REMOVIDO: setCurrentQuestionIndex(prev => prev + 1);
       } else {
         // Se errar de novo na revisão, embaralha e joga pro fim da fila
         const remixedQuestion = prepareQuestion(question);
@@ -166,6 +166,11 @@ export function useSmartQuiz({
 
     return { isCorrect };
   }, [currentMode, updateDatabaseStats, prepareQuestion]);
+
+  // Nova função EXPLÍCITA para avançar para a próxima questão
+  const nextQuestion = useCallback(() => {
+    setCurrentQuestionIndex(prev => prev + 1);
+  }, []);
 
   // Obter questão atual
   const getCurrentQuestion = useCallback((): Question | null => {
@@ -234,6 +239,7 @@ export function useSmartQuiz({
     getCurrentQuestion,
     resetSession,
     fetchUserProfile,
+    nextQuestion,
 
     // Computed
     totalQuestions: queue.length + mistakesQueue.length,
