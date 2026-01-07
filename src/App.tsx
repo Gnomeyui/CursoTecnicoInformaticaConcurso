@@ -45,7 +45,7 @@ function AppContent() {
   
   const { showLevelUpCelebration, dismissLevelUpCelebration, levelUpInfo, showGloriaCelebration, dismissGloriaCelebration } = useGame();
   const { getTodayStats } = useStats();
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, currentTheme } = useTheme();
 
   // Carregar estatísticas do dia
   useEffect(() => {
@@ -59,18 +59,36 @@ function AppContent() {
     const updateStatusBar = async () => {
       if (typeof window !== 'undefined' && 'StatusBar' in window) {
         const StatusBar = (window as any).StatusBar;
+        
+        // Mapa de cores para cada tema
+        const themeColors: Record<string, { light: string; dark: string }> = {
+          default: { light: '#f8fafc', dark: '#0f172a' },
+          modern: { light: '#f9fafb', dark: '#030712' },
+          reading: { light: '#f5f5f4', dark: '#1c1917' },
+          focus: { light: '#ffffff', dark: '#000000' },
+          calm: { light: '#f0fdfa', dark: '#042f2e' },
+          forest: { light: '#f8fafc', dark: '#0f172a' },
+          ocean: { light: '#f8fafc', dark: '#0f172a' },
+          sunset: { light: '#f8fafc', dark: '#0f172a' },
+          purple: { light: '#f8fafc', dark: '#0f172a' },
+        };
+        
+        const color = isDarkMode 
+          ? themeColors[currentTheme]?.dark || '#0f172a'
+          : themeColors[currentTheme]?.light || '#ffffff';
+        
         if (isDarkMode) {
           StatusBar?.setStyle('dark-content');
-          StatusBar?.setBackgroundColor('#1f2937'); // gray-800
         } else {
           StatusBar?.setStyle('light-content');
-          StatusBar?.setBackgroundColor('#ffffff');
         }
+        
+        StatusBar?.setBackgroundColor(color);
       }
     };
     
     updateStatusBar();
-  }, [isDarkMode]);
+  }, [isDarkMode, currentTheme]);
 
   const handleStartQuiz = () => {
     setSelectedSubject('all'); // Todas as matérias por padrão
@@ -131,7 +149,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+    <div className="min-h-screen bg-app text-app transition-colors duration-300">
       {/* Renderização condicional baseada na view atual */}
       {currentView === 'dashboard' && (
         <Dashboard
