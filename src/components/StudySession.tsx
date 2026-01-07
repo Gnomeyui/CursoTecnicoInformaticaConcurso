@@ -239,11 +239,27 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
                 disabled={showExplanation}
                 className={buttonClass}
               >
-                <div className="flex items-center gap-3 text-gray-900 dark:text-gray-100">
-                  <span className="flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm text-gray-900 dark:text-gray-100">
+                <div className="flex items-center gap-3">
+                  <span className={`
+                    flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-semibold
+                    ${!showResult && !isSelected ? 'text-gray-700 dark:text-gray-300' : ''}
+                    ${!showResult && isSelected ? 'text-blue-600 dark:text-blue-400 border-blue-500' : ''}
+                    ${showResult && isCorrect ? 'text-green-700 dark:text-green-300 border-green-500' : ''}
+                    ${showResult && isSelected && !isCorrect ? 'text-red-700 dark:text-red-300 border-red-500' : ''}
+                    ${showResult && !isCorrect && !isSelected ? 'text-gray-400 dark:text-gray-500' : ''}
+                  `}>
                     {String.fromCharCode(65 + index)}
                   </span>
-                  <span className="flex-1 text-gray-900 dark:text-gray-100">{option}</span>
+                  <span className={`
+                    flex-1
+                    ${!showResult && !isSelected ? 'text-gray-900 dark:text-gray-100' : ''}
+                    ${!showResult && isSelected ? 'text-blue-700 dark:text-blue-300' : ''}
+                    ${showResult && isCorrect ? 'text-green-900 dark:text-green-100 font-medium' : ''}
+                    ${showResult && isSelected && !isCorrect ? 'text-red-900 dark:text-red-100' : ''}
+                    ${showResult && !isCorrect && !isSelected ? 'text-gray-500 dark:text-gray-400' : ''}
+                  `}>
+                    {option}
+                  </span>
                   {showResult && isCorrect && (
                     <CheckCircle className="size-6 text-green-500 flex-shrink-0" />
                   )}

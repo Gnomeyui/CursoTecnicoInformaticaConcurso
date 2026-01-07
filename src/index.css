@@ -1934,6 +1934,10 @@
     color: var(--color-green-700);
   }
 
+  .text-green-900 {
+    color: var(--color-green-900);
+  }
+
   .text-indigo-500 {
     color: var(--color-indigo-500);
   }
@@ -2880,6 +2884,12 @@
   }
 
   @media (prefers-color-scheme: dark) {
+    .dark\:text-green-100 {
+      color: var(--color-green-100);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
     .dark\:text-green-300 {
       color: var(--color-green-300);
     }
@@ -2918,6 +2928,12 @@
   @media (prefers-color-scheme: dark) {
     .dark\:text-purple-400 {
       color: var(--color-purple-400);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .dark\:text-red-100 {
+      color: var(--color-red-100);
     }
   }
 
