@@ -16,7 +16,7 @@ const THEME_STYLES: Record<string, {
   ring: string;
 }> = {
   default: {
-    gradient: 'from-blue-600 to-indigo-600',
+    gradient: 'from-blue-500 to-indigo-500',
     button: 'bg-blue-600 hover:bg-blue-700',
     lightText: 'text-blue-50',
     iconBg: 'bg-blue-50 dark:bg-blue-900/30',
@@ -25,7 +25,7 @@ const THEME_STYLES: Record<string, {
     ring: 'ring-blue-100'
   },
   blue: {
-    gradient: 'from-blue-600 to-indigo-600',
+    gradient: 'from-blue-500 to-indigo-500',
     button: 'bg-blue-600 hover:bg-blue-700',
     lightText: 'text-blue-50',
     iconBg: 'bg-blue-50 dark:bg-blue-900/30',
@@ -34,7 +34,7 @@ const THEME_STYLES: Record<string, {
     ring: 'ring-blue-100'
   },
   green: {
-    gradient: 'from-emerald-500 to-teal-600',
+    gradient: 'from-emerald-400 to-teal-500',
     button: 'bg-emerald-600 hover:bg-emerald-700',
     lightText: 'text-emerald-50',
     iconBg: 'bg-emerald-50 dark:bg-emerald-900/30',
@@ -43,7 +43,7 @@ const THEME_STYLES: Record<string, {
     ring: 'ring-emerald-100'
   },
   purple: {
-    gradient: 'from-violet-600 to-fuchsia-600',
+    gradient: 'from-violet-500 to-fuchsia-500',
     button: 'bg-violet-600 hover:bg-violet-700',
     lightText: 'text-violet-50',
     iconBg: 'bg-violet-50 dark:bg-violet-900/30',
@@ -52,7 +52,7 @@ const THEME_STYLES: Record<string, {
     ring: 'ring-violet-100'
   },
   orange: {
-    gradient: 'from-orange-500 to-red-500',
+    gradient: 'from-orange-400 to-red-500',
     button: 'bg-orange-600 hover:bg-orange-700',
     lightText: 'text-orange-50',
     iconBg: 'bg-orange-50 dark:bg-orange-900/30',
@@ -149,7 +149,7 @@ export function Dashboard({
           className={`w-full group relative overflow-hidden rounded-3xl bg-gradient-to-br ${currentTheme.gradient} p-6 text-left shadow-lg hover:shadow-xl transition-all duration-300 transform active:scale-[0.98]`}
         >
           <div className="absolute top-0 right-0 p-4 opacity-10 transform group-hover:scale-110 transition-transform duration-500">
-            <Zap size={140} fill="currentColor" className={currentTheme.lightText} />
+            <Zap size={140} fill="currentColor" className="text-white" />
           </div>
           
           <div className="relative z-10 flex flex-col h-full justify-between min-h-[140px]">
