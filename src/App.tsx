@@ -12,6 +12,7 @@ import { FlashcardScreen } from './components/FlashcardScreen';
 import { RegimentoInterno } from './components/RegimentoInterno';
 import { Settings } from './components/Settings';
 import { ProfileSelector } from './components/ProfileSelector';
+import { StudyPlanSettings } from './components/StudyPlanSettings';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { GameProvider, useGame } from './context/GameContext';
 import { StatsProvider, useStats } from './context/StatsContext';
@@ -32,7 +33,8 @@ type View =
   | 'simulatedExam'
   | 'flashcards'
   | 'regimento'
-  | 'profiles';
+  | 'profiles'
+  | 'studyPlan';
 
 type Difficulty = 'easy' | 'medium' | 'hard' | 'mix';
 
@@ -148,6 +150,10 @@ function AppContent() {
     setCurrentView('profiles');
   };
 
+  const handleOpenStudyPlan = () => {
+    setCurrentView('studyPlan');
+  };
+
   return (
     <div className="min-h-screen bg-app text-app transition-colors duration-300">
       {/* Renderização condicional baseada na view atual */}
@@ -164,6 +170,7 @@ function AppContent() {
           onOpenRegimento={handleOpenRegimento}
           onOpenSettings={handleOpenSettings}
           onOpenProfiles={handleOpenProfiles}
+          onOpenStudyPlan={handleOpenStudyPlan}
         />
       )}
 
@@ -216,6 +223,10 @@ function AppContent() {
 
       {currentView === 'profiles' && (
         <ProfileSelector onBack={handleBackToDashboard} />
+      )}
+
+      {currentView === 'studyPlan' && (
+        <StudyPlanSettings onBack={handleBackToDashboard} />
       )}
 
       {/* Celebrações */}
