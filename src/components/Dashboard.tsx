@@ -15,95 +15,8 @@ import { useCustomization } from '../context/CustomizationContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { useGame } from '../context/GameContext';
 import { useStats } from '../context/StatsContext';
-
-// --- SISTEMA DE CORES COM CONTRASTE MÁXIMO ---
-const THEME_STYLES: Record<string, {
-  gradient: string;
-  button: string;
-  lightText: string;
-  iconBg: string;
-  iconColor: string;
-  progressBar: string;
-  borderColor: string;
-  highlight: string;
-  // NOVOS: Garantia de legibilidade
-  cardText: string;
-  cardSubtext: string;
-}> = {
-  blue: {
-    // Gradientes: Light (saturado) | Dark (profundo)
-    gradient: 'from-blue-600 to-indigo-600 dark:from-blue-900 dark:to-indigo-950',
-    
-    // Botões: Sempre branco no fundo colorido
-    button: 'bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600',
-    
-    // Texto em gradiente: SEMPRE BRANCO
-    lightText: 'text-white',
-    
-    // Ícones: Fundo claro + texto escuro (Light) | Fundo transparente + texto claro (Dark)
-    iconBg: 'bg-blue-100 dark:bg-blue-500/20', 
-    iconColor: 'text-blue-700 dark:text-blue-200',
-    
-    // Progress bar: Visível em ambos os modos
-    progressBar: 'bg-blue-600 dark:bg-blue-400',
-    borderColor: 'border-blue-200 dark:border-blue-800/50',
-    
-    // Highlight: Fundo suave + texto forte
-    highlight: 'bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100',
-    
-    // GARANTIA DE LEGIBILIDADE
-    cardText: 'text-gray-900 dark:text-white',
-    cardSubtext: 'text-gray-700 dark:text-gray-200'
-  },
-  green: {
-    gradient: 'from-emerald-500 to-teal-600 dark:from-emerald-900 dark:to-teal-950',
-    button: 'bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-700 dark:hover:bg-emerald-600',
-    lightText: 'text-white',
-    iconBg: 'bg-emerald-100 dark:bg-emerald-500/20',
-    iconColor: 'text-emerald-700 dark:text-emerald-200',
-    progressBar: 'bg-emerald-600 dark:bg-emerald-400',
-    borderColor: 'border-emerald-200 dark:border-emerald-800/50',
-    highlight: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-900 dark:text-emerald-100',
-    cardText: 'text-gray-900 dark:text-white',
-    cardSubtext: 'text-gray-700 dark:text-gray-200'
-  },
-  purple: {
-    gradient: 'from-violet-600 to-fuchsia-600 dark:from-violet-900 dark:to-fuchsia-950',
-    button: 'bg-violet-600 hover:bg-violet-700 text-white dark:bg-violet-700 dark:hover:bg-violet-600',
-    lightText: 'text-white',
-    iconBg: 'bg-violet-100 dark:bg-violet-500/20',
-    iconColor: 'text-violet-700 dark:text-violet-200',
-    progressBar: 'bg-violet-600 dark:bg-violet-400',
-    borderColor: 'border-violet-200 dark:border-violet-800/50',
-    highlight: 'bg-violet-50 dark:bg-violet-900/30 text-violet-900 dark:text-violet-100',
-    cardText: 'text-gray-900 dark:text-white',
-    cardSubtext: 'text-gray-700 dark:text-gray-200'
-  },
-  orange: {
-    gradient: 'from-orange-500 to-red-500 dark:from-orange-900 dark:to-red-950',
-    button: 'bg-orange-600 hover:bg-orange-700 text-white dark:bg-orange-700 dark:hover:bg-orange-600',
-    lightText: 'text-white',
-    iconBg: 'bg-orange-100 dark:bg-orange-500/20',
-    iconColor: 'text-orange-700 dark:text-orange-200',
-    progressBar: 'bg-orange-600 dark:bg-orange-400',
-    borderColor: 'border-orange-200 dark:border-orange-800/50',
-    highlight: 'bg-orange-50 dark:bg-orange-900/30 text-orange-900 dark:text-orange-100',
-    cardText: 'text-gray-900 dark:text-white',
-    cardSubtext: 'text-gray-700 dark:text-gray-200'
-  },
-  default: {
-    gradient: 'from-blue-600 to-indigo-600 dark:from-blue-900 dark:to-indigo-950',
-    button: 'bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600',
-    lightText: 'text-white',
-    iconBg: 'bg-blue-100 dark:bg-blue-500/20',
-    iconColor: 'text-blue-700 dark:text-blue-200',
-    progressBar: 'bg-blue-600 dark:bg-blue-400',
-    borderColor: 'border-blue-200 dark:border-blue-800/50',
-    highlight: 'bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100',
-    cardText: 'text-gray-900 dark:text-white',
-    cardSubtext: 'text-gray-700 dark:text-gray-200'
-  }
-};
+// IMPORTANTE: Importar o novo sistema
+import { APP_THEMES } from '../lib/themeConfig';
 
 interface DashboardProps {
   dailyScore: number;
@@ -136,7 +49,8 @@ export function Dashboard({
   const { xp, level } = useGame();
   const { getTodayStats, detailedStats } = useStats();
   
-  const theme = THEME_STYLES[settings.colorTheme] || THEME_STYLES['blue'];
+  // USAR O NOVO SISTEMA DE CORES
+  const theme = APP_THEMES[settings.colorTheme] || APP_THEMES['focus'];
 
   const [stats, setStats] = useState({
     xp: 0,
@@ -197,9 +111,10 @@ export function Dashboard({
           {onOpenStudyPlan && (
             <button 
               onClick={onOpenStudyPlan}
-              className={`p-2.5 rounded-full ${theme.iconBg} ${theme.iconColor} hover:brightness-110 transition-all shadow-sm`}
+              className={`p-2.5 rounded-full ${theme.button} hover:brightness-110 transition-all shadow-lg hover:shadow-xl active:scale-95`}
+              aria-label="Plano de Estudos"
             >
-              <CalendarClock size={20} />
+              <CalendarClock size={20} className="text-white" />
             </button>
           )}
 

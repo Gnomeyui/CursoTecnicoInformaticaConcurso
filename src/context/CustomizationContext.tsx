@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+// Importe o ThemeType do nosso novo arquivo
+import { ThemeType, APP_THEMES } from '../lib/themeConfig';
 
 export interface CustomizationSettings {
   fontSize: 'small' | 'medium' | 'large' | 'xlarge';
-  colorTheme: 'default' | 'blue' | 'green' | 'purple' | 'orange';
+  colorTheme: ThemeType; // <--- Atualizado para usar as 8 paletas
   highContrast: boolean;
   reducedMotion: boolean;
   compactMode: boolean;
@@ -11,6 +13,11 @@ export interface CustomizationSettings {
 interface CustomizationContextType {
   settings: CustomizationSettings;
   updateSettings: (settings: Partial<CustomizationSettings>) => void;
+  // Compatibilidade com código antigo
+  primaryColor: ThemeType;
+  setPrimaryColor: (color: ThemeType) => void;
+  // Novo: acesso direto ao tema
+  theme: typeof APP_THEMES[ThemeType];
 }
 
 const CustomizationContext = createContext<CustomizationContextType | undefined>(undefined);
@@ -20,7 +27,7 @@ const STORAGE_KEY = 'alerr_customization_settings';
 export function CustomizationProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<CustomizationSettings>({
     fontSize: 'medium',
-    colorTheme: 'default',
+    colorTheme: 'focus', // Padrão: Azul Foco
     highContrast: false,
     reducedMotion: false,
     compactMode: false
@@ -40,6 +47,27 @@ export function CustomizationProvider({ children }: { children: ReactNode }) {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const data = JSON.parse(saved);
+        
+        // MIGRAÇÃO: Converter valores antigos para novos
+        const colorThemeMap: Record<string, ThemeType> = {
+          'default': 'focus',
+          'blue': 'focus',
+          'green': 'calm',
+          'purple': 'creative',
+          'orange': 'energy'
+        };
+        
+        // Se o colorTheme for um valor antigo, migrar
+        if (data.colorTheme && colorThemeMap[data.colorTheme]) {
+          data.colorTheme = colorThemeMap[data.colorTheme];
+        }
+        
+        // Garantir que seja um valor válido
+        const validThemes: ThemeType[] = ['focus', 'calm', 'creative', 'energy', 'comfort', 'minimal', 'ocean', 'warmth'];
+        if (!validThemes.includes(data.colorTheme)) {
+          data.colorTheme = 'focus';
+        }
+        
         setSettings(data);
       }
     } catch (error) {
@@ -67,40 +95,6 @@ export function CustomizationProvider({ children }: { children: ReactNode }) {
     };
     root.style.fontSize = fontSizes[settings.fontSize];
 
-    // Aplicar tema de cores
-    const themes = {
-      default: {
-        primary: '239 68 68', // red-500
-        secondary: '59 130 246', // blue-500
-        accent: '16 185 129' // emerald-500
-      },
-      blue: {
-        primary: '59 130 246', // blue-500
-        secondary: '14 165 233', // sky-500
-        accent: '99 102 241' // indigo-500
-      },
-      green: {
-        primary: '34 197 94', // green-500
-        secondary: '16 185 129', // emerald-500
-        accent: '20 184 166' // teal-500
-      },
-      purple: {
-        primary: '168 85 247', // purple-500
-        secondary: '139 92 246', // violet-500
-        accent: '236 72 153' // pink-500
-      },
-      orange: {
-        primary: '249 115 22', // orange-500
-        secondary: '251 146 60', // orange-400
-        accent: '234 88 12' // orange-600
-      }
-    };
-    
-    const theme = themes[settings.colorTheme];
-    root.style.setProperty('--color-primary', theme.primary);
-    root.style.setProperty('--color-secondary', theme.secondary);
-    root.style.setProperty('--color-accent', theme.accent);
-
     // Aplicar alto contraste
     if (settings.highContrast) {
       root.classList.add('high-contrast');
@@ -127,8 +121,19 @@ export function CustomizationProvider({ children }: { children: ReactNode }) {
     setSettings(prev => ({ ...prev, ...newSettings }));
   };
 
+  // Compatibilidade com código antigo
+  const setPrimaryColor = (color: ThemeType) => {
+    updateSettings({ colorTheme: color });
+  };
+
   return (
-    <CustomizationContext.Provider value={{ settings, updateSettings }}>
+    <CustomizationContext.Provider value={{ 
+      settings, 
+      updateSettings,
+      primaryColor: settings.colorTheme,
+      setPrimaryColor,
+      theme: APP_THEMES[settings.colorTheme]
+    }}>
       {children}
     </CustomizationContext.Provider>
   );

@@ -6,6 +6,7 @@ import { Switch } from './ui/switch';
 import { Card, CardContent } from './ui/card';
 import { Input } from './ui/input';
 import { useCustomization } from '../context/CustomizationContext';
+import { APP_THEMES } from '../lib/themeConfig';
 
 interface StudyPlanSettingsProps {
   onBack: () => void;
@@ -13,15 +14,8 @@ interface StudyPlanSettingsProps {
 
 export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
   const { settings } = useCustomization();
+  const activeTheme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
   
-  // Mapa de cores para os ícones e destaques
-  const themeColors = {
-    blue:   { text: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-900/30', btn: 'bg-blue-600 hover:bg-blue-700' },
-    green:  { text: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/30', btn: 'bg-green-600 hover:bg-green-700' },
-    purple: { text: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100 dark:bg-purple-900/30', btn: 'bg-purple-600 hover:bg-purple-700' },
-    orange: { text: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-900/30', btn: 'bg-orange-600 hover:bg-orange-700' }
-  }[settings.colorTheme] || { text: 'text-blue-600', bg: 'bg-blue-100', btn: 'bg-blue-600' };
-
   // Estados
   const [questionsPerBatch, setQuestionsPerBatch] = useState([10]);
   const [intervalMinutes, setIntervalMinutes] = useState([30]);
@@ -46,7 +40,7 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
 
         {/* 1. RITMO */}
         <section>
-          <div className={`flex items-center gap-2 mb-4 ${themeColors.text}`}>
+          <div className={`flex items-center gap-2 mb-4 ${activeTheme.text}`}>
             <Zap size={20} />
             <h2 className="font-bold text-foreground">Ritmo de Estudo</h2>
           </div>
@@ -56,7 +50,7 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
               <div>
                 <div className="flex justify-between mb-4">
                   <span className="text-sm font-medium text-foreground">Questões por rodada</span>
-                  <span className={`text-xl font-bold ${themeColors.text}`}>{questionsPerBatch}</span>
+                  <span className={`text-xl font-bold ${activeTheme.text}`}>{questionsPerBatch}</span>
                 </div>
                 <Slider 
                   value={questionsPerBatch} 
@@ -76,7 +70,7 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
 
         {/* 2. INTERVALO */}
         <section>
-          <div className={`flex items-center gap-2 mb-4 ${themeColors.text}`}>
+          <div className={`flex items-center gap-2 mb-4 ${activeTheme.text}`}>
             <Clock size={20} />
             <h2 className="font-bold text-foreground">Intervalos</h2>
           </div>
@@ -86,7 +80,7 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
               <div>
                 <div className="flex justify-between mb-4">
                   <span className="text-sm font-medium text-foreground">A cada quanto tempo?</span>
-                  <span className={`text-xl font-bold ${themeColors.text}`}>{intervalMinutes} min</span>
+                  <span className={`text-xl font-bold ${activeTheme.text}`}>{intervalMinutes} min</span>
                 </div>
                 <Slider 
                   value={intervalMinutes} 
@@ -106,7 +100,7 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
 
         {/* 3. HORÁRIO E NOTIFICAÇÕES */}
         <section>
-          <div className={`flex items-center gap-2 mb-4 ${themeColors.text}`}>
+          <div className={`flex items-center gap-2 mb-4 ${activeTheme.text}`}>
             <Bell size={20} />
             <h2 className="font-bold text-foreground">Horário Ativo</h2>
           </div>
@@ -146,8 +140,8 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full ${themeColors.bg}`}>
-                    <Volume2 size={18} className={themeColors.text} />
+                  <div className={`p-2 rounded-full ${activeTheme.bg}`}>
+                    <Volume2 size={18} className={activeTheme.text} />
                   </div>
                   <span className="text-sm font-medium text-foreground">Som de Notificação</span>
                 </div>
@@ -159,8 +153,8 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full ${themeColors.bg}`}>
-                    <Smartphone size={18} className={themeColors.text} />
+                  <div className={`p-2 rounded-full ${activeTheme.bg}`}>
+                    <Smartphone size={18} className={activeTheme.text} />
                   </div>
                   <span className="text-sm font-medium text-foreground">Vibração</span>
                 </div>
@@ -177,7 +171,7 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
         {/* Botão Salvar */}
         <div className="pt-4 pb-8">
           <Button 
-            className={`w-full py-6 text-lg font-bold shadow-lg text-white rounded-xl transition-all active:scale-[0.98] ${themeColors.btn}`}
+            className={`w-full py-6 text-lg font-bold shadow-lg text-white rounded-xl transition-all active:scale-[0.98] ${activeTheme.btn}`}
             onClick={() => {
               alert("Plano salvo! Notificações agendadas.");
               onBack();

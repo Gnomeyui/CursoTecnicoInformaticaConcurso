@@ -7,6 +7,8 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useTheme } from '../context/ThemeContext';
 import { useGame } from '../context/GameContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
+import { useCustomization } from '../context/CustomizationContext';
+import { APP_THEMES } from '../lib/themeConfig';
 import { createClient } from '@supabase/supabase-js';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 
@@ -40,6 +42,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
   const { isDarkMode } = useTheme();
   const { recordSimulatedExam } = useGame();
   const { selectedProfile } = useConcursoProfile();
+  const { theme } = useCustomization();
   
   // Estados principais
   const [examState, setExamState] = useState<'config' | 'running' | 'finished'>('config');
@@ -303,20 +306,20 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
         </div>
 
         <div className="px-4 sm:px-6 py-8 max-w-2xl mx-auto">
-          <div className="bg-card-theme rounded-2xl p-8 shadow-lg space-y-6">
+          <div className="bg-card rounded-2xl p-8 shadow-lg border border-border space-y-6">
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-theme rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className={`w-20 h-20 bg-gradient-to-br ${theme.gradient} rounded-full flex items-center justify-center mx-auto mb-4`}>
                 <Trophy className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-2xl text-app mb-2">Simulado Inteligente</h2>
-              <p className="text-gray-600 dark:text-gray-400">
+              <h2 className="text-2xl font-bold text-foreground mb-2">Simulado Inteligente</h2>
+              <p className="text-muted-foreground">
                 Questões personalizadas do Supabase para {selectedProfile?.name || 'seu perfil'}
               </p>
             </div>
 
             {/* Número de Questões */}
             <div>
-              <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Número de Questões
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -324,10 +327,10 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
                   <button
                     key={count}
                     onClick={() => setQuestionCount(count)}
-                    className={`py-3 rounded-xl transition-all ${
+                    className={`py-3 rounded-xl font-bold transition-all ${
                       questionCount === count
-                        ? 'bg-gradient-theme text-white shadow-md'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        ? `${theme.button} shadow-md`
+                        : 'bg-secondary text-secondary-foreground hover:bg-muted'
                     }`}
                   >
                     {count}
@@ -338,7 +341,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
 
             {/* Tempo Limite */}
             <div>
-              <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Tempo Limite (minutos)
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -346,10 +349,10 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
                   <button
                     key={time}
                     onClick={() => setTimeLimit(time)}
-                    className={`py-3 rounded-xl transition-all ${
+                    className={`py-3 rounded-xl font-bold transition-all ${
                       timeLimit === time
-                        ? 'bg-gradient-theme text-white shadow-md'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        ? `${theme.button} shadow-md`
+                        : 'bg-secondary text-secondary-foreground hover:bg-muted'
                     }`}
                   >
                     {time}min
@@ -378,7 +381,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
             <button
               onClick={startExam}
               disabled={loading}
-              className="w-full bg-gradient-theme text-white py-4 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className={`w-full ${theme.button} py-4 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 font-bold`}
             >
               <Play className="w-5 h-5" />
               {loading ? 'Carregando Questões...' : 'Iniciar Simulado'}
@@ -418,7 +421,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
             {/* Barra de Progresso */}
             <div className="mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div 
-                className="bg-gradient-theme h-2 rounded-full transition-all"
+                className={`bg-gradient-to-r ${theme.gradient} h-2 rounded-full transition-all`}
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -511,7 +514,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
               <button
                 onClick={() => goToQuestion(Math.min(selectedQuestions.length - 1, currentQuestionIndex + 1))}
                 disabled={currentQuestionIndex === selectedQuestions.length - 1}
-                className="flex-1 py-3 bg-gradient-theme text-white rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className={`flex-1 py-3 ${theme.button} rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium`}
               >
                 Próxima →
               </button>
@@ -706,7 +709,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
             <div className="flex gap-3">
               <button
                 onClick={() => setExamState('config')}
-                className="flex-1 py-3 bg-gradient-theme text-white rounded-xl hover:shadow-lg transition-all font-bold"
+                className={`flex-1 py-3 ${theme.button} rounded-xl hover:shadow-lg transition-all font-bold`}
               >
                 🔄 Novo Simulado
               </button>

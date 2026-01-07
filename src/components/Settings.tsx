@@ -18,6 +18,8 @@ import { Switch } from './ui/switch';
 import { Separator } from './ui/separator';
 import { Label } from './ui/label';
 import { useTheme } from '../context/ThemeContext';
+import { useCustomization } from '../context/CustomizationContext';
+import { APP_THEMES } from '../lib/themeConfig';
 
 interface SettingsProps {
   onClose: () => void;
@@ -33,6 +35,8 @@ export function Settings({
   onOpenNotifications 
 }: SettingsProps) {
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const { settings } = useCustomization();
+  const activeTheme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
   
   // Estados para preferências (integrar com localStorage depois)
   const [notifications, setNotifications] = React.useState(() => {
@@ -117,8 +121,8 @@ export function Settings({
                   className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left rounded-t-xl"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full text-blue-600 dark:text-blue-400">
-                      <User size={20} />
+                    <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full">
+                      <User size={20} className="text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">Perfil do Concurso</p>
@@ -141,8 +145,8 @@ export function Settings({
                 className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left rounded-b-xl"
               >
                 <div className="flex items-center gap-3">
-                  <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-full text-green-600 dark:text-green-400">
-                    <Target size={20} />
+                  <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-full">
+                    <Target size={20} className="text-green-600 dark:text-green-400" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">Meta Diária</p>
@@ -169,10 +173,10 @@ export function Settings({
               {/* Botão de Tema (Dark Mode) */}
               <div className="flex items-center justify-between p-4 rounded-t-xl">
                 <div className="flex items-center gap-3">
-                  <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-full text-purple-600 dark:text-purple-400">
-                    {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
+                  <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-full">
+                    {isDarkMode ? <Moon size={20} className="text-purple-600 dark:text-purple-400" /> : <Sun size={20} className="text-purple-600 dark:text-purple-400" />}
                   </div>
-                  <Label htmlFor="dark-mode" className="font-medium text-base cursor-pointer">
+                  <Label htmlFor="dark-mode" className="font-medium text-base cursor-pointer text-gray-900 dark:text-white">
                     Modo Escuro
                   </Label>
                 </div>
@@ -190,8 +194,8 @@ export function Settings({
                   className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left rounded-b-xl"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="bg-pink-100 dark:bg-pink-900/30 p-2 rounded-full text-pink-600 dark:text-pink-400">
-                      <Palette size={20} />
+                    <div className="bg-pink-100 dark:bg-pink-900/30 p-2 rounded-full">
+                      <Palette size={20} className="text-pink-600 dark:text-pink-400" />
                     </div>
                     <span className="font-medium text-gray-900 dark:text-white">
                       Personalizar Cores & Temas
@@ -220,8 +224,8 @@ export function Settings({
                   className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left rounded-t-xl"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-full text-green-600 dark:text-green-400">
-                      <Bell size={20} />
+                    <div className="bg-amber-100 dark:bg-amber-900/30 p-2 rounded-full">
+                      <Bell size={20} className="text-amber-600 dark:text-amber-400" />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">
@@ -237,10 +241,10 @@ export function Settings({
               ) : (
                 <div className="flex items-center justify-between p-4 rounded-t-xl">
                   <div className="flex items-center gap-3">
-                    <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-full text-green-600 dark:text-green-400">
-                      <Bell size={20} />
+                    <div className="bg-amber-100 dark:bg-amber-900/30 p-2 rounded-full">
+                      <Bell size={20} className="text-amber-600 dark:text-amber-400" />
                     </div>
-                    <Label htmlFor="notif" className="font-medium text-base cursor-pointer">
+                    <Label htmlFor="notif" className="font-medium text-base cursor-pointer text-gray-900 dark:text-white">
                       Notificações Inteligentes
                     </Label>
                   </div>
@@ -254,10 +258,10 @@ export function Settings({
 
               <div className="flex items-center justify-between p-4 rounded-b-xl">
                 <div className="flex items-center gap-3">
-                  <div className="bg-yellow-100 dark:bg-yellow-900/30 p-2 rounded-full text-yellow-600 dark:text-yellow-400">
-                    <Volume2 size={20} />
+                  <div className="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-full">
+                    <Volume2 size={20} className="text-orange-600 dark:text-orange-400" />
                   </div>
-                  <Label htmlFor="sound" className="font-medium text-base cursor-pointer">
+                  <Label htmlFor="sound" className="font-medium text-base cursor-pointer text-gray-900 dark:text-white">
                     Efeitos Sonoros
                   </Label>
                 </div>

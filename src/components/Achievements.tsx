@@ -2,6 +2,8 @@ import React from 'react';
 import { ArrowLeft, Trophy, Target, Flame, Star, Award, Zap, Crown, BookOpen, Brain, Clock, TrendingUp, Shield, Rocket, Heart, Check, Medal, Users, Coffee, Moon, Sun, Calendar, Smile, ThumbsUp, Gift, Sparkles, Lightbulb, Battery, ChevronUp, Eye, Crosshair } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 import { useStats } from '../context/StatsContext';
+import { useCustomization } from '../context/CustomizationContext';
+import { APP_THEMES } from '../lib/themeConfig';
 
 interface AchievementsProps {
   onBack: () => void;
@@ -20,6 +22,7 @@ interface Achievement {
 export function Achievements({ onBack }: AchievementsProps) {
   const { xp, level } = useGame();
   const { detailedStats } = useStats();
+  const { theme } = useCustomization();
 
   const achievements: Achievement[] = [
     // INÍCIO - Primeiras conquistas
@@ -538,34 +541,34 @@ export function Achievements({ onBack }: AchievementsProps) {
   );
 
   return (
-    <div className="min-h-screen p-6 pb-24">
+    <div className="min-h-screen bg-app p-6 pb-24">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <button
           onClick={onBack}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          className="p-2 hover:bg-muted rounded-lg transition-colors"
         >
-          <ArrowLeft className="size-6 text-gray-700 dark:text-gray-300" />
+          <ArrowLeft className="size-6 text-foreground" />
         </button>
         <div>
-          <h1 className="text-2xl text-gray-900 dark:text-gray-100">Conquistas</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <h1 className="text-2xl font-bold text-foreground">Conquistas</h1>
+          <p className="text-sm text-muted-foreground">
             {unlockedAchievements.length} de {achievements.length} desbloqueadas
           </p>
         </div>
       </div>
 
       {/* Progress Overview */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md mb-6">
+      <div className="bg-card rounded-2xl p-6 shadow-md border border-border mb-6">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-gray-600 dark:text-gray-400">Progresso Geral</span>
-          <span className="text-lg text-gray-900 dark:text-gray-100">
+          <span className="text-sm font-medium text-muted-foreground">Progresso Geral</span>
+          <span className="text-lg font-bold text-foreground">
             {Math.round((unlockedAchievements.length / achievements.length) * 100)}%
           </span>
         </div>
-        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div className="h-3 bg-secondary rounded-full overflow-hidden">
           <div 
-            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+            className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-500`}
             style={{ width: `${(unlockedAchievements.length / achievements.length) * 100}%` }}
           />
         </div>
@@ -574,7 +577,7 @@ export function Achievements({ onBack }: AchievementsProps) {
       {/* Unlocked Achievements */}
       {unlockedAchievements.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-xl mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-foreground">
             <Trophy className="size-6 text-yellow-500" />
             Desbloqueadas
           </h2>
@@ -582,22 +585,22 @@ export function Achievements({ onBack }: AchievementsProps) {
             {unlockedAchievements.map((achievement) => (
               <div
                 key={achievement.id}
-                className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md"
+                className="bg-card rounded-2xl p-4 shadow-md border border-border"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${achievement.color} flex-shrink-0`}>
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${achievement.color} flex-shrink-0 shadow-lg`}>
                     <achievement.icon className="size-8 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg mb-1 text-gray-900 dark:text-gray-100">{achievement.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <h3 className="text-lg font-bold mb-1 text-foreground">{achievement.title}</h3>
+                    <p className="text-sm text-muted-foreground">
                       {achievement.description}
                     </p>
                     <div className="mt-2 flex items-center gap-2">
-                      <div className="h-2 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-500 w-full" />
+                      <div className="h-2 flex-1 bg-secondary rounded-full overflow-hidden">
+                        <div className="h-full bg-green-500 w-full transition-all" />
                       </div>
-                      <span className="text-xs text-green-500">✓</span>
+                      <span className="text-xs text-green-500 font-bold">✓</span>
                     </div>
                   </div>
                 </div>
@@ -610,8 +613,8 @@ export function Achievements({ onBack }: AchievementsProps) {
       {/* Locked Achievements */}
       {lockedAchievements.length > 0 && (
         <div>
-          <h2 className="text-xl mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100">
-            <Target className="size-6 text-gray-500" />
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-foreground">
+            <Target className="size-6 text-muted-foreground" />
             Bloqueadas
           </h2>
           <div className="space-y-3">
@@ -626,26 +629,26 @@ export function Achievements({ onBack }: AchievementsProps) {
               return (
                 <div
                   key={achievement.id}
-                  className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md opacity-60"
+                  className="bg-card rounded-2xl p-4 shadow-md border border-border opacity-60"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-gray-200 dark:bg-gray-700 flex-shrink-0">
-                      <achievement.icon className="size-8 text-gray-500" />
+                    <div className="p-3 rounded-xl bg-secondary flex-shrink-0">
+                      <achievement.icon className="size-8 text-muted-foreground" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg mb-1 text-gray-900 dark:text-gray-100">{achievement.title}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <h3 className="text-lg font-bold mb-1 text-foreground">{achievement.title}</h3>
+                      <p className="text-sm text-muted-foreground">
                         {achievement.description}
                       </p>
                       {progress && (
                         <div className="mt-2 flex items-center gap-2">
-                          <div className="h-2 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                          <div className="h-2 flex-1 bg-secondary rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-blue-500 transition-all"
+                              className={`h-full bg-gradient-to-r ${theme.gradient} transition-all`}
                               style={{ width: `${progressPercentage}%` }}
                             />
                           </div>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-muted-foreground font-medium">
                             {progress.current}/{progress.total}
                           </span>
                         </div>
