@@ -67,7 +67,7 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
             <h2 className="font-bold text-gray-800 dark:text-gray-200">Ritmo de Estudo</h2>
           </div>
           
-          <Card className="border-none shadow-sm dark:bg-gray-900 dark:border dark:border-gray-800">
+          <Card className="border-none shadow-sm bg-white dark:bg-gray-900/50 dark:border dark:border-gray-800">
             <CardContent className="pt-6 space-y-6">
               <div>
                 <div className="flex justify-between mb-4">
@@ -97,7 +97,7 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
             <h2 className="font-bold text-gray-800 dark:text-gray-200">Intervalos</h2>
           </div>
 
-          <Card className="border-none shadow-sm dark:bg-gray-900 dark:border dark:border-gray-800">
+          <Card className="border-none shadow-sm bg-white dark:bg-gray-900/50 dark:border dark:border-gray-800">
             <CardContent className="pt-6 space-y-6">
               <div>
                 <div className="flex justify-between mb-4">

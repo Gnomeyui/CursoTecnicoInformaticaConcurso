@@ -5,7 +5,7 @@ import { useStats } from '../context/StatsContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { useCustomization } from '../context/CustomizationContext';
 
-// 🎨 MAPA DE ESTILOS DINÂMICOS - Versão Light Mode (SEM DARK)
+// 🎨 MAPA DE ESTILOS DINÂMICOS - Versão com Dark Mode Calibrado
 const THEME_STYLES: Record<string, {
   gradient: string;
   button: string;
@@ -13,52 +13,53 @@ const THEME_STYLES: Record<string, {
   iconBg: string;
   iconColor: string;
   progressBar: string;
-  ring: string;
+  borderColor: string;
 }> = {
   default: {
-    gradient: 'from-blue-500 to-indigo-500',
-    button: 'bg-blue-600 hover:bg-blue-700',
-    lightText: 'text-blue-50',
-    iconBg: 'bg-blue-50',
-    iconColor: 'text-blue-600',
-    progressBar: 'stroke-blue-600',
-    ring: 'ring-blue-100'
+    // Gradiente ajustado: Mais escuro e elegante no modo Dark
+    gradient: 'from-blue-600 to-indigo-600 dark:from-blue-800 dark:to-indigo-900',
+    button: 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600',
+    lightText: 'text-blue-50 dark:text-blue-100',
+    iconBg: 'bg-blue-50 dark:bg-blue-900/40', // Mais transparência no escuro
+    iconColor: 'text-blue-600 dark:text-blue-300', // Texto mais claro no escuro
+    progressBar: 'bg-blue-600 dark:bg-blue-500',
+    borderColor: 'border-blue-100 dark:border-blue-800/50'
   },
   blue: {
-    gradient: 'from-blue-500 to-indigo-500',
-    button: 'bg-blue-600 hover:bg-blue-700',
-    lightText: 'text-blue-50',
-    iconBg: 'bg-blue-50',
-    iconColor: 'text-blue-600',
-    progressBar: 'stroke-blue-600',
-    ring: 'ring-blue-100'
+    gradient: 'from-blue-600 to-indigo-600 dark:from-blue-800 dark:to-indigo-900',
+    button: 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600',
+    lightText: 'text-blue-50 dark:text-blue-100',
+    iconBg: 'bg-blue-50 dark:bg-blue-900/40',
+    iconColor: 'text-blue-600 dark:text-blue-300',
+    progressBar: 'bg-blue-600 dark:bg-blue-500',
+    borderColor: 'border-blue-100 dark:border-blue-800/50'
   },
   green: {
-    gradient: 'from-emerald-400 to-teal-500',
-    button: 'bg-emerald-600 hover:bg-emerald-700',
-    lightText: 'text-emerald-50',
-    iconBg: 'bg-emerald-50',
-    iconColor: 'text-emerald-600',
-    progressBar: 'stroke-emerald-600',
-    ring: 'ring-emerald-100'
+    gradient: 'from-emerald-500 to-teal-600 dark:from-emerald-800 dark:to-teal-900',
+    button: 'bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-700',
+    lightText: 'text-emerald-50 dark:text-emerald-100',
+    iconBg: 'bg-emerald-50 dark:bg-emerald-900/40',
+    iconColor: 'text-emerald-600 dark:text-emerald-300',
+    progressBar: 'bg-emerald-600 dark:bg-emerald-500',
+    borderColor: 'border-emerald-100 dark:border-emerald-800/50'
   },
   purple: {
-    gradient: 'from-violet-500 to-fuchsia-500',
-    button: 'bg-violet-600 hover:bg-violet-700',
-    lightText: 'text-violet-50',
-    iconBg: 'bg-violet-50',
-    iconColor: 'text-violet-600',
-    progressBar: 'stroke-violet-600',
-    ring: 'ring-violet-100'
+    gradient: 'from-violet-600 to-fuchsia-600 dark:from-violet-800 dark:to-fuchsia-900',
+    button: 'bg-violet-600 hover:bg-violet-700 dark:bg-violet-700',
+    lightText: 'text-violet-50 dark:text-violet-100',
+    iconBg: 'bg-violet-50 dark:bg-violet-900/40',
+    iconColor: 'text-violet-600 dark:text-violet-300',
+    progressBar: 'bg-violet-600 dark:bg-violet-500',
+    borderColor: 'border-violet-100 dark:border-violet-800/50'
   },
   orange: {
-    gradient: 'from-orange-400 to-red-500',
-    button: 'bg-orange-600 hover:bg-orange-700',
-    lightText: 'text-orange-50',
-    iconBg: 'bg-orange-50',
-    iconColor: 'text-orange-600',
-    progressBar: 'stroke-orange-600',
-    ring: 'ring-orange-100'
+    gradient: 'from-orange-500 to-red-500 dark:from-orange-800 dark:to-red-900',
+    button: 'bg-orange-600 hover:bg-orange-700 dark:bg-orange-700',
+    lightText: 'text-orange-50 dark:text-orange-100',
+    iconBg: 'bg-orange-50 dark:bg-orange-900/40',
+    iconColor: 'text-orange-600 dark:text-orange-300',
+    progressBar: 'bg-orange-600 dark:bg-orange-500',
+    borderColor: 'border-orange-100 dark:border-orange-800/50'
   }
 };
 
@@ -121,17 +122,17 @@ export function Dashboard({
   const criticalQuestions = 0; // Depois pegar do backend
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-32 font-sans animate-in fade-in duration-500">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-32 font-sans animate-in fade-in duration-500 transition-colors">
       
       {/* 1. TOP BAR SIMPLIFICADA */}
-      <div className="px-6 pt-6 pb-2 flex justify-between items-center bg-white sticky top-0 z-20 border-b border-gray-100 shadow-sm">
+      <div className="px-6 pt-6 pb-2 flex justify-between items-center bg-white dark:bg-gray-900 sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800 shadow-sm">
         <div onClick={onOpenProfiles} className="cursor-pointer">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-0.5">Estudando para</p>
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5">Estudando para</p>
           <div className="flex items-center gap-1 group">
-            <h1 className="text-lg font-bold text-gray-800 truncate max-w-[200px]">
+            <h1 className="text-lg font-bold text-gray-800 dark:text-white truncate max-w-[200px]">
               {activeProfile ? activeProfile.nome : 'Selecionar Cargo'}
             </h1>
-            <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
+            <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
           </div>
         </div>
         
@@ -148,7 +149,7 @@ export function Dashboard({
 
           <button 
             onClick={onOpenCustomization}
-            className="p-2.5 bg-gray-100 rounded-full hover:bg-gray-200 transition-all text-gray-600"
+            className="p-2.5 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all text-gray-600 dark:text-gray-300"
           >
             <Settings size={20} />
           </button>
@@ -190,34 +191,34 @@ export function Dashboard({
         <div className="grid grid-cols-2 gap-4">
           
           {/* Card de Nível */}
-          <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden">
             <div className={`absolute -right-4 -bottom-4 opacity-10 ${currentTheme.iconColor}`}>
               <Trophy size={80} />
             </div>
             <p className="text-xs font-medium text-gray-400 uppercase">Nível {level}</p>
             <div className="mt-2 mb-3">
-              <span className="text-3xl font-bold text-gray-800">{xp}</span>
+              <span className="text-3xl font-bold text-gray-800 dark:text-white">{xp}</span>
               <span className="text-xs text-gray-400 font-medium ml-1">xp</span>
             </div>
             {/* Mini Progress Bar */}
-            <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+            <div className="w-full bg-gray-100 dark:bg-gray-800 h-1.5 rounded-full overflow-hidden">
               <div 
-                className={`h-full rounded-full ${currentTheme.iconColor.replace('text-', 'bg-')}`}
+                className={`h-full rounded-full ${currentTheme.progressBar}`}
                 style={{ width: `${progressPercentage}%` }}
               ></div>
             </div>
           </div>
 
           {/* Card de Precisão */}
-          <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden">
             <div className={`absolute -right-4 -bottom-4 opacity-10 ${currentTheme.iconColor}`}>
               <Target size={80} />
             </div>
             <p className="text-xs font-medium text-gray-400 uppercase">Precisão Global</p>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-gray-800">{Math.round(todayAccuracy)}%</span>
+              <span className="text-3xl font-bold text-gray-800 dark:text-white">{Math.round(todayAccuracy)}%</span>
             </div>
-            <div className="mt-3 flex items-center gap-1.5 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-md w-fit">
+            <div className="mt-3 flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-md w-fit">
               <TrendingUp size={12} />
               <span className="font-bold">Hoje</span>
             </div>
@@ -252,7 +253,7 @@ export function Dashboard({
         {/* 5. LISTA DE MATÉRIAS (MINIMALISTA) */}
         <div>
           <div className="flex items-center justify-between mb-4 px-1">
-            <h3 className="font-bold text-gray-800 text-lg">Seu Progresso</h3>
+            <h3 className="font-bold text-gray-800 dark:text-white text-lg">Seu Progresso</h3>
             <button 
               onClick={onOpenStatistics}
               className={`text-xs font-medium ${currentTheme.iconColor} ${currentTheme.iconBg} px-2 py-1 rounded-lg hover:brightness-95 transition-colors`}
@@ -261,15 +262,15 @@ export function Dashboard({
             </button>
           </div>
           
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 divide-y divide-gray-50">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 divide-y divide-gray-50 dark:divide-gray-800">
             {subjects.map((subj, index) => (
-              <div key={index} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors first:rounded-t-3xl last:rounded-b-3xl cursor-pointer">
+              <div key={index} className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors first:rounded-t-3xl last:rounded-b-3xl cursor-pointer">
                 <div className="flex items-center gap-4">
                   {/* Circular Progress */}
                   <div className="relative size-10 flex items-center justify-center shrink-0">
                     <svg className="size-full -rotate-90" viewBox="0 0 36 36">
                       <path 
-                        className="text-gray-100" 
+                        className="text-gray-100 dark:text-gray-800" 
                         d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
                         fill="none" 
                         stroke="currentColor" 
@@ -284,15 +285,15 @@ export function Dashboard({
                         strokeWidth="4" 
                       />
                     </svg>
-                    <span className="absolute text-[10px] font-bold text-gray-600">{subj.progress}%</span>
+                    <span className="absolute text-[10px] font-bold text-gray-600 dark:text-gray-300">{subj.progress}%</span>
                   </div>
                   
                   <div>
-                    <p className="text-sm font-bold text-gray-800 leading-tight">{subj.name}</p>
+                    <p className="text-sm font-bold text-gray-800 dark:text-white leading-tight">{subj.name}</p>
                     <p className="text-xs text-gray-400 mt-0.5">{subj.total} questões</p>
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-gray-300" />
+                <ChevronRight size={16} className="text-gray-300 dark:text-gray-600" />
               </div>
             ))}
           </div>
@@ -302,20 +303,20 @@ export function Dashboard({
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={onOpenSimulatedExam}
-            className="bg-white border-2 border-gray-100 rounded-2xl p-4 hover:border-purple-200 transition-all active:scale-95 text-left"
+            className="bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-800 rounded-2xl p-4 hover:border-purple-200 dark:hover:border-purple-900/30 transition-all active:scale-95 text-left"
           >
             <Clock className="size-6 text-purple-500 mb-2" />
-            <p className="font-bold text-gray-900 text-sm">Simulado</p>
-            <p className="text-xs text-gray-500 mt-0.5">Modo prova</p>
+            <p className="font-bold text-gray-900 dark:text-white text-sm">Simulado</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Modo prova</p>
           </button>
           
           <button
             onClick={onOpenAchievements}
-            className="bg-white border-2 border-gray-100 rounded-2xl p-4 hover:border-yellow-200 transition-all active:scale-95 text-left"
+            className="bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-800 rounded-2xl p-4 hover:border-yellow-200 dark:hover:border-yellow-900/30 transition-all active:scale-95 text-left"
           >
             <Trophy className="size-6 text-yellow-500 mb-2" />
-            <p className="font-bold text-gray-900 text-sm">Conquistas</p>
-            <p className="text-xs text-gray-500 mt-0.5">{detailedStats?.badges?.length || 0} badges</p>
+            <p className="font-bold text-gray-900 dark:text-white text-sm">Conquistas</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{detailedStats?.badges?.length || 0} badges</p>
           </button>
         </div>
 
@@ -323,7 +324,7 @@ export function Dashboard({
 
       {/* 7. BOTTOM NAVIGATION (FLUTUANTE ESTILO ILHA) */}
       <div className="fixed bottom-6 left-0 w-full px-6 flex justify-center z-30 pointer-events-none">
-        <nav className="bg-white border border-gray-100 p-2 rounded-2xl shadow-xl flex items-center gap-1 pointer-events-auto max-w-sm w-full justify-between">
+        <nav className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-2 rounded-2xl shadow-xl flex items-center gap-1 pointer-events-auto max-w-sm w-full justify-between">
           <button 
             onClick={onStartQuiz}
             className={`flex-1 flex flex-col items-center justify-center py-2 rounded-xl ${currentTheme.iconBg} ${currentTheme.iconColor} transition-all`}
@@ -334,7 +335,7 @@ export function Dashboard({
           
           <button 
             onClick={onOpenSimulatedExam}
-            className="flex-1 flex flex-col items-center justify-center py-2 rounded-xl text-gray-400 hover:bg-gray-50 transition-all"
+            className="flex-1 flex flex-col items-center justify-center py-2 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
           >
             <Target size={20} strokeWidth={2.5} className="mb-0.5" />
             <span className="text-[10px] font-medium">Simulados</span>
@@ -342,7 +343,7 @@ export function Dashboard({
           
           <button 
             onClick={onOpenStatistics}
-            className="flex-1 flex flex-col items-center justify-center py-2 rounded-xl text-gray-400 hover:bg-gray-50 transition-all"
+            className="flex-1 flex flex-col items-center justify-center py-2 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
           >
             <BarChart3 size={20} strokeWidth={2.5} className="mb-0.5" />
             <span className="text-[10px] font-medium">Stats</span>
