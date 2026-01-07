@@ -365,7 +365,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
             <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-yellow-800 dark:text-yellow-200">
+                <div className="text-sm text-gray-900 dark:text-white">
                   <p className="mb-2"><strong>Sistema Inteligente:</strong></p>
                   <ul className="list-disc list-inside space-y-1 text-xs">
                     <li>Questões adaptadas ao seu perfil de concurso</li>

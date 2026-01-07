@@ -14,8 +14,8 @@ interface StudyPlanSettingsProps {
 
 export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
   const { settings } = useCustomization();
-  const activeTheme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
-  
+  const theme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
+
   // Estados
   const [questionsPerBatch, setQuestionsPerBatch] = useState([10]);
   const [intervalMinutes, setIntervalMinutes] = useState([30]);
@@ -23,161 +23,140 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
   const [alerts, setAlerts] = useState({ sound: true, vibration: true });
 
   return (
-    <div className="min-h-screen bg-background pb-20 animate-in slide-in-from-right transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 animate-in slide-in-from-right">
       
-      {/* HEADER */}
-      <div className="bg-background/80 backdrop-blur-md p-4 sticky top-0 z-10 border-b border-border flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onBack} className="hover:bg-muted">
-          <ArrowLeft className="h-6 w-6 text-foreground" />
+      {/* Header */}
+      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-4 sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={onBack} className="hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-900 dark:text-white">
+          <ArrowLeft className="h-6 w-6" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold text-foreground">Plano de Estudos</h1>
-          <p className="text-xs text-muted-foreground">Personalize o seu ritmo</p>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">Plano de Estudos</h1>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Personalize o seu ritmo</p>
         </div>
       </div>
 
       <div className="p-6 space-y-8 max-w-xl mx-auto">
 
-        {/* 1. RITMO */}
+        {/* SECTION: RITMO */}
         <section>
-          <div className={`flex items-center gap-2 mb-4 ${activeTheme.text}`}>
-            <Zap size={20} />
-            <h2 className="font-bold text-foreground">Ritmo de Estudo</h2>
+          <div className="flex items-center gap-3 mb-4">
+            <div className={`p-2 rounded-lg ${theme.bg}`}>
+               <Zap size={18} className={theme.text} />
+            </div>
+            <h2 className="font-bold text-gray-900 dark:text-white text-sm uppercase tracking-wide">Intensidade</h2>
           </div>
           
-          <Card className="border-border bg-card shadow-sm">
-            <CardContent className="pt-6 space-y-6">
+          <Card className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm rounded-3xl">
+            <CardContent className="pt-6 space-y-8">
+              {/* Slider 1 */}
               <div>
-                <div className="flex justify-between mb-4">
-                  <span className="text-sm font-medium text-foreground">Questões por rodada</span>
-                  <span className={`text-xl font-bold ${activeTheme.text}`}>{questionsPerBatch}</span>
+                <div className="flex justify-between mb-4 items-center">
+                  <span className="font-medium text-gray-900 dark:text-white">Questões por rodada</span>
+                  <span className={`text-lg font-bold ${theme.text} bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-md`}>
+                    {questionsPerBatch}
+                  </span>
                 </div>
                 <Slider 
                   value={questionsPerBatch} 
                   onValueChange={setQuestionsPerBatch} 
-                  max={50} 
-                  min={5} 
-                  step={5} 
-                  className="py-2 cursor-pointer"
+                  max={50} min={5} step={5} 
+                  className="py-2"
                 />
-                <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
-                  Você receberá {questionsPerBatch} questões para resolver de cada vez.
-                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Menos questões = Mais foco.</p>
               </div>
-            </CardContent>
-          </Card>
-        </section>
 
-        {/* 2. INTERVALO */}
-        <section>
-          <div className={`flex items-center gap-2 mb-4 ${activeTheme.text}`}>
-            <Clock size={20} />
-            <h2 className="font-bold text-foreground">Intervalos</h2>
-          </div>
-
-          <Card className="border-border bg-card shadow-sm">
-            <CardContent className="pt-6 space-y-6">
-              <div>
-                <div className="flex justify-between mb-4">
-                  <span className="text-sm font-medium text-foreground">A cada quanto tempo?</span>
-                  <span className={`text-xl font-bold ${activeTheme.text}`}>{intervalMinutes} min</span>
+              {/* Slider 2 */}
+               <div>
+                <div className="flex justify-between mb-4 items-center">
+                  <span className="font-medium text-gray-900 dark:text-white">Intervalo</span>
+                  <span className={`text-lg font-bold ${theme.text} bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-md`}>
+                    {intervalMinutes} min
+                  </span>
                 </div>
                 <Slider 
                   value={intervalMinutes} 
                   onValueChange={setIntervalMinutes} 
-                  max={120} 
-                  min={10} 
-                  step={10} 
-                  className="py-2 cursor-pointer"
+                  max={120} min={10} step={10} 
+                  className="py-2"
                 />
-                <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
-                  O app lembrará você de estudar a cada {intervalMinutes} minutos.
-                </p>
               </div>
             </CardContent>
           </Card>
         </section>
 
-        {/* 3. HORÁRIO E NOTIFICAÇÕES */}
+        {/* SECTION: ALERTAS */}
         <section>
-          <div className={`flex items-center gap-2 mb-4 ${activeTheme.text}`}>
-            <Bell size={20} />
-            <h2 className="font-bold text-foreground">Horário Ativo</h2>
+          <div className="flex items-center gap-3 mb-4">
+            <div className={`p-2 rounded-lg ${theme.bg}`}>
+               <Bell size={18} className={theme.text} />
+            </div>
+            <h2 className="font-bold text-gray-900 dark:text-white text-sm uppercase tracking-wide">Notificações</h2>
           </div>
 
-          <div className="bg-card border border-border rounded-xl shadow-sm p-5 space-y-6">
+          <Card className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm rounded-3xl overflow-hidden divide-y divide-gray-200 dark:divide-gray-700">
             
-            <div className="grid grid-cols-2 gap-4">
+             <div className="p-5 grid grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-700/50">
               <div>
-                <label className="text-xs font-bold text-muted-foreground mb-2 block uppercase tracking-wider">Início</label>
+                <label className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 block uppercase">Início</label>
                 <div className="relative">
-                  <Sun className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Sun className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input 
                     type="time" 
                     value={timeRange.start}
                     onChange={(e) => setTimeRange({...timeRange, start: e.target.value})}
-                    className="pl-10 bg-background border-input text-foreground font-medium"
+                    className="pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white font-medium h-10 rounded-xl"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-bold text-muted-foreground mb-2 block uppercase tracking-wider">Fim</label>
+                <label className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 block uppercase">Fim</label>
                 <div className="relative">
-                  <Moon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Moon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input 
                     type="time" 
                     value={timeRange.end}
                     onChange={(e) => setTimeRange({...timeRange, end: e.target.value})}
-                    className="pl-10 bg-background border-input text-foreground font-medium"
+                    className="pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white font-medium h-10 rounded-xl"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="h-px bg-border my-2"></div>
-
-            {/* Sons e Vibração */}
-            <div className="space-y-4">
+            <div className="p-5 space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full ${activeTheme.bg}`}>
-                    <Volume2 size={18} className={activeTheme.text} />
+                  <div className="bg-yellow-100 dark:bg-yellow-900/30 p-2 rounded-full">
+                    <Volume2 size={18} className="text-yellow-600 dark:text-yellow-400" />
                   </div>
-                  <span className="text-sm font-medium text-foreground">Som de Notificação</span>
+                  <span className="font-medium text-gray-900 dark:text-white">Sons</span>
                 </div>
-                <Switch 
-                  checked={alerts.sound}
-                  onCheckedChange={(v) => setAlerts({...alerts, sound: v})}
-                />
+                <Switch checked={alerts.sound} onCheckedChange={(v) => setAlerts({...alerts, sound: v})} />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full ${activeTheme.bg}`}>
-                    <Smartphone size={18} className={activeTheme.text} />
+                  <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full">
+                    <Smartphone size={18} className="text-blue-600 dark:text-blue-400" />
                   </div>
-                  <span className="text-sm font-medium text-foreground">Vibração</span>
+                  <span className="font-medium text-gray-900 dark:text-white">Vibração</span>
                 </div>
-                <Switch 
-                  checked={alerts.vibration}
-                  onCheckedChange={(v) => setAlerts({...alerts, vibration: v})}
-                />
+                <Switch checked={alerts.vibration} onCheckedChange={(v) => setAlerts({...alerts, vibration: v})} />
               </div>
             </div>
-
-          </div>
+          </Card>
         </section>
 
-        {/* Botão Salvar */}
-        <div className="pt-4 pb-8">
+        {/* Ação */}
+        <div className="pt-4">
           <Button 
-            className={`w-full py-6 text-lg font-bold shadow-lg text-white rounded-xl transition-all active:scale-[0.98] ${activeTheme.btn}`}
+            className={`w-full py-6 text-lg font-bold shadow-lg rounded-2xl transition-transform active:scale-[0.98] ${theme.button} text-white`}
             onClick={() => {
-              alert("Plano salvo! Notificações agendadas.");
+              alert("Plano salvo!");
               onBack();
             }}
           >
-            Salvar Plano de Estudos
+            Salvar Alterações
           </Button>
         </div>
 
