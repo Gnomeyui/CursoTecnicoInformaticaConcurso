@@ -242,21 +242,21 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
                 <div className="flex items-center gap-3">
                   <span className={`
                     flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-semibold
-                    ${!showResult && !isSelected ? 'text-gray-700 dark:text-gray-300' : ''}
-                    ${!showResult && isSelected ? 'text-blue-600 dark:text-blue-400 border-blue-500' : ''}
-                    ${showResult && isCorrect ? 'text-green-700 dark:text-green-300 border-green-500' : ''}
-                    ${showResult && isSelected && !isCorrect ? 'text-red-700 dark:text-red-300 border-red-500' : ''}
-                    ${showResult && !isCorrect && !isSelected ? 'text-gray-400 dark:text-gray-500' : ''}
+                    ${!showResult && !isSelected ? 'text-gray-700 border-gray-300' : ''}
+                    ${!showResult && isSelected ? 'text-blue-900 border-blue-500' : ''}
+                    ${showResult && isCorrect ? 'text-green-900 border-green-500' : ''}
+                    ${showResult && isSelected && !isCorrect ? 'text-red-900 border-red-500' : ''}
+                    ${showResult && !isCorrect && !isSelected ? 'text-gray-400 border-gray-300' : ''}
                   `}>
                     {String.fromCharCode(65 + index)}
                   </span>
                   <span className={`
-                    flex-1
-                    ${!showResult && !isSelected ? 'text-gray-900 dark:text-gray-100' : ''}
-                    ${!showResult && isSelected ? 'text-blue-700 dark:text-blue-300' : ''}
-                    ${showResult && isCorrect ? 'text-green-900 dark:text-green-100 font-medium' : ''}
-                    ${showResult && isSelected && !isCorrect ? 'text-red-900 dark:text-red-100' : ''}
-                    ${showResult && !isCorrect && !isSelected ? 'text-gray-500 dark:text-gray-400' : ''}
+                    flex-1 font-medium
+                    ${!showResult && !isSelected ? 'text-gray-900' : ''}
+                    ${!showResult && isSelected ? 'text-blue-900' : ''}
+                    ${showResult && isCorrect ? 'text-green-900 font-semibold' : ''}
+                    ${showResult && isSelected && !isCorrect ? 'text-red-900' : ''}
+                    ${showResult && !isCorrect && !isSelected ? 'text-gray-500' : ''}
                   `}>
                     {option}
                   </span>

@@ -2218,6 +2218,10 @@
     color: var(--color-blue-700);
   }
 
+  .text-blue-900 {
+    color: var(--color-blue-900);
+  }
+
   .text-card-foreground {
     color: oklch(.145 0 0);
   }
@@ -3629,12 +3633,6 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    .dark\:text-blue-300 {
-      color: var(--color-blue-300);
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
     .dark\:text-blue-400 {
       color: var(--color-blue-400);
     }
@@ -3673,12 +3671,6 @@
   @media (prefers-color-scheme: dark) {
     .dark\:text-gray-500 {
       color: var(--color-gray-500);
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .dark\:text-green-100 {
-      color: var(--color-green-100);
     }
   }
 
@@ -3733,12 +3725,6 @@
   @media (prefers-color-scheme: dark) {
     .dark\:text-purple-400 {
       color: var(--color-purple-400);
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .dark\:text-red-100 {
-      color: var(--color-red-100);
     }
   }
 
