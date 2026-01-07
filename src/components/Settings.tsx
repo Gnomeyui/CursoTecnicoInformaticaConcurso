@@ -310,6 +310,11 @@ export function Settings({
           <p className="font-semibold">Gabaritoo v1.0.0</p>
           <p>Sistema Inteligente de Estudos para Concursos</p>
           <p className="text-gray-400/70">Feito com ❤️ em Roraima 🇧🇷</p>
+          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-green-600 dark:text-green-400 font-medium flex items-center justify-center gap-1">
+              ✓ Todas as configurações são salvas automaticamente
+            </p>
+          </div>
         </div>
 
       </div>

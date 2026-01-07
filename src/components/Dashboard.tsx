@@ -50,20 +50,27 @@ export function Dashboard({
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex-1">
-          <h1 className="text-3xl mb-2 text-gray-900 dark:text-gray-100">Gabaritoo</h1>
+          <h1 className="text-3xl mb-2 font-bold text-gray-900 dark:text-gray-100">Gabaritoo</h1>
           {activeProfile ? (
-            <div>
-              <p className="text-gray-900 dark:text-gray-100">{activeProfile.nome}</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{activeProfile.orgao}</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs px-2 py-1 rounded-md font-bold uppercase tracking-wide">
+                {activeProfile.orgao}
+              </span>
+              <p className="text-gray-600 dark:text-gray-400 font-medium">{activeProfile.nome}</p>
             </div>
           ) : (
-            <button
+            <div 
               onClick={onOpenProfiles}
-              className="text-blue-500 hover:text-blue-600 text-sm flex items-center gap-1"
+              className="mt-2 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 p-3 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors animate-pulse"
             >
-              <User className="size-4" />
-              Escolher perfil de concurso
-            </button>
+              <div className="bg-red-100 dark:bg-red-900/40 p-2 rounded-full text-red-600 dark:text-red-400">
+                <User size={18} />
+              </div>
+              <div>
+                <p className="text-red-700 dark:text-red-400 font-bold text-sm">Nenhum foco definido!</p>
+                <p className="text-red-600 dark:text-red-500 text-xs">Toque aqui para escolher seu cargo.</p>
+              </div>
+            </div>
           )}
         </div>
         <button
