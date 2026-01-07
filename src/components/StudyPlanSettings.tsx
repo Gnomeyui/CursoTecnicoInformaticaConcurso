@@ -14,30 +14,14 @@ interface StudyPlanSettingsProps {
 export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
   const { settings } = useCustomization();
   
-  // Cor dinâmica baseada no tema
-  const accentColor = {
-    blue: 'text-blue-600',
-    green: 'text-green-600',
-    purple: 'text-purple-600',
-    orange: 'text-orange-600',
-    default: 'text-blue-600'
-  }[settings.colorTheme] || 'text-blue-600';
-
-  const bgColor = {
-    blue: 'bg-blue-600',
-    green: 'bg-green-600',
-    purple: 'bg-purple-600',
-    orange: 'bg-orange-600',
-    default: 'bg-blue-600'
-  }[settings.colorTheme] || 'bg-blue-600';
-
-  const hoverBgColor = {
-    blue: 'hover:bg-blue-700',
-    green: 'hover:bg-green-700',
-    purple: 'hover:bg-purple-700',
-    orange: 'hover:bg-orange-700',
-    default: 'hover:bg-blue-700'
-  }[settings.colorTheme] || 'hover:bg-blue-700';
+  // 🎨 MAPA DE ESTILOS SEGURO - Garante que as cores dinâmicas funcionem
+  const styles = {
+    blue:   { text: 'text-blue-600',   btn: 'bg-blue-600 hover:bg-blue-700' },
+    green:  { text: 'text-green-600',  btn: 'bg-green-600 hover:bg-green-700' },
+    purple: { text: 'text-purple-600', btn: 'bg-purple-600 hover:bg-purple-700' },
+    orange: { text: 'text-orange-600', btn: 'bg-orange-600 hover:bg-orange-700' },
+    default: { text: 'text-blue-600',   btn: 'bg-blue-600 hover:bg-blue-700' }
+  }[settings.colorTheme] || { text: 'text-blue-600', btn: 'bg-blue-600 hover:bg-blue-700' };
 
   // Estados
   const [questionsPerBatch, setQuestionsPerBatch] = useState([10]);
@@ -61,16 +45,16 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 animate-in slide-in-from-right">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 animate-in slide-in-from-right transition-colors duration-300">
       
       {/* HEADER */}
-      <div className="bg-white p-4 sticky top-0 z-10 shadow-sm flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onBack}>
-          <ArrowLeft className="h-6 w-6 text-gray-600" />
+      <div className="bg-white dark:bg-gray-900 p-4 sticky top-0 z-10 shadow-sm flex items-center gap-4 border-b border-gray-100 dark:border-gray-800">
+        <Button variant="ghost" size="icon" onClick={onBack} className="hover:bg-gray-100 dark:hover:bg-gray-800">
+          <ArrowLeft className="h-6 w-6 text-gray-600 dark:text-gray-300" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold text-gray-800">Plano de Estudos</h1>
-          <p className="text-xs text-gray-500">Defina o seu ritmo diário</p>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">Plano de Estudos</h1>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Personalize o seu ritmo</p>
         </div>
       </div>
 
@@ -78,17 +62,17 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
 
         {/* 1. QUANTIDADE DE QUESTÕES */}
         <section>
-          <div className={`flex items-center gap-2 mb-3 ${accentColor}`}>
+          <div className={`flex items-center gap-2 mb-3 ${styles.text}`}>
             <Zap size={20} />
-            <h2 className="font-bold text-gray-800">Ritmo de Estudo</h2>
+            <h2 className="font-bold text-gray-800 dark:text-gray-200">Ritmo de Estudo</h2>
           </div>
           
-          <Card className="border-none shadow-sm">
+          <Card className="border-none shadow-sm dark:bg-gray-900 dark:border dark:border-gray-800">
             <CardContent className="pt-6 space-y-6">
               <div>
                 <div className="flex justify-between mb-4">
-                  <span className="text-sm font-medium text-gray-700">Questões por rodada</span>
-                  <span className={`text-xl font-bold ${accentColor}`}>{questionsPerBatch[0]}</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Questões por rodada</span>
+                  <span className={`text-xl font-bold ${styles.text}`}>{questionsPerBatch[0]}</span>
                 </div>
                 <Slider 
                   value={questionsPerBatch} 
@@ -108,17 +92,17 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
 
         {/* 2. INTERVALO DE TEMPO */}
         <section>
-          <div className={`flex items-center gap-2 mb-3 ${accentColor}`}>
+          <div className={`flex items-center gap-2 mb-3 ${styles.text}`}>
             <Clock size={20} />
-            <h2 className="font-bold text-gray-800">Intervalos</h2>
+            <h2 className="font-bold text-gray-800 dark:text-gray-200">Intervalos</h2>
           </div>
 
-          <Card className="border-none shadow-sm">
+          <Card className="border-none shadow-sm dark:bg-gray-900 dark:border dark:border-gray-800">
             <CardContent className="pt-6 space-y-6">
               <div>
                 <div className="flex justify-between mb-4">
-                  <span className="text-sm font-medium text-gray-700">A cada quanto tempo?</span>
-                  <span className={`text-xl font-bold ${accentColor}`}>{intervalMinutes[0]} min</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">A cada quanto tempo?</span>
+                  <span className={`text-xl font-bold ${styles.text}`}>{intervalMinutes[0]} min</span>
                 </div>
                 <Slider 
                   value={intervalMinutes} 
@@ -138,12 +122,12 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
 
         {/* 3. HORÁRIO E NOTIFICAÇÕES */}
         <section>
-          <div className={`flex items-center gap-2 mb-3 ${accentColor}`}>
+          <div className={`flex items-center gap-2 mb-3 ${styles.text}`}>
             <Bell size={20} />
-            <h2 className="font-bold text-gray-800">Horário Ativo</h2>
+            <h2 className="font-bold text-gray-800 dark:text-gray-200">Horário Ativo</h2>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-4 space-y-4">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 space-y-4">
             
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -154,7 +138,7 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
                     type="time" 
                     value={timeRange.start}
                     onChange={(e) => setTimeRange({...timeRange, start: e.target.value})}
-                    className="pl-10 bg-gray-50 border-gray-200"
+                    className="pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-white"
                   />
                 </div>
               </div>
@@ -166,22 +150,22 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
                     type="time" 
                     value={timeRange.end}
                     onChange={(e) => setTimeRange({...timeRange, end: e.target.value})}
-                    className="pl-10 bg-gray-50 border-gray-200"
+                    className="pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-white"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="h-px bg-gray-100 my-4"></div>
+            <div className="h-px bg-gray-100 dark:bg-gray-800 my-4"></div>
 
             {/* Sons e Vibração */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-yellow-100 p-2 rounded-full text-yellow-600">
+                  <div className="bg-yellow-100 dark:bg-yellow-900/30 p-2 rounded-full text-yellow-600 dark:text-yellow-400">
                     <Volume2 size={18} />
                   </div>
-                  <span className="text-sm font-medium text-gray-700">Som de Notificação</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Som de Notificação</span>
                 </div>
                 <Switch 
                   checked={alerts.sound}
@@ -191,10 +175,10 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-blue-100 p-2 rounded-full text-blue-600">
+                  <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full text-blue-600 dark:text-blue-400">
                     <Smartphone size={18} />
                   </div>
-                  <span className="text-sm font-medium text-gray-700">Vibração</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Vibração</span>
                 </div>
                 <Switch 
                   checked={alerts.vibration}
@@ -206,10 +190,10 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
           </div>
         </section>
 
-        {/* Botão Salvar */}
+        {/* Botão Salvar com Cores Dinâmicas Seguras */}
         <div className="pt-4">
           <Button 
-            className={`w-full py-6 text-lg font-bold shadow-lg ${bgColor} ${hoverBgColor} text-white rounded-xl`}
+            className={`w-full py-6 text-lg font-bold shadow-lg text-white rounded-xl ${styles.btn}`}
             onClick={handleSave}
           >
             Salvar Plano de Estudos
