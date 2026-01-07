@@ -826,6 +826,10 @@
     margin-bottom: calc(var(--spacing) * 20);
   }
 
+  .-ml-2 {
+    margin-left: calc(var(--spacing) * -2);
+  }
+
   .ml-1 {
     margin-left: calc(var(--spacing) * 1);
   }
@@ -1630,6 +1634,10 @@
     background-color: oklch(1 0 0);
   }
 
+  .bg-card\/80 {
+    background-color: color-mix(in oklab, oklch(1 0 0) 80%, transparent);
+  }
+
   .bg-cyan-50 {
     background-color: var(--color-cyan-50);
   }
@@ -1676,16 +1684,6 @@
 
   .bg-indigo-50 {
     background-color: var(--color-indigo-50);
-  }
-
-  .bg-indigo-900\/50 {
-    background-color: color-mix(in srgb, oklch(.359 .144 278.697) 50%, transparent);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .bg-indigo-900\/50 {
-      background-color: color-mix(in oklab, var(--color-indigo-900) 50%, transparent);
-    }
   }
 
   .bg-muted {
@@ -1783,16 +1781,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-white\/20 {
       background-color: color-mix(in oklab, var(--color-white) 20%, transparent);
-    }
-  }
-
-  .bg-white\/80 {
-    background-color: #fffc;
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .bg-white\/80 {
-      background-color: color-mix(in oklab, var(--color-white) 80%, transparent);
     }
   }
 
@@ -2306,10 +2294,6 @@
     white-space: nowrap;
   }
 
-  .text-amber-600 {
-    color: var(--color-amber-600);
-  }
-
   .text-amber-700 {
     color: var(--color-amber-700);
   }
@@ -2404,10 +2388,6 @@
 
   .text-green-900 {
     color: var(--color-green-900);
-  }
-
-  .text-indigo-300 {
-    color: var(--color-indigo-300);
   }
 
   .text-indigo-700 {
@@ -3143,12 +3123,6 @@
   @media (hover: hover) {
     .hover\:text-foreground:hover {
       color: oklch(.145 0 0);
-    }
-  }
-
-  @media (hover: hover) {
-    .hover\:text-gray-900:hover {
-      color: var(--color-gray-900);
     }
   }
 
@@ -3898,24 +3872,6 @@
     @supports (color: color-mix(in lab, red, red)) {
       .dark\:bg-gray-800\/50 {
         background-color: color-mix(in oklab, var(--color-gray-800) 50%, transparent);
-      }
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .dark\:bg-gray-900 {
-      background-color: var(--color-gray-900);
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .dark\:bg-gray-900\/80 {
-      background-color: color-mix(in srgb, oklch(.21 .034 264.665) 80%, transparent);
-    }
-
-    @supports (color: color-mix(in lab, red, red)) {
-      .dark\:bg-gray-900\/80 {
-        background-color: color-mix(in oklab, var(--color-gray-900) 80%, transparent);
       }
     }
   }

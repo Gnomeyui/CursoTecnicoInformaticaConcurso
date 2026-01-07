@@ -1,12 +1,11 @@
 import React from 'react';
 import { 
-  Moon, Sun, Bell, Volume2, Trash2, LogOut, User, 
-  ChevronRight, Palette, Clock, Shield, HelpCircle, Target
+  Bell, Volume2, Trash2, LogOut, User, 
+  ChevronRight, Palette, Clock, Shield, HelpCircle, Target, ArrowLeft
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Switch } from './ui/switch';
-import { useTheme } from '../context/ThemeContext';
 import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
 
@@ -22,7 +21,6 @@ export function Settings({
   onClose, onOpenCustomization, onOpenProfile, onOpenStudyPlan, onOpenNotifications
 }: SettingsProps) {
   
-  const { isDarkMode, toggleDarkMode } = useTheme();
   const { settings } = useCustomization();
   const theme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
 
@@ -121,12 +119,17 @@ export function Settings({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 animate-in slide-in-from-right">
+    <div className="min-h-screen bg-background pb-20 animate-in slide-in-from-right">
       
       {/* Header */}
-      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md px-6 py-5 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10 flex items-center justify-between">
-        <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Ajustes</h1>
-        <Button variant="ghost" onClick={onClose} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-bold">Concluir</Button>
+      <div className="bg-card/80 backdrop-blur-md px-6 py-5 border-b border-border sticky top-0 z-10 flex items-center gap-3">
+        <button 
+          onClick={onClose} 
+          className="p-2 hover:bg-accent rounded-lg transition-colors -ml-2"
+        >
+          <ArrowLeft className="h-6 w-6 text-foreground" />
+        </button>
+        <h1 className="text-2xl font-black text-foreground tracking-tight">Ajustes</h1>
       </div>
 
       <div className="p-6 space-y-8 max-w-2xl mx-auto">
@@ -174,13 +177,7 @@ export function Settings({
         <section>
           <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase ml-4 mb-3 tracking-widest">Visual</h2>
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[1.5rem] shadow-sm overflow-hidden divide-y divide-gray-200 dark:divide-gray-700">
-            <MenuItem 
-              icon={isDarkMode ? Moon : Sun} 
-              label="Modo Escuro" 
-              desc="Conforto visual para a noite"
-              colorClass={isDarkMode ? "bg-indigo-900/50 text-indigo-300" : "bg-amber-100 text-amber-600"}
-              activeToggle={<Switch checked={isDarkMode} onCheckedChange={toggleDarkMode} />}
-            />
+            {/* MODO ESCURO REMOVIDO - APP SEMPRE EM LIGHT MODE */}
             {onOpenCustomization && (
               <MenuItem 
                 icon={Palette} 

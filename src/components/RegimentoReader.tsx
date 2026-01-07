@@ -157,17 +157,17 @@ export default function RegimentoReader({ onClose, theme }: RegimentoReaderProps
     if (!artigoEncontrado) return null;
 
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 sticky top-0 z-10">
+        <div className="bg-card border-b border-border p-4 sticky top-0 z-10">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setViewMode('index')}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-2 hover:bg-accent rounded-lg transition-colors"
             >
-              <X size={24} className="text-gray-700 dark:text-gray-300" />
+              <X size={24} className="text-foreground" />
             </button>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h1 className="text-xl font-semibold text-foreground">
               Art. {artigoEncontrado.numero}º
             </h1>
           </div>
@@ -224,7 +224,7 @@ export default function RegimentoReader({ onClose, theme }: RegimentoReaderProps
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="p-4 sticky top-0 z-10" style={{ backgroundColor: currentTheme.primary }}>
         <div className="flex items-center justify-between text-white mb-4">

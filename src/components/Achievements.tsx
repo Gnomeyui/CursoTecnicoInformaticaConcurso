@@ -28,7 +28,7 @@ export function Achievements({ onBack }: AchievementsProps = {}) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 animate-in fade-in">
+    <div className="min-h-screen bg-background pb-24 animate-in fade-in">
       
       {/* Header com Gradiente */}
       <div className={`relative overflow-hidden pb-12 pt-8 px-6 bg-gradient-to-br ${theme.gradient} rounded-b-[2.5rem] shadow-xl`}>

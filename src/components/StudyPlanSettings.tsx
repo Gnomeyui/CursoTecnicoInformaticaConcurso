@@ -23,16 +23,16 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
   const [alerts, setAlerts] = useState({ sound: true, vibration: true });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 animate-in slide-in-from-right">
+    <div className="min-h-screen bg-background pb-20 animate-in slide-in-from-right">
       
       {/* Header */}
-      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-4 sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onBack} className="hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-900 dark:text-white">
+      <div className="bg-card/80 backdrop-blur-md p-4 sticky top-0 z-10 border-b border-border flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={onBack} className="hover:bg-accent text-foreground">
           <ArrowLeft className="h-6 w-6" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">Plano de Estudos</h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Personalize o seu ritmo</p>
+          <h1 className="text-xl font-bold text-foreground">Plano de Estudos</h1>
+          <p className="text-xs text-muted-foreground">Personalize o seu ritmo</p>
         </div>
       </div>
 
@@ -44,10 +44,10 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
             <div className={`p-2 rounded-lg ${theme.bg}`}>
                <Zap size={18} className={theme.text} />
             </div>
-            <h2 className="font-bold text-gray-900 dark:text-white text-sm uppercase tracking-wide">Intensidade</h2>
+            <h2 className="font-bold text-foreground text-sm uppercase tracking-wide">Intensidade</h2>
           </div>
           
-          <Card className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm rounded-3xl">
+          <Card className="border-border bg-card shadow-sm rounded-3xl">
             <CardContent className="pt-6 space-y-8">
               {/* Slider 1 */}
               <div>
