@@ -1,6 +1,21 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Plus, Check, Trash2, GraduationCap, BookOpen, Building2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { 
+  ArrowLeft, 
+  Plus, 
+  Check, 
+  Trash2, 
+  GraduationCap, 
+  Building2, 
+  Search,
+  BookOpen,
+  Briefcase,
+  X
+} from 'lucide-react';
 import { useConcursoProfile, perfisPredefinidos, ConcursoProfile } from '../context/ConcursoProfileContext';
+import { Card, CardContent } from './ui/card';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Badge } from './ui/badge';
 
 interface ProfileSelectorProps {
   onBack: () => void;
@@ -8,31 +23,58 @@ interface ProfileSelectorProps {
 
 export function ProfileSelector({ onBack }: ProfileSelectorProps) {
   const { profiles, activeProfile, createProfile, setActiveProfile, deleteProfile } = useConcursoProfile();
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  
+  // Estados locais
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isCreatingCustom, setIsCreatingCustom] = useState(false);
   const [customProfile, setCustomProfile] = useState({
     nome: '',
     nivel: 'medio' as 'fundamental' | 'medio' | 'superior',
-    orgao: 'ALE-RR',
+    orgao: '',
     materias: [] as string[],
   });
 
-  const allMaterias = ['Informática', 'Legislação', 'Português', 'LGPD', 'Governança de TI'];
+  // Filtro inteligente: Busca na lista gigante de cargos
+  const filteredPredefined = useMemo(() => {
+    if (!searchTerm) return perfisPredefinidos.slice(0, 5); // Mostra 5 sugestões se vazio
+    
+    const term = searchTerm.toLowerCase().trim();
+    return perfisPredefinidos.filter(p => 
+      p.nome.toLowerCase().includes(term) || 
+      p.orgao.toLowerCase().includes(term)
+    ).slice(0, 15); // Limita a 15 resultados para não travar
+  }, [searchTerm]);
 
-  const handleCreateFromPredefined = (perfil: typeof perfisPredefinidos[0]) => {
-    createProfile(perfil);
+  const allMaterias = [
+    'Informática', 
+    'Legislação', 
+    'Português', 
+    'Raciocínio Lógico', 
+    'Direito Adm.', 
+    'Direito Const.',
+    'Matemática',
+    'Atualidades',
+    'LGPD',
+    'Governança de TI'
+  ];
+
+  // Handlers
+  const handleCreateCustom = () => {
+    if (customProfile.nome) {
+      createProfile({
+        ...customProfile,
+        orgao: customProfile.orgao || 'Geral', // Valor padrão se vazio
+        materias: customProfile.materias.length > 0 ? customProfile.materias : ['Português'] // Mínimo 1 matéria
+      });
+      setIsCreatingCustom(false);
+      setCustomProfile({ nome: '', nivel: 'medio', orgao: '', materias: [] });
+      setSearchTerm(''); // Limpa busca
+    }
   };
 
-  const handleCreateCustom = () => {
-    if (customProfile.nome && customProfile.materias.length > 0) {
-      createProfile(customProfile);
-      setShowCreateForm(false);
-      setCustomProfile({
-        nome: '',
-        nivel: 'medio',
-        orgao: 'ALE-RR',
-        materias: [],
-      });
-    }
+  const handleAddPredefined = (cargo: typeof perfisPredefinidos[0]) => {
+    createProfile(cargo);
+    setSearchTerm(''); // Limpa busca após adicionar
   };
 
   const toggleMateria = (materia: string) => {
@@ -44,283 +86,343 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
     }));
   };
 
-  const getNivelLabel = (nivel: string) => {
-    const labels = {
-      fundamental: 'Fundamental',
-      medio: 'Médio',
-      superior: 'Superior',
-    };
-    return labels[nivel as keyof typeof labels] || nivel;
+  // Cores por nível
+  const getNivelBadge = (nivel: string) => {
+    switch(nivel) {
+      case 'superior': return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800';
+      case 'medio': return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800';
+      default: return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800';
+    }
   };
 
-  const getNivelColor = (nivel: string) => {
-    const colors = {
-      fundamental: 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
-      medio: 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
-      superior: 'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
-    };
-    return colors[nivel as keyof typeof colors] || colors.medio;
+  const getNivelLabel = (nivel: string) => {
+    switch(nivel) {
+      case 'superior': return 'Superior';
+      case 'medio': return 'Médio';
+      default: return 'Fundamental';
+    }
   };
 
   return (
-    <div className="min-h-screen p-6">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <button
-          onClick={onBack}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-        >
-          <ArrowLeft className="size-6 text-gray-700 dark:text-gray-300" />
-        </button>
+    <div className="min-h-screen bg-app pb-20 animate-in slide-in-from-right duration-300">
+      
+      {/* 1. Header Fixo */}
+      <div className="bg-card-theme p-4 sticky top-0 z-10 shadow-sm flex items-center gap-4 border-b border-gray-200 dark:border-gray-700">
+        <Button variant="ghost" size="icon" onClick={onBack}>
+          <ArrowLeft className="h-6 w-6" />
+        </Button>
         <div>
-          <h1 className="text-2xl text-gray-900 dark:text-gray-100">Perfis de Concurso</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Escolha ou crie o concurso que está estudando
-          </p>
+          <h1 className="text-xl font-bold text-app">Gerenciar Perfis</h1>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Selecione seu foco de estudo</p>
         </div>
       </div>
 
-      {/* Perfil Ativo Atual */}
-      {activeProfile && (
-        <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl p-6 mb-6 text-white">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <p className="text-sm opacity-90 mb-1">Estudando para:</p>
-              <h2 className="text-2xl font-bold">{activeProfile.nome}</h2>
+      <div className="p-4 space-y-6 max-w-xl mx-auto">
+
+        {/* 2. Perfil Ativo (Destaque) */}
+        {activeProfile && (
+          <section>
+            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
+              Estudando Agora
+            </h2>
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden">
+              <Building2 className="absolute right-[-20px] bottom-[-20px] h-32 w-32 text-white opacity-10" />
+              
+              <div className="relative z-10">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <Badge className="bg-white/20 hover:bg-white/30 text-white border-0 mb-2">
+                      {activeProfile.orgao}
+                    </Badge>
+                    <h2 className="text-2xl font-bold">{activeProfile.nome}</h2>
+                    <p className="text-blue-100 text-sm flex items-center gap-1 mt-1">
+                      <GraduationCap size={14} /> 
+                      Nível {getNivelLabel(activeProfile.nivel)}
+                    </p>
+                    {activeProfile.materias && activeProfile.materias.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-3">
+                        {activeProfile.materias.slice(0, 4).map((materia, idx) => (
+                          <span 
+                            key={idx}
+                            className="text-xs bg-white/10 px-2 py-1 rounded text-blue-50"
+                          >
+                            {materia}
+                          </span>
+                        ))}
+                        {activeProfile.materias.length > 4 && (
+                          <span className="text-xs bg-white/10 px-2 py-1 rounded text-blue-50">
+                            +{activeProfile.materias.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="bg-white text-blue-600 rounded-full p-2 shadow-md">
+                    <Check size={20} strokeWidth={3} />
+                  </div>
+                </div>
+              </div>
             </div>
-            <Check className="size-8 bg-white/20 rounded-full p-1.5" />
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="bg-white/20 px-3 py-1 rounded-full flex items-center gap-1">
-              <Building2 className="size-4" />
-              {activeProfile.orgao}
-            </span>
-            <span className="bg-white/20 px-3 py-1 rounded-full flex items-center gap-1">
-              <GraduationCap className="size-4" />
-              Nível {getNivelLabel(activeProfile.nivel)}
-            </span>
-          </div>
-          <div className="mt-4 pt-4 border-t border-white/20">
-            <p className="text-xs opacity-90 mb-2">Matérias:</p>
-            <div className="flex flex-wrap gap-2">
-              {activeProfile.materias.map(materia => (
-                <span key={materia} className="text-xs bg-white/20 px-2 py-1 rounded-lg">
-                  {materia}
-                </span>
+          </section>
+        )}
+
+        {/* 3. Lista de Perfis Salvos (se houver mais além do ativo) */}
+        {profiles.length > 1 && (
+          <section>
+            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2 ml-1">
+              Meus Outros Perfis
+            </h2>
+            <div className="space-y-3">
+              {profiles.filter(p => !p.ativo).map(profile => (
+                <Card 
+                  key={profile.id} 
+                  className="border-l-4 border-l-gray-300 dark:border-l-gray-600 hover:border-l-blue-400 transition-all active:scale-[0.98] cursor-pointer"
+                  onClick={() => setActiveProfile(profile.id)}
+                >
+                  <CardContent className="p-4 flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-800 dark:text-gray-200">{profile.nome}</h3>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <Badge variant="outline" className="text-xs">
+                          {profile.orgao}
+                        </Badge>
+                        <Badge variant="outline" className={`text-xs ${getNivelBadge(profile.nivel)}`}>
+                          {getNivelLabel(profile.nivel)}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-1">
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        className="text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (window.confirm(`Deseja realmente excluir o perfil "${profile.nome}"?`)) {
+                            deleteProfile(profile.id);
+                          }
+                        }}
+                      >
+                        <Trash2 size={18} />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+          </section>
+        )}
 
-      {/* Meus Perfis */}
-      {profiles.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-lg mb-3 text-gray-900 dark:text-gray-100">Meus Perfis</h3>
-          <div className="space-y-3">
-            {profiles.map(profile => (
-              <div
-                key={profile.id}
-                className={`bg-white dark:bg-gray-800 rounded-xl p-4 border-2 transition-all ${
-                  profile.ativo
-                    ? 'border-blue-500'
-                    : 'border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1">
-                    <h4 className="text-gray-900 dark:text-gray-100 mb-1">{profile.nome}</h4>
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="text-gray-600 dark:text-gray-400">{profile.orgao}</span>
-                      <span className={`px-2 py-0.5 rounded-full ${getNivelColor(profile.nivel)}`}>
-                        {getNivelLabel(profile.nivel)}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {profile.materias.map(materia => (
-                        <span
-                          key={materia}
-                          className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded"
-                        >
-                          {materia}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {!profile.ativo && (
-                      <button
-                        onClick={() => setActiveProfile(profile.id)}
-                        className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors"
-                      >
-                        Ativar
-                      </button>
-                    )}
-                    <button
-                      onClick={() => deleteProfile(profile.id)}
-                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="size-4 text-red-500" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Criar Novo Perfil */}
-      <div className="mb-6">
-        <button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="w-full bg-white dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-4 hover:border-blue-500 dark:hover:border-blue-500 transition-colors flex items-center justify-center gap-2 text-gray-700 dark:text-gray-300"
-        >
-          <Plus className="size-5" />
-          <span>Criar Perfil Personalizado</span>
-        </button>
-      </div>
-
-      {/* Formulário Criar Perfil Personalizado */}
-      {showCreateForm && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6 border-2 border-blue-500">
-          <h3 className="text-lg mb-4 text-gray-900 dark:text-gray-100">Novo Perfil Personalizado</h3>
-          
-          <div className="space-y-4">
-            {/* Nome do Cargo */}
-            <div>
-              <label className="block text-sm mb-2 text-gray-700 dark:text-gray-300">
-                Nome do Cargo
-              </label>
-              <input
-                type="text"
-                value={customProfile.nome}
-                onChange={(e) => setCustomProfile(prev => ({ ...prev, nome: e.target.value }))}
-                placeholder="Ex: Técnico em Informática"
-                className="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 outline-none"
-              />
+        {/* 4. Adicionar Novo (Busca Inteligente) */}
+        <section className="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+            <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full p-1">
+              <Plus size={20} />
             </div>
+            Adicionar Novo Objetivo
+          </h2>
 
-            {/* Órgão */}
-            <div>
-              <label className="block text-sm mb-2 text-gray-700 dark:text-gray-300">
-                Órgão
-              </label>
-              <input
-                type="text"
-                value={customProfile.orgao}
-                onChange={(e) => setCustomProfile(prev => ({ ...prev, orgao: e.target.value }))}
-                placeholder="Ex: ALE-RR, TRE-RO"
-                className="w-full px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-blue-500 outline-none"
-              />
-            </div>
-
-            {/* Nível */}
-            <div>
-              <label className="block text-sm mb-2 text-gray-700 dark:text-gray-300">
-                Nível de Escolaridade
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {(['fundamental', 'medio', 'superior'] as const).map(nivel => (
-                  <button
-                    key={nivel}
-                    onClick={() => setCustomProfile(prev => ({ ...prev, nivel }))}
-                    className={`py-2 rounded-lg border-2 transition-all text-sm ${
-                      customProfile.nivel === nivel
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
-                    }`}
-                  >
-                    {getNivelLabel(nivel)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Matérias */}
-            <div>
-              <label className="block text-sm mb-2 text-gray-700 dark:text-gray-300">
-                Matérias do Concurso
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {allMaterias.map(materia => (
-                  <button
-                    key={materia}
-                    onClick={() => toggleMateria(materia)}
-                    className={`py-2 px-3 rounded-lg border-2 transition-all text-sm text-left ${
-                      customProfile.materias.includes(materia)
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
-                    }`}
-                  >
-                    {materia}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Botões */}
-            <div className="flex gap-3 pt-2">
+          {/* Barra de Busca */}
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Input 
+              placeholder="Busque seu cargo (ex: Agente, Técnico, Analista)..." 
+              className="pl-10 pr-10 h-12 text-base"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
               <button
-                onClick={() => setShowCreateForm(false)}
-                className="flex-1 py-2 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
-                Cancelar
+                <X size={20} />
               </button>
-              <button
-                onClick={handleCreateCustom}
-                disabled={!customProfile.nome || customProfile.materias.length === 0}
-                className="flex-1 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white rounded-lg transition-colors disabled:cursor-not-allowed"
-              >
-                Criar Perfil
-              </button>
-            </div>
+            )}
           </div>
-        </div>
-      )}
 
-      {/* Perfis Pré-definidos */}
-      <div>
-        <h3 className="text-lg mb-3 text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <BookOpen className="size-5" />
-          Perfis Sugeridos
-        </h3>
-        <div className="grid gap-3">
-          {perfisPredefinidos.map((perfil, index) => (
-            <div
-              key={index}
-              className="bg-white dark:bg-gray-800 rounded-xl p-4 border-2 border-gray-200 dark:border-gray-700"
-            >
-              <div className="flex items-start justify-between">
+          {/* Indicador de resultados */}
+          {searchTerm && (
+            <div className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+              {filteredPredefined.length > 0 ? (
+                <span>Encontrados {filteredPredefined.length} resultados</span>
+              ) : (
+                <span>Nenhum resultado encontrado</span>
+              )}
+            </div>
+          )}
+
+          {/* Lista de Resultados da Busca */}
+          <div className="space-y-2 mb-6">
+            {filteredPredefined.map((cargo, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleAddPredefined(cargo)}
+                className="w-full text-left bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all shadow-sm flex justify-between items-center group"
+              >
                 <div className="flex-1">
-                  <h4 className="text-gray-900 dark:text-gray-100 mb-1">{perfil.nome}</h4>
-                  <div className="flex items-center gap-2 text-xs mb-2">
-                    <span className="text-gray-600 dark:text-gray-400">{perfil.orgao}</span>
-                    <span className={`px-2 py-0.5 rounded-full ${getNivelColor(perfil.nivel)}`}>
-                      {getNivelLabel(perfil.nivel)}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {perfil.materias.map(materia => (
-                      <span
-                        key={materia}
-                        className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded"
-                      >
-                        {materia}
-                      </span>
-                    ))}
+                  <p className="font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-700 dark:group-hover:text-blue-400">
+                    {cargo.nome}
+                  </p>
+                  <div className="flex gap-2 mt-1 flex-wrap">
+                    <Badge variant="outline" className="text-xs font-normal text-gray-600 dark:text-gray-400">
+                      {cargo.orgao}
+                    </Badge>
+                    <Badge variant="outline" className={`text-xs font-normal border ${getNivelBadge(cargo.nivel)}`}>
+                      {getNivelLabel(cargo.nivel)}
+                    </Badge>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleCreateFromPredefined(perfil)}
-                  className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors whitespace-nowrap ml-2"
-                >
-                  Adicionar
-                </button>
+                <Plus className="text-gray-300 group-hover:text-blue-500 dark:group-hover:text-blue-400 flex-shrink-0 ml-2" />
+              </button>
+            ))}
+            
+            {searchTerm && filteredPredefined.length === 0 && (
+              <div className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                <BookOpen className="mx-auto h-12 w-12 text-gray-300 mb-3" />
+                <p className="text-gray-500 dark:text-gray-400 mb-1">Nenhum cargo encontrado</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500">
+                  Tente termos como "Técnico", "Agente" ou "Analista"
+                </p>
               </div>
-            </div>
-          ))}
-        </div>
+            )}
+
+            {!searchTerm && filteredPredefined.length > 0 && (
+              <div className="text-center py-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  💡 Digite acima para buscar entre 439+ cargos
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Botão para criar Personalizado (se não achar na busca) */}
+          <div className="text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Não encontrou o que procurava?</p>
+            {!isCreatingCustom ? (
+              <Button 
+                variant="outline" 
+                className="w-full border-dashed border-2 h-12"
+                onClick={() => {
+                  setIsCreatingCustom(true);
+                  setSearchTerm(''); // Limpa busca
+                }}
+              >
+                <Plus className="mr-2" size={18} />
+                Criar Cargo Personalizado
+              </Button>
+            ) : (
+              <Card className="border-blue-200 dark:border-blue-800 shadow-sm text-left animate-in fade-in zoom-in duration-200">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="font-bold text-gray-800 dark:text-gray-200">Novo Cargo Personalizado</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => {
+                        setIsCreatingCustom(false);
+                        setCustomProfile({ nome: '', nivel: 'medio', orgao: '', materias: [] });
+                      }}
+                    >
+                      <X size={18} />
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-1 block">
+                        Nome do Cargo *
+                      </label>
+                      <Input 
+                        placeholder="Ex: Auditor Fiscal" 
+                        value={customProfile.nome}
+                        onChange={e => setCustomProfile({...customProfile, nome: e.target.value})}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-1 block">
+                        Órgão / Banca
+                      </label>
+                      <Input 
+                        placeholder="Ex: FGV, CESPE, Prefeitura..." 
+                        value={customProfile.orgao}
+                        onChange={e => setCustomProfile({...customProfile, orgao: e.target.value})}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-2 block">
+                        Nível de Escolaridade
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {(['fundamental', 'medio', 'superior'] as const).map(nivel => (
+                          <button
+                            key={nivel}
+                            onClick={() => setCustomProfile({...customProfile, nivel})}
+                            className={`text-sm px-3 py-2 rounded-lg border transition-all ${
+                              customProfile.nivel === nivel
+                                ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-400 text-blue-700 dark:text-blue-400 font-bold'
+                                : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
+                            }`}
+                          >
+                            {getNivelLabel(nivel)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-2 block">
+                        Matérias Principais (opcional)
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {allMaterias.map(m => (
+                          <button
+                            key={m}
+                            onClick={() => toggleMateria(m)}
+                            className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
+                              customProfile.materias.includes(m)
+                                ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-400 text-blue-700 dark:text-blue-400 font-medium'
+                                : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
+                            }`}
+                          >
+                            {customProfile.materias.includes(m) && <Check size={12} className="inline mr-1" />}
+                            {m}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-2">
+                      <Button 
+                        variant="ghost" 
+                        className="flex-1" 
+                        onClick={() => {
+                          setIsCreatingCustom(false);
+                          setCustomProfile({ nome: '', nivel: 'medio', orgao: '', materias: [] });
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button 
+                        className="flex-1 bg-blue-600 hover:bg-blue-700" 
+                        onClick={handleCreateCustom}
+                        disabled={!customProfile.nome}
+                      >
+                        <Check size={18} className="mr-2" />
+                        Criar Perfil
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+        </section>
+
       </div>
     </div>
   );

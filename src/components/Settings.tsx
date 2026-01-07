@@ -1,188 +1,317 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Target, Trash2, User } from 'lucide-react';
-import { SmartNotificationSettings } from './SmartNotificationSettings';
+import React from 'react';
+import { 
+  Moon, 
+  Sun, 
+  Bell, 
+  Volume2, 
+  Trash2, 
+  LogOut, 
+  User, 
+  ChevronRight, 
+  Palette,
+  ShieldAlert,
+  Target
+} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
+import { Button } from './ui/button';
+import { Switch } from './ui/switch';
+import { Separator } from './ui/separator';
+import { Label } from './ui/label';
+import { useTheme } from '../context/ThemeContext';
 
 interface SettingsProps {
-  onBack: () => void;
+  onClose: () => void;
+  onOpenCustomization?: () => void;
+  onOpenProfile?: () => void;
+  onOpenNotifications?: () => void;
 }
 
-export function Settings({ onBack }: SettingsProps) {
-  const [dailyGoal, setDailyGoal] = useState(20);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+export function Settings({ 
+  onClose, 
+  onOpenCustomization, 
+  onOpenProfile,
+  onOpenNotifications 
+}: SettingsProps) {
+  const { isDarkMode, toggleDarkMode } = useTheme();
+  
+  // Estados para preferências (integrar com localStorage depois)
+  const [notifications, setNotifications] = React.useState(() => {
+    const saved = localStorage.getItem('alerr_notifications_enabled');
+    return saved ? JSON.parse(saved) : true;
+  });
+  
+  const [sound, setSound] = React.useState(() => {
+    const saved = localStorage.getItem('alerr_sound_enabled');
+    return saved ? JSON.parse(saved) : false;
+  });
 
-  useEffect(() => {
+  const [dailyGoal, setDailyGoal] = React.useState(() => {
     const saved = localStorage.getItem('alerr_settings');
     if (saved) {
       const settings = JSON.parse(saved);
-      setDailyGoal(settings.dailyGoal || 20);
+      return settings.dailyGoal || 20;
     }
+    return 20;
+  });
 
-    // Carregar última vez que salvou
-    const lastSavedStr = localStorage.getItem('alerr_settings_last_saved');
-    if (lastSavedStr) {
-      setLastSaved(new Date(lastSavedStr));
-    }
-  }, []);
+  // Salvar preferências quando mudarem
+  React.useEffect(() => {
+    localStorage.setItem('alerr_notifications_enabled', JSON.stringify(notifications));
+  }, [notifications]);
 
-  // 🚀 NOVO: Salvar automaticamente quando a meta diária mudar
-  useEffect(() => {
-    // Aguardar 800ms após a última mudança antes de salvar (debounce)
-    const timer = setTimeout(() => {
-      if (dailyGoal > 0) {
-        saveSettingsAutomatically();
+  React.useEffect(() => {
+    localStorage.setItem('alerr_sound_enabled', JSON.stringify(sound));
+  }, [sound]);
+
+  const handleResetProgress = () => {
+    if (window.confirm('⚠️ Tem certeza? Esta ação não pode ser desfeita. Todo o seu progresso, XP e estatísticas serão apagados.')) {
+      // Listar todas as chaves relacionadas ao app
+      const keysToKeep = ['alerr_notifications_enabled', 'alerr_sound_enabled'];
+      const keysToRemove: string[] = [];
+      
+      // Identificar chaves do Gabaritoo
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('alerr_') && !keysToKeep.includes(key)) {
+          keysToRemove.push(key);
+        }
       }
-    }, 800);
-
-    return () => clearTimeout(timer);
-  }, [dailyGoal]);
-
-  // 🚀 NOVA FUNÇÃO: Salvar automaticamente (sem alert)
-  const saveSettingsAutomatically = () => {
-    setIsSaving(true);
-    
-    const saved = localStorage.getItem('alerr_settings');
-    const existingSettings = saved ? JSON.parse(saved) : {};
-    
-    const settings = {
-      ...existingSettings,
-      dailyGoal
-    };
-    
-    localStorage.setItem('alerr_settings', JSON.stringify(settings));
-    
-    // Salvar timestamp
-    const now = new Date();
-    setLastSaved(now);
-    localStorage.setItem('alerr_settings_last_saved', now.toISOString());
-    
-    console.log('✅ Meta diária salva automaticamente:', dailyGoal);
-    
-    setTimeout(() => setIsSaving(false), 500);
+      
+      // Remover
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      alert('✅ Progresso resetado! Reinicie o app para começar do zero.');
+      window.location.reload();
+    }
   };
 
-  const saveSettings = () => {
-    const saved = localStorage.getItem('alerr_settings');
-    const existingSettings = saved ? JSON.parse(saved) : {};
-    
-    const settings = {
-      ...existingSettings,
-      dailyGoal
-    };
-    localStorage.setItem('alerr_settings', JSON.stringify(settings));
-    
-    // Salvar timestamp
-    const now = new Date();
-    setLastSaved(now);
-    localStorage.setItem('alerr_settings_last_saved', now.toISOString());
-    
-    alert('Configurações salvas com sucesso!');
-  };
-
-  const resetProgress = () => {
-    if (confirm('Tem certeza que deseja resetar todo o seu progresso? Esta ação não pode ser desfeita.')) {
-      localStorage.removeItem('alerr_progress');
-      alert('Progresso resetado!');
-      onBack();
+  const handleLogout = () => {
+    if (window.confirm('Deseja realmente sair da sua conta?')) {
+      // Implementar logout (quando tiver autenticação)
+      alert('Logout em desenvolvimento. Por enquanto, o app funciona em modo offline.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Header - Mobile Optimized */}
-      <div className="bg-gray-50 dark:bg-gray-800 shadow-sm border-b border-slate-200 dark:border-gray-700 sticky top-0 z-50">
-        <div className="px-3 sm:px-4 py-3">
-          <button 
-            onClick={onBack}
-            className="flex items-center gap-1 text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-colors active:scale-95 touch-manipulation min-h-[44px]"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            <span className="text-sm sm:text-base">Voltar</span>
-          </button>
-        </div>
+    <div className="min-h-screen bg-app pb-20 animate-in slide-in-from-right duration-300">
+      
+      {/* Cabeçalho */}
+      <div className="bg-card-theme p-6 shadow-sm sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+        <h1 className="text-2xl font-bold text-app">Configurações</h1>
+        <Button variant="ghost" onClick={onClose}>Concluir</Button>
       </div>
 
-      <div className="px-3 sm:px-4 py-4 sm:py-6 md:py-8 max-w-3xl mx-auto">
-        <h1 className="text-2xl sm:text-3xl text-slate-900 dark:text-white mb-6 sm:mb-8">Configurações Gerais</h1>
+      <div className="p-4 space-y-6 max-w-2xl mx-auto">
+        
+        {/* Seção: Conta */}
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase ml-1">
+            Sua Conta
+          </h2>
+          <Card className="border-none shadow-sm">
+            <CardContent className="p-0 divide-y dark:divide-gray-700">
+              
+              {onOpenProfile && (
+                <button 
+                  onClick={onOpenProfile}
+                  className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left rounded-t-xl"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full text-blue-600 dark:text-blue-400">
+                      <User size={20} />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">Perfil do Concurso</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Alterar cargo ou banca</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={18} className="text-gray-400" />
+                </button>
+              )}
 
-        {/* Daily Goal - Mobile Optimized */}
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 sm:p-6 shadow-md mb-4 sm:mb-6 border border-slate-200 dark:border-gray-700">
-          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <Target className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-lg sm:text-xl text-slate-900 dark:text-white">Meta Diária</h2>
-          </div>
-          <p className="text-sm sm:text-base text-slate-600 dark:text-gray-400 mb-4">
-            Quantas questões você quer responder por dia?
-          </p>
-          <input
-            type="range"
-            min="5"
-            max="500"
-            value={dailyGoal}
-            onChange={(e) => setDailyGoal(Number(e.target.value))}
-            className="w-full mb-3 touch-manipulation slider-custom"
-            style={{ 
-              height: '44px',
-              borderRadius: '12px',
-              background: `linear-gradient(to right, var(--slider-fill) 0%, var(--slider-fill) ${((dailyGoal - 5) / (500 - 5)) * 100}%, var(--slider-track) ${((dailyGoal - 5) / (500 - 5)) * 100}%, var(--slider-track) 100%)`
-            }}
-          />
-          <div className="text-center mb-3">
-            <span className="text-3xl sm:text-4xl text-blue-600 dark:text-blue-400">{dailyGoal}</span>
-            <span className="text-sm sm:text-base text-slate-600 dark:text-gray-400 ml-2">questões/dia</span>
-          </div>
+              <button 
+                onClick={() => {
+                  const newGoal = prompt(`Qual sua meta diária de questões?\n\nAtual: ${dailyGoal} questões/dia`, dailyGoal.toString());
+                  if (newGoal && !isNaN(Number(newGoal))) {
+                    const goal = Math.max(1, Math.min(1000, Number(newGoal)));
+                    setDailyGoal(goal);
+                    localStorage.setItem('alerr_settings', JSON.stringify({ dailyGoal: goal }));
+                  }
+                }}
+                className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left rounded-b-xl"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-full text-green-600 dark:text-green-400">
+                    <Target size={20} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white">Meta Diária</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {dailyGoal} questões por dia
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </button>
 
-          {/* Indicador de salvamento automático */}
-          {isSaving && (
-            <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-2 border border-blue-300 dark:border-blue-600 animate-pulse">
-              <p className="text-xs text-blue-700 dark:text-blue-300 text-center">
-                💾 Salvando automaticamente...
-              </p>
-            </div>
-          )}
-
-          {lastSaved && !isSaving && (
-            <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-2 border border-green-300 dark:border-green-600">
-              <p className="text-xs text-green-700 dark:text-green-300 text-center">
-                ✅ Salvo: {lastSaved.toLocaleTimeString('pt-BR')}
-              </p>
-            </div>
-          )}
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Save Button - Mobile Touch Friendly */}
-        <button
-          onClick={saveSettings}
-          className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 sm:py-5 rounded-xl shadow-lg active:scale-[0.98] transition-all duration-200 mb-4 sm:mb-6 text-base sm:text-lg touch-manipulation"
-        >
-          Salvar Configurações
-        </button>
+        {/* Seção: Aparência */}
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase ml-1">
+            App & Visual
+          </h2>
+          <Card className="border-none shadow-sm">
+            <CardContent className="p-0 divide-y dark:divide-gray-700">
+              
+              {/* Botão de Tema (Dark Mode) */}
+              <div className="flex items-center justify-between p-4 rounded-t-xl">
+                <div className="flex items-center gap-3">
+                  <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-full text-purple-600 dark:text-purple-400">
+                    {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
+                  </div>
+                  <Label htmlFor="dark-mode" className="font-medium text-base cursor-pointer">
+                    Modo Escuro
+                  </Label>
+                </div>
+                <Switch 
+                  id="dark-mode" 
+                  checked={isDarkMode} 
+                  onCheckedChange={toggleDarkMode} 
+                />
+              </div>
 
-        {/* Danger Zone - Mobile Optimized */}
-        <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-5 sm:p-6 border border-red-200 dark:border-red-700">
-          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <Trash2 className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
-            <h2 className="text-lg sm:text-xl text-red-900 dark:text-red-300">Zona de Perigo</h2>
-          </div>
-          <p className="text-sm sm:text-base text-red-700 dark:text-red-300 mb-4">
-            Resetar todo o progresso (pontos, estatísticas e histórico).
-          </p>
-          <button
-            onClick={resetProgress}
-            className="bg-red-600 text-white px-5 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-red-700 transition-colors active:scale-95 text-sm sm:text-base touch-manipulation min-h-[44px]"
-          >
-            Resetar Progresso
-          </button>
+              {/* Botão para Personalização Avançada */}
+              {onOpenCustomization && (
+                <button 
+                  onClick={onOpenCustomization}
+                  className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left rounded-b-xl"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="bg-pink-100 dark:bg-pink-900/30 p-2 rounded-full text-pink-600 dark:text-pink-400">
+                      <Palette size={20} />
+                    </div>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      Personalizar Cores & Temas
+                    </span>
+                  </div>
+                  <ChevronRight size={18} className="text-gray-400" />
+                </button>
+              )}
+
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Smart Notification Settings */}
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 sm:p-6 shadow-md mb-4 sm:mb-6 border border-slate-200 dark:border-gray-700">
-          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <User className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-lg sm:text-xl text-slate-900 dark:text-white">Configurações de Notificação Inteligente</h2>
-          </div>
-          <SmartNotificationSettings />
+        {/* Seção: Preferências */}
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase ml-1">
+            Preferências
+          </h2>
+          <Card className="border-none shadow-sm">
+            <CardContent className="p-0 divide-y dark:divide-gray-700">
+              
+              {/* Notificações - Abre tela dedicada se existir */}
+              {onOpenNotifications ? (
+                <button 
+                  onClick={onOpenNotifications}
+                  className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left rounded-t-xl"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-full text-green-600 dark:text-green-400">
+                      <Bell size={20} />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        Notificações Inteligentes
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {notifications ? 'Ativadas' : 'Desativadas'}
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight size={18} className="text-gray-400" />
+                </button>
+              ) : (
+                <div className="flex items-center justify-between p-4 rounded-t-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-full text-green-600 dark:text-green-400">
+                      <Bell size={20} />
+                    </div>
+                    <Label htmlFor="notif" className="font-medium text-base cursor-pointer">
+                      Notificações Inteligentes
+                    </Label>
+                  </div>
+                  <Switch 
+                    id="notif" 
+                    checked={notifications} 
+                    onCheckedChange={setNotifications} 
+                  />
+                </div>
+              )}
+
+              <div className="flex items-center justify-between p-4 rounded-b-xl">
+                <div className="flex items-center gap-3">
+                  <div className="bg-yellow-100 dark:bg-yellow-900/30 p-2 rounded-full text-yellow-600 dark:text-yellow-400">
+                    <Volume2 size={20} />
+                  </div>
+                  <Label htmlFor="sound" className="font-medium text-base cursor-pointer">
+                    Efeitos Sonoros
+                  </Label>
+                </div>
+                <Switch 
+                  id="sound" 
+                  checked={sound} 
+                  onCheckedChange={setSound} 
+                />
+              </div>
+
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Seção: Zona de Perigo */}
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-red-500 dark:text-red-400 uppercase ml-1">
+            Dados
+          </h2>
+          <Card className="border-red-100 dark:border-red-900 shadow-sm">
+            <CardContent className="p-0 divide-y dark:divide-gray-700">
+              
+              <button 
+                onClick={handleResetProgress}
+                className="w-full flex items-center gap-3 p-4 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600 dark:text-red-400 text-left rounded-t-xl"
+              >
+                <Trash2 size={20} />
+                <div>
+                  <p className="font-medium">Resetar todo o progresso</p>
+                  <p className="text-xs text-red-500/70 dark:text-red-400/70">
+                    Ação irreversível - cuidado!
+                  </p>
+                </div>
+              </button>
+              
+              <button 
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-400 text-left rounded-b-xl"
+              >
+                <LogOut size={20} />
+                <span className="font-medium">Sair da Conta</span>
+              </button>
+              
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center text-xs text-gray-400 dark:text-gray-500 mt-8 pb-8 space-y-1">
+          <p className="font-semibold">Gabaritoo v1.0.0</p>
+          <p>Sistema Inteligente de Estudos para Concursos</p>
+          <p className="text-gray-400/70">Feito com ❤️ em Roraima 🇧🇷</p>
+        </div>
+
       </div>
     </div>
   );

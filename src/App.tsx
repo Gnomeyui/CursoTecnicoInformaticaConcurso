@@ -195,7 +195,11 @@ function AppContent() {
       )}
 
       {currentView === 'settings' && (
-        <Settings onBack={handleBackToDashboard} />
+        <Settings 
+          onClose={handleBackToDashboard}
+          onOpenCustomization={handleOpenCustomization}
+          onOpenProfile={handleOpenProfiles}
+        />
       )}
 
       {currentView === 'simulatedExam' && (
