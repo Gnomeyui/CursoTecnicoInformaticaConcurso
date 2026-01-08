@@ -1,7 +1,50 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../utils/supabase/client';
+/**
+ * useSmartQuiz - Hook Inteligente para Quiz com SQLite
+ * 
+ * MODELO HÍBRIDO - Combina:
+ * - Busca com JOIN (exams + questions)
+ * - Sistema de shuffle de alternativas
+ * - Lógica de mastered/critical
+ * - Filtros avançados (disciplina, dificuldade)
+ * - Sistema de XP e progressão
+ */
 
-// Utilitário: Fisher-Yates Shuffle
+import { useState, useCallback, useEffect } from 'react';
+import { sqliteService } from '../lib/database/SQLiteService';
+
+interface QuestionOption {
+  id: string;
+  text: string;
+}
+
+interface Question {
+  id: number;
+  questionNumber: number;
+  discipline: string;
+  statement: string;
+  options: Record<string, string>;
+  shuffledOptions: QuestionOption[]; // Para exibir embaralhado
+  correctOption: string;
+  // Dados da prova
+  banca: string;
+  orgao: string;
+  cargo: string;
+  ano: number;
+  nivel: string;
+}
+
+interface UseSmartQuizProps {
+  discipline?: string;
+  quantidade?: number;
+  excludeMastered?: boolean; // Excluir questões já dominadas
+  prioritizeCritical?: boolean; // Priorizar questões críticas
+  autoStart?: boolean;
+  userId?: string;
+}
+
+/**
+ * Função auxiliar para embaralhar array
+ */
 function shuffleArray<T>(array: T[]): T[] {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
@@ -11,304 +54,241 @@ function shuffleArray<T>(array: T[]): T[] {
   return newArray;
 }
 
-interface QuestionOption {
-  id: string;
-  text: string;
-}
-
-interface Question {
-  id: string;
-  text: string;
-  options: QuestionOption[];
-  shuffledOptions?: QuestionOption[];
-  correct_option_id: string;
-  subject_id: string;
-  difficulty_level: 'facil' | 'medio' | 'dificil';
-}
-
-interface UseSmartQuizOptions {
-  archetypeId?: number;
-  userId?: string;
-  questionsPerBlock?: number;
-}
-
 export function useSmartQuiz({
-  archetypeId,
-  userId,
-  questionsPerBlock = 10
-}: UseSmartQuizOptions = {}) {
+  discipline,
+  quantidade = 10,
+  excludeMastered = false,
+  prioritizeCritical = false,
+  autoStart = true,
+  userId = 'local_user'
+}: UseSmartQuizProps = {}) {
   const [queue, setQueue] = useState<Question[]>([]);
-  const [mistakesQueue, setMistakesQueue] = useState<Question[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [currentMode, setCurrentMode] = useState<'normal' | 'review_forced'>('normal');
-  const [isLoading, setIsLoading] = useState(false);
-  const [sessionStats, setSessionStats] = useState({
-    questionsAnswered: 0,
-    correctAnswers: 0,
-    xpGained: 0
-  });
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Preparar questão com embaralhamento de opções
-  const prepareQuestion = useCallback((questionData: Question): Question => {
-    const shuffledOptions = shuffleArray([...questionData.options]);
-    return { ...questionData, shuffledOptions };
-  }, []);
-
-  // Buscar bloco de questões do banco
+  /**
+   * Busca inteligente de questões
+   */
   const fetchBlock = useCallback(async () => {
-    if (!archetypeId || !userId) {
-      console.error('archetypeId e userId são obrigatórios');
-      return;
-    }
+    setLoading(true);
+    setError(null);
 
-    setIsLoading(true);
     try {
-      // ===== ALGORITMO INTELIGENTE 70/30 (SEM RPC) =====
-      
-      // 1️⃣ Calcular quantidades (70% novas + 30% erradas)
-      const novasLimit = Math.ceil(questionsPerBlock * 0.7);  // 70%
-      const erradasLimit = questionsPerBlock - novasLimit;    // 30%
-      
-      // 2️⃣ BUSCAR QUESTÕES NOVAS (nunca respondidas)
-      const { data: novasQuestions, error: novasError } = await supabase
-        .from('questions')
-        .select('*')
-        .eq('concurso_perfil_id', archetypeId)
-        .not('id', 'in', `(
-          SELECT question_id 
-          FROM user_question_progress 
-          WHERE user_id = '${userId}'
-        )`)
-        .limit(novasLimit);
-      
-      if (novasError && novasError.code !== 'PGRST116') {
-        console.error('Erro ao buscar questões novas:', novasError);
-      }
-      
-      // 3️⃣ BUSCAR QUESTÕES ERRADAS (para revisão)
-      const { data: progressData, error: progressError } = await supabase
-        .from('user_question_progress')
-        .select('question_id, times_wrong_total, times_correct, is_mastered')
-        .eq('user_id', userId)
-        .eq('is_mastered', false)
-        .gt('times_wrong_total', 0)  // Pelo menos 1 erro
-        .order('times_wrong_total', { ascending: false })  // Mais erros primeiro
-        .limit(erradasLimit);
-      
-      if (progressError) {
-        console.error('Erro ao buscar progresso:', progressError);
-      }
-      
-      // 4️⃣ Buscar detalhes das questões erradas
-      let erradasQuestions: any[] = [];
-      if (progressData && progressData.length > 0) {
-        const erradasIds = progressData
-          .filter(p => p.times_wrong_total > p.times_correct)  // Mais erros que acertos
-          .map(p => p.question_id);
-        
-        if (erradasIds.length > 0) {
-          const { data: erradasData } = await supabase
-            .from('questions')
-            .select('*')
-            .eq('concurso_perfil_id', archetypeId)
-            .in('id', erradasIds);
-          
-          erradasQuestions = erradasData || [];
-        }
-      }
-      
-      // 5️⃣ COMBINAR E EMBARALHAR
-      const allQuestions = [
-        ...(novasQuestions || []),
-        ...(erradasQuestions || [])
-      ];
-      
-      // Se não conseguiu questões suficientes, busca mais novas como fallback
-      if (allQuestions.length < questionsPerBlock) {
-        const remaining = questionsPerBlock - allQuestions.length;
-        const { data: fallbackQuestions } = await supabase
-          .from('questions')
-          .select('*')
-          .eq('concurso_perfil_id', archetypeId)
-          .limit(remaining);
-        
-        if (fallbackQuestions) {
-          allQuestions.push(...fallbackQuestions);
-        }
+      await sqliteService.initialize();
+
+      // Montar query dinâmica
+      let sql = `
+        SELECT 
+          q.id,
+          q.question_number,
+          q.discipline,
+          q.statement,
+          q.options,
+          q.correct_option,
+          e.banca,
+          e.orgao,
+          e.cargo,
+          e.ano,
+          e.nivel,
+          COALESCE(p.is_mastered, 0) as is_mastered,
+          COALESCE(p.is_critical, 0) as is_critical,
+          COALESCE(p.times_wrong_total, 0) as times_wrong
+        FROM questions q
+        INNER JOIN exams e ON q.exam_id = e.id
+        LEFT JOIN user_question_progress p ON q.id = p.question_id AND p.user_id = ?
+        WHERE 1=1
+      `;
+      const params: any[] = [userId];
+
+      // Filtro de disciplina
+      if (discipline) {
+        sql += ' AND q.discipline = ?';
+        params.push(discipline);
       }
 
-      // 6️⃣ PREPARAR QUESTÕES
-      if (allQuestions.length > 0) {
-        const preparedQuestions = shuffleArray(allQuestions).map(prepareQuestion);
-        setQueue(preparedQuestions);
-        setCurrentQuestionIndex(0);
-        setCurrentMode('normal');
-        
-        console.log(`✅ Quiz carregado: ${novasQuestions?.length || 0} novas + ${erradasQuestions.length} revisão = ${preparedQuestions.length} total`);
-      } else {
-        console.warn('⚠️ Nenhuma questão encontrada para este perfil');
+      // Filtro de questões já dominadas
+      if (excludeMastered) {
+        sql += ' AND COALESCE(p.is_mastered, 0) = 0';
       }
-    } catch (error) {
-      console.error('❌ Erro ao buscar questões:', error);
+
+      // Ordenação: Prioriza críticas primeiro, depois aleatório
+      if (prioritizeCritical) {
+        sql += ' ORDER BY is_critical DESC, times_wrong DESC, RANDOM()';
+      } else {
+        sql += ' ORDER BY RANDOM()';
+      }
+
+      sql += ' LIMIT ?';
+      params.push(quantidade);
+
+      const results = await sqliteService.query(sql, params);
+
+      if (results.length === 0) {
+        setError('Nenhuma questão encontrada com os filtros aplicados.');
+        setQueue([]);
+        return;
+      }
+
+      // Processar resultados
+      const parsedQuestions: Question[] = results.map(row => {
+        const optionsObj = JSON.parse(row.options);
+        
+        // Criar array de opções para shuffle
+        const optionsArray: QuestionOption[] = Object.entries(optionsObj).map(([key, text]) => ({
+          id: key,
+          text: text as string
+        }));
+
+        return {
+          id: row.id,
+          questionNumber: row.question_number,
+          discipline: row.discipline,
+          statement: row.statement,
+          options: optionsObj,
+          shuffledOptions: shuffleArray(optionsArray), // Embaralhar alternativas
+          correctOption: row.correct_option,
+          banca: row.banca,
+          orgao: row.orgao,
+          cargo: row.cargo,
+          ano: row.ano,
+          nivel: row.nivel
+        };
+      });
+
+      setQueue(parsedQuestions);
+      setCurrentIndex(0);
+
+      console.log(`✅ ${parsedQuestions.length} questões carregadas (Disciplina: ${discipline || 'Todas'})`);
+
+    } catch (err) {
+      console.error('❌ Erro ao buscar questões:', err);
+      setError(`Erro ao carregar questões: ${err}`);
+      setQueue([]);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  }, [archetypeId, userId, questionsPerBlock, prepareQuestion]);
+  }, [discipline, quantidade, excludeMastered, prioritizeCritical, userId]);
 
-  // Atualizar estatísticas no banco
-  const updateDatabaseStats = useCallback(async (
-    questionId: string,
-    isCorrect: boolean
-  ) => {
-    if (!userId) return;
+  /**
+   * Registra resposta e atualiza progresso + XP
+   */
+  const handleAnswer = useCallback(async (question: Question, selectedOptionId: string) => {
+    const isCorrect = selectedOptionId === question.correctOption;
 
     try {
-      // Atualizar progresso da questão
-      await supabase.rpc('update_question_progress', {
-        p_user_id: userId,
-        p_question_id: questionId,
-        p_is_correct: isCorrect
-      });
+      // 1. Buscar progresso atual
+      const existingProgress = await sqliteService.query(
+        'SELECT * FROM user_question_progress WHERE user_id = ? AND question_id = ?',
+        [userId, question.id]
+      );
 
-      // Calcular XP ganho (10 XP por acerto, 2 XP por tentativa)
-      const xpGain = isCorrect ? 10 : 2;
+      const current = existingProgress[0] || {
+        times_viewed: 0,
+        times_correct: 0,
+        times_wrong_total: 0
+      };
 
-      // Atualizar perfil do usuário
-      await supabase.rpc('update_user_profile', {
-        p_user_id: userId,
-        p_xp_gain: xpGain,
-        p_is_correct: isCorrect
-      });
+      const newViewed = current.times_viewed + 1;
+      const newCorrect = current.times_correct + (isCorrect ? 1 : 0);
+      const newWrong = current.times_wrong_total + (isCorrect ? 0 : 1);
 
-      // Atualizar estatísticas da sessão
-      setSessionStats(prev => ({
-        questionsAnswered: prev.questionsAnswered + 1,
-        correctAnswers: prev.correctAnswers + (isCorrect ? 1 : 0),
-        xpGained: prev.xpGained + xpGain
-      }));
-    } catch (error) {
-      console.error('Erro ao atualizar estatísticas:', error);
-    }
-  }, [userId]);
+      // Regras de classificação
+      const isMastered = newCorrect >= 4 ? 1 : 0; // ✅ Dominada após 4 acertos
+      const isCritical = newWrong >= 3 ? 1 : 0;   // 🔴 Crítica após 3 erros
 
-  // Processar resposta do usuário
-  const handleAnswer = useCallback(async (
-    question: Question,
-    selectedOptionId: string
-  ) => {
-    const isCorrect = selectedOptionId === question.correct_option_id;
+      // 2. Atualizar/Inserir progresso
+      await sqliteService.execute(`
+        INSERT OR REPLACE INTO user_question_progress (
+          user_id, question_id, times_viewed, times_correct,
+          times_wrong_total, is_mastered, is_critical, 
+          last_answered_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      `, [userId, question.id, newViewed, newCorrect, newWrong, isMastered, isCritical]);
 
-    if (currentMode === 'normal') {
-      // Modo Normal: Processa estatísticas
-      await updateDatabaseStats(question.id, isCorrect);
-
-      if (!isCorrect) {
-        // Se errou, joga para a fila de revisão imediata
-        const remixedQuestion = prepareQuestion(question);
-        setMistakesQueue(prev => [...prev, remixedQuestion]);
-      }
-
-      // REMOVIDO: Não avança automaticamente - deixa o UI controlar
-      // setCurrentQuestionIndex(prev => prev + 1);
-    } else {
-      // Modo Review (O Loop de 30%): Só sai se acertar
+      // 3. Atualizar XP do usuário
       if (isCorrect) {
-        // Remove da fila de erros
-        setMistakesQueue(prev => prev.filter(q => q.id !== question.id));
-        // REMOVIDO: setCurrentQuestionIndex(prev => prev + 1);
+        await sqliteService.execute(`
+          UPDATE user_profile 
+          SET xp = xp + 10,
+              total_questions_answered = total_questions_answered + 1,
+              correct_answers = correct_answers + 1,
+              updated_at = CURRENT_TIMESTAMP
+          WHERE user_id = ?
+        `, [userId]);
       } else {
-        // Se errar de novo na revisão, embaralha e joga pro fim da fila
-        const remixedQuestion = prepareQuestion(question);
-        setMistakesQueue(prev => {
-          const filtered = prev.filter(q => q.id !== question.id);
-          return [...filtered, remixedQuestion];
-        });
-        // Não avança, fica na mesma questão (mas com opções embaralhadas)
+        await sqliteService.execute(`
+          UPDATE user_profile 
+          SET total_questions_answered = total_questions_answered + 1,
+              updated_at = CURRENT_TIMESTAMP
+          WHERE user_id = ?
+        `, [userId]);
       }
-    }
 
-    return { isCorrect };
-  }, [currentMode, updateDatabaseStats, prepareQuestion]);
+      console.log(`${isCorrect ? '✅' : '❌'} Q${question.id}: ${isCorrect ? '+10 XP' : 'Errou'}`);
 
-  // Nova função EXPLÍCITA para avançar para a próxima questão
-  const nextQuestion = useCallback(() => {
-    setCurrentQuestionIndex(prev => prev + 1);
-  }, []);
+      return { isCorrect, isMastered: isMastered === 1, isCritical: isCritical === 1 };
 
-  // Obter questão atual
-  const getCurrentQuestion = useCallback((): Question | null => {
-    // Se acabou o lote normal de 10, verifica se tem erros pra corrigir
-    if (currentQuestionIndex >= queue.length && mistakesQueue.length > 0) {
-      setCurrentMode('review_forced');
-      setQueue(mistakesQueue);
-      setMistakesQueue([]);
-      setCurrentQuestionIndex(0);
-      return mistakesQueue[0];
-    }
-
-    // Se acabou tudo
-    if (currentQuestionIndex >= queue.length && mistakesQueue.length === 0) {
-      return null; // Sessão finalizada
-    }
-
-    // Fluxo normal
-    return queue[currentQuestionIndex] || null;
-  }, [queue, mistakesQueue, currentQuestionIndex]);
-
-  // Resetar sessão
-  const resetSession = useCallback(() => {
-    setQueue([]);
-    setMistakesQueue([]);
-    setCurrentQuestionIndex(0);
-    setCurrentMode('normal');
-    setSessionStats({
-      questionsAnswered: 0,
-      correctAnswers: 0,
-      xpGained: 0
-    });
-  }, []);
-
-  // Buscar perfil do usuário
-  const fetchUserProfile = useCallback(async () => {
-    if (!userId) return null;
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Erro ao buscar perfil:', error);
-      return null;
+    } catch (err) {
+      console.error('❌ Erro ao salvar progresso:', err);
+      return { isCorrect, isMastered: false, isCritical: false };
     }
   }, [userId]);
+
+  /**
+   * Navegar para próxima questão
+   */
+  const nextQuestion = useCallback(() => {
+    if (currentIndex < queue.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  }, [currentIndex, queue.length]);
+
+  /**
+   * Navegar para questão anterior
+   */
+  const previousQuestion = useCallback(() => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  }, [currentIndex]);
+
+  /**
+   * Reiniciar quiz
+   */
+  const resetQuiz = useCallback(() => {
+    setCurrentIndex(0);
+    fetchBlock();
+  }, [fetchBlock]);
+
+  /**
+   * Auto-start (buscar questões automaticamente)
+   */
+  useEffect(() => {
+    if (autoStart) {
+      fetchBlock();
+    }
+  }, [autoStart, fetchBlock]);
 
   return {
     // Estado
     queue,
-    mistakesQueue,
-    currentQuestionIndex,
-    currentMode,
-    isLoading,
-    sessionStats,
-
-    // Funções
-    fetchBlock,
+    currentIndex,
+    loading,
+    error,
+    
+    // Questão atual
+    currentQuestion: queue[currentIndex] || null,
+    totalQuestions: queue.length,
+    isLastQuestion: currentIndex === queue.length - 1,
+    isFirstQuestion: currentIndex === 0,
+    isSessionComplete: currentIndex >= queue.length && queue.length > 0,
+    
+    // Ações
     handleAnswer,
-    getCurrentQuestion,
-    resetSession,
-    fetchUserProfile,
     nextQuestion,
-
-    // Computed
-    totalQuestions: queue.length + mistakesQueue.length,
-    isSessionComplete: currentQuestionIndex >= queue.length && mistakesQueue.length === 0,
-    accuracy: sessionStats.questionsAnswered > 0
-      ? (sessionStats.correctAnswers / sessionStats.questionsAnswered) * 100
-      : 0
+    previousQuestion,
+    resetQuiz,
+    reload: fetchBlock
   };
 }

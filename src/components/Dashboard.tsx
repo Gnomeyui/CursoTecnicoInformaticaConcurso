@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   AlertTriangle, Trophy, Flame, TrendingUp, Target, 
-  BookOpen, Settings as SettingsIcon, ChevronRight, Zap 
+  BookOpen, Settings as SettingsIcon, ChevronRight, Zap, Calendar
 } from 'lucide-react';
 import { supabase } from '../utils/supabase/client';
 import { useCustomization } from '../context/CustomizationContext';
@@ -156,9 +156,14 @@ const Dashboard = ({
             <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
           </div>
         </div>
-        <button onClick={onOpenSettings} className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 transition-all text-gray-500">
-          <SettingsIcon size={20} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={onOpenStudyPlan} className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+            <Calendar size={20} />
+          </button>
+          <button onClick={onOpenSettings} className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+            <SettingsIcon size={20} />
+          </button>
+        </div>
       </div>
 
       <main className="px-6 space-y-6 mt-6">

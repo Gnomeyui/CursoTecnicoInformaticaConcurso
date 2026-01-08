@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Zap, Bell, Volume2, Smartphone, Save } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, Bell, Volume2, Smartphone, Save, Music, Upload } from 'lucide-react';
 import { Button } from './ui/button';
 import { Slider } from './ui/slider';
 import { Switch } from './ui/switch';
@@ -17,6 +17,8 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
   const [intervalMinutes, setIntervalMinutes] = useState([30]);
   const [notificationTime, setNotificationTime] = useState({ start: '08:00', end: '18:00' });
   const [preferences, setPreferences] = useState({ sound: true, vibration: true });
+  const [notificationSound, setNotificationSound] = useState('padrao');
+  const [customSoundFile, setCustomSoundFile] = useState<string | null>(null);
 
   // Carregar dados ao abrir
   useEffect(() => {
@@ -28,12 +30,14 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
       setIntervalMinutes(parsed.intervalMinutes || [30]);
       setNotificationTime(parsed.notificationTime || { start: '08:00', end: '18:00' });
       setPreferences(parsed.preferences || { sound: true, vibration: true });
+      setNotificationSound(parsed.notificationSound || 'padrao');
+      setCustomSoundFile(parsed.customSoundFile || null);
     }
   }, []);
 
   // Função de Salvar
   const handleSave = () => {
-    const settings = { dailyGoal, batchSize, intervalMinutes, notificationTime, preferences };
+    const settings = { dailyGoal, batchSize, intervalMinutes, notificationTime, preferences, notificationSound, customSoundFile };
     localStorage.setItem('studyPlan', JSON.stringify(settings));
     
     // Aqui você pode chamar uma função para reagendar as notificações locais (se usar Capacitor)
@@ -42,6 +46,31 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
     // Feedback visual
     alert("✅ Plano salvo com sucesso!"); 
     onBack();
+  };
+
+  // Handler para upload de arquivo de áudio
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Verifica se é um arquivo de áudio
+      if (file.type.startsWith('audio/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          setCustomSoundFile(result);
+          setNotificationSound('personalizado');
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert('⚠️ Por favor, escolha um arquivo de áudio (MP3, WAV, etc.)');
+      }
+    }
+  };
+
+  // Nome do arquivo personalizado
+  const getCustomFileName = () => {
+    if (!customSoundFile) return null;
+    return 'Arquivo personalizado';
   };
 
   return (
@@ -72,7 +101,20 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
               <div>
                 <div className="flex justify-between mb-3">
                   <span className="text-sm font-medium">Meta Diária</span>
-                  <span className="text-lg font-bold text-blue-600">{dailyGoal} questões</span>
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      type="number" 
+                      value={dailyGoal[0]} 
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 5;
+                        setDailyGoal([Math.min(Math.max(val, 5), 1000)]);
+                      }}
+                      min={5}
+                      max={1000}
+                      className="w-20 h-8 text-center text-lg font-bold text-blue-600 border-2 border-blue-200 focus:border-blue-400 rounded-lg px-[8px] py-[4px] mx-[7px] my-[-1px]"
+                    />
+                    <span className="text-sm font-medium text-blue-600">questões</span>
+                  </div>
                 </div>
                 <Slider value={dailyGoal} onValueChange={setDailyGoal} max={100} min={5} step={5} className="py-2" />
                 <p className="text-xs text-gray-400 mt-2">Ajuste conforme seu tempo disponível.</p>
@@ -100,7 +142,20 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
               <div>
                 <div className="flex justify-between mb-3">
                   <span className="text-sm font-medium">Intervalo de Estudo</span>
-                  <span className="text-lg font-bold text-purple-600">{intervalMinutes} min</span>
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      type="number" 
+                      value={intervalMinutes[0]} 
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 1;
+                        setIntervalMinutes([Math.min(Math.max(val, 1), 100)]);
+                      }}
+                      min={1}
+                      max={100}
+                      className="w-16 h-8 text-center text-lg font-bold text-purple-600 border-2 border-purple-200 focus:border-purple-400 rounded-lg px-2"
+                    />
+                    <span className="text-sm font-medium text-purple-600">min</span>
+                  </div>
                 </div>
                 <Slider value={intervalMinutes} onValueChange={setIntervalMinutes} max={100} min={1} step={1} className="py-2" />
                 <p className="text-xs text-gray-400 mt-2">Notificações de 1 a 100 minutos.</p>
@@ -133,6 +188,106 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
               </div>
               <Switch checked={preferences.sound} onCheckedChange={(v) => setPreferences({...preferences, sound: v})} />
             </div>
+            
+            {/* Toque de Alerta */}
+            {preferences.sound && (
+              <div className="p-4 bg-gray-50 dark:bg-gray-800/50">
+                <div className="flex items-center gap-2 mb-3">
+                  <Music size={16} className="text-orange-600" />
+                  <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Toque do Alerta</span>
+                </div>
+                
+                <div className="space-y-2">
+                  {/* Opções predefinidas */}
+                  <label className="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-orange-300 cursor-pointer transition-colors">
+                    <input 
+                      type="radio" 
+                      name="sound" 
+                      value="padrao" 
+                      checked={notificationSound === 'padrao'}
+                      onChange={(e) => setNotificationSound(e.target.value)}
+                      className="w-4 h-4 text-orange-600" 
+                    />
+                    <span className="text-sm">🔔 Padrão</span>
+                  </label>
+                  
+                  <label className="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-orange-300 cursor-pointer transition-colors">
+                    <input 
+                      type="radio" 
+                      name="sound" 
+                      value="suave" 
+                      checked={notificationSound === 'suave'}
+                      onChange={(e) => setNotificationSound(e.target.value)}
+                      className="w-4 h-4 text-orange-600" 
+                    />
+                    <span className="text-sm">🎵 Suave</span>
+                  </label>
+                  
+                  <label className="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-orange-300 cursor-pointer transition-colors">
+                    <input 
+                      type="radio" 
+                      name="sound" 
+                      value="energico" 
+                      checked={notificationSound === 'energico'}
+                      onChange={(e) => setNotificationSound(e.target.value)}
+                      className="w-4 h-4 text-orange-600" 
+                    />
+                    <span className="text-sm">⚡ Enérgico</span>
+                  </label>
+                  
+                  <label className="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-orange-300 cursor-pointer transition-colors">
+                    <input 
+                      type="radio" 
+                      name="sound" 
+                      value="sino" 
+                      checked={notificationSound === 'sino'}
+                      onChange={(e) => setNotificationSound(e.target.value)}
+                      className="w-4 h-4 text-orange-600" 
+                    />
+                    <span className="text-sm">🔕 Sino</span>
+                  </label>
+                  
+                  {/* Opção Personalizado */}
+                  <label className="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-orange-300 cursor-pointer transition-colors">
+                    <input 
+                      type="radio" 
+                      name="sound" 
+                      value="personalizado" 
+                      checked={notificationSound === 'personalizado'}
+                      onChange={(e) => setNotificationSound(e.target.value)}
+                      className="w-4 h-4 text-orange-600" 
+                    />
+                    <span className="text-sm">🎧 Personalizado</span>
+                  </label>
+                  
+                  {/* Upload de arquivo quando personalizado está selecionado */}
+                  {notificationSound === 'personalizado' && (
+                    <div className="ml-7 mt-2 space-y-2">
+                      <label className="flex items-center gap-2 px-4 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg cursor-pointer hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors">
+                        <Upload size={16} />
+                        <span className="text-sm font-medium">Escolher arquivo de áudio</span>
+                        <input 
+                          type="file" 
+                          accept="audio/*" 
+                          onChange={handleFileUpload}
+                          className="hidden" 
+                        />
+                      </label>
+                      
+                      {customSoundFile && (
+                        <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
+                          <span>✓</span>
+                          <span>{getCustomFileName()}</span>
+                        </div>
+                      )}
+                      
+                      <p className="text-xs text-gray-400">Formatos: MP3, WAV, OGG, M4A</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <div className="bg-blue-100 p-2 rounded-full text-blue-600"><Smartphone size={18} /></div>

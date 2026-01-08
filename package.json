@@ -4,6 +4,7 @@
       "version": "0.1.0",
       "private": true,
       "dependencies": {
+          "@capacitor-community/sqlite": "*",
           "@capacitor/core": "*",
           "@capacitor/haptics": "*",
           "@capacitor/local-notifications": "*",
