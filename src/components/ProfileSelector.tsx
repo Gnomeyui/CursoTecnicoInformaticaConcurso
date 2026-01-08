@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ArrowLeft, Plus, Check, Trash2, GraduationCap, Building2, Search, X } from 'lucide-react';
 import { useConcursoProfile, perfisPredefinidos } from '../context/ConcursoProfileContext';
+import { useCustomization } from '../context/CustomizationContext';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -11,6 +12,7 @@ interface ProfileSelectorProps {
 
 export function ProfileSelector({ onBack }: ProfileSelectorProps) {
   const { profiles, activeProfile, createProfile, setActiveProfile, deleteProfile } = useConcursoProfile();
+  const { theme } = useCustomization(); // Obter tema ativo
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -232,15 +234,27 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                     <div 
                       key={profile.id}
                       onClick={() => !profile.ativo && setActiveProfile(profile.id)}
-                      className={`relative p-4 rounded-xl border-2 transition-all ${
+                      className={`relative p-4 rounded-xl border-2 transition-all group overflow-hidden ${
                         profile.ativo 
-                          ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 dark:border-blue-600 cursor-default' 
+                          ? `border-2 ${theme.border} bg-card cursor-default` 
                           : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer active:scale-[0.98]'
                       }`}
                     >
-                      <div className="flex justify-between items-start">
+                      {/* Efeito de brilho de fundo sutil baseado na cor do tema (apenas para perfil ativo) */}
+                      {profile.ativo && (
+                        <div className={`absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity ${theme.bgLight}`} />
+                      )}
+                      
+                      <div className="flex justify-between items-start relative z-10">
                         <div className="flex-1">
-                          <h3 className="font-bold text-gray-800 dark:text-gray-100">{profile.nome}</h3>
+                          {profile.ativo && (
+                            <span className={`text-[10px] font-extrabold uppercase tracking-widest mb-1 block ${theme.primaryText}`}>
+                              Foco Atual
+                            </span>
+                          )}
+                          <h3 className={`font-bold ${profile.ativo ? 'text-xl' : ''} text-gray-800 dark:text-gray-100`}>
+                            {profile.nome}
+                          </h3>
                           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{profile.orgao}</p>
                           {profile.materias && profile.materias.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
@@ -262,9 +276,9 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                         </div>
                         
                         {profile.ativo ? (
-                          <span className="bg-blue-600 dark:bg-blue-500 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 font-bold">
-                            <Check size={12} /> Ativo
-                          </span>
+                          <div className={`h-10 w-10 rounded-full bg-gradient-to-br ${theme.gradient} flex items-center justify-center text-white shadow-md`}>
+                            <Check size={20} strokeWidth={3} />
+                          </div>
                         ) : (
                           <button 
                             onClick={(e) => { 
@@ -310,10 +324,10 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                       createProfile(perfil);
                       setSearchTerm('');
                     }}
-                    className="w-full text-left bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all flex justify-between items-center group active:scale-[0.98]"
+                    className={`w-full text-left bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border transition-all flex justify-between items-center group active:scale-[0.98] border-gray-200 dark:border-gray-700 hover:${theme.border.replace('border-', 'border-')} hover:shadow-sm dark:hover:bg-muted/10`}
                   >
                     <div className="flex-1">
-                      <div className="font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-700 dark:group-hover:text-blue-400">
+                      <div className={`font-bold text-gray-800 dark:text-gray-200 group-hover:${theme.primaryText} transition-colors`}>
                         {perfil.nome}
                       </div>
                       <div className="flex gap-2 mt-1.5 flex-wrap">
@@ -325,7 +339,7 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                         </Badge>
                       </div>
                     </div>
-                    <div className="bg-gray-50 dark:bg-gray-700 p-2 rounded-full text-gray-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors ml-3">
+                    <div className={`p-2 rounded-full transition-colors ml-3 text-gray-400 bg-gray-50 dark:bg-gray-700 group-hover:${theme.bgLight} group-hover:${theme.primaryText}`}>
                       <Plus size={20} />
                     </div>
                   </button>
