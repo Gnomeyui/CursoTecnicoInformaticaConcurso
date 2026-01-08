@@ -9,13 +9,7 @@ import { useGame } from '../context/GameContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
-import { createClient } from '@supabase/supabase-js';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
-
-const supabase = createClient(
-  `https://${projectId}.supabase.co`,
-  publicAnonKey
-);
+import { supabase } from '../utils/supabase/client';
 
 interface QuestionOption {
   id: string;

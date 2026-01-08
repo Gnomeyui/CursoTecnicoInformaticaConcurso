@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SmartQuizSession } from '../components/SmartQuizSession';
-import { createClient } from '@supabase/supabase-js';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
-
-const supabase = createClient(
-  `https://${projectId}.supabase.co`,
-  publicAnonKey
-);
+import { supabase } from '../utils/supabase/client';
 
 /**
  * EXEMPLO 1: Integração Completa com Seleção de Cargo

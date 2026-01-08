@@ -1,11 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
-
-const supabase = createClient(
-  `https://${projectId}.supabase.co`,
-  publicAnonKey
-);
+import { supabase } from '../utils/supabase/client';
 
 // Utilitário: Fisher-Yates Shuffle
 function shuffleArray<T>(array: T[]): T[] {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dashboard } from './components/Dashboard';
+import Dashboard from './components/Dashboard';
 import { StudySession } from './components/StudySession';
 import { Statistics } from './components/Statistics';
 import { Achievements } from './components/Achievements';
@@ -206,6 +206,7 @@ function AppContent() {
           onClose={handleBackToDashboard}
           onOpenCustomization={handleOpenCustomization}
           onOpenProfile={handleOpenProfiles}
+          onOpenStudyPlan={handleOpenStudyPlan}
         />
       )}
 
