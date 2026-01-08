@@ -1,34 +1,44 @@
-// Wrapper que adiciona dificuldade automaticamente às questões que não possuem
-import { Question, QUESTIONS } from './questions';
+// src/data/questionsWithDifficulty.ts
+// ====================================================================
+// ARQUIVO LIMPO - Preparado para Supabase
+// ====================================================================
+// A classificação de dificuldade agora é gerenciada no backend
+// As questões virão com dificuldade já definida do banco de dados
+// ====================================================================
+
+import { Question } from './questions';
 
 /**
  * Classifica automaticamente a dificuldade de uma questão
  * baseado em palavras-chave e complexidade
+ * 
+ * NOTA: Esta função está mantida apenas como referência.
+ * No sistema real, a dificuldade vem do banco de dados.
  */
-function autoDifficulty(question: Question): 'facil' | 'medio' | 'dificil' {
+function autoDifficulty(question: Question): 'easy' | 'medium' | 'hard' {
   // Se já tem dificuldade, usa ela
-  if (question.dificuldade) {
-    return question.dificuldade;
+  if (question.difficulty) {
+    return question.difficulty;
   }
 
-  const pergunta = question.pergunta.toLowerCase();
-  const materia = question.materia.toLowerCase();
+  const pergunta = question.question.toLowerCase();
+  const materia = question.subject.toLowerCase();
 
-  // Palavras-chave para FÁCIL
+  // Palavras-chave para FÁCIL (easy)
   const facilKeywords = [
     'o que é', 'qual é', 'significa', 'quantos',
     'qual comando', 'qual porta', 'responsável por',
     'utiliza', 'função', 'tipo de'
   ];
 
-  // Palavras-chave para DIFÍCIL
+  // Palavras-chave para DIFÍCIL (hard)
   const dificilKeywords = [
     'exceto', 'incorreto', 'não', 'considerando',
     'analise', 'conforme', 'jurisprudência',
     'stf', 'tcu', 'múltiplos'
   ];
 
-  // Palavras-chave para MÉDIO
+  // Palavras-chave para MÉDIO (medium)
   const medioKeywords = [
     'diferença', 'comparação', 'quando', 'como',
     'configurar', 'técnico', 'administrador',
@@ -52,26 +62,25 @@ function autoDifficulty(question: Question): 'facil' | 'medio' | 'dificil' {
 
   // Lógica de classificação
   if (hasDificil || isVeryLong) {
-    return 'dificil';
+    return 'hard';
   }
 
   if (hasMedio || isLong || isDificultMateria) {
-    return 'medio';
+    return 'medium';
   }
 
   if (hasFacil) {
-    return 'facil';
+    return 'easy';
   }
 
   // Padrão: médio
-  return 'medio';
+  return 'medium';
 }
 
 /**
  * Questões com dificuldade garantida
- * Adiciona automaticamente quando não existir
+ * 
+ * ⚠️ Array vazio: Todas as questões agora vêm do Supabase
+ * com dificuldade já classificada no banco de dados.
  */
-export const QUESTIONS_WITH_DIFFICULTY: Question[] = QUESTIONS.map(q => ({
-  ...q,
-  dificuldade: q.dificuldade || autoDifficulty(q)
-}));
+export const questionsWithDifficulty: Question[] = [];

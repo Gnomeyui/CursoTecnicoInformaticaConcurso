@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FLASHCARDS, Flashcard } from '../data/flashcards';
+import { flashcards as FLASHCARDS, Flashcard } from '../data/flashcards';
 import { 
   ChevronLeft, RotateCw, BookOpen, Trophy, 
   ThumbsUp, ThumbsDown, Zap, ArrowRight, Scale
@@ -16,6 +16,43 @@ export function FlashcardScreen({ onBack }: FlashcardScreenProps) {
   const [sessionCorrect, setSessionCorrect] = useState(0);
   const [sessionTotal, setSessionTotal] = useState(0);
   const [reviewedCards, setReviewedCards] = useState<Set<number>>(new Set());
+
+  // ⚠️ MIGRAÇÃO PARA SUPABASE: Array vazio até importar dados
+  if (FLASHCARDS.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-900 p-6">
+        <div className="max-w-2xl mx-auto">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors mb-6"
+          >
+            <ChevronLeft size={20} />
+            <span>Voltar</span>
+          </button>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
+            <div className="text-6xl mb-4">📚</div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Flashcards em Manutenção
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Os flashcards foram migrados para o banco de dados Supabase.
+              <br />
+              Por favor, importe os dados seguindo as instruções em:
+            </p>
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 text-left">
+              <p className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                📄 /GUIA_MIGRACAO_SUPABASE.md
+              </p>
+              <p className="text-sm font-mono text-gray-800 dark:text-gray-200 mt-2">
+                📄 /data/flashcards.ts (ver SQL de referência)
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const currentCard = FLASHCARDS[currentIndex];
 
@@ -87,7 +124,7 @@ export function FlashcardScreen({ onBack }: FlashcardScreenProps) {
               </div>
               
               <div className="text-center">
-                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wide">Precisão</div>
+                <div className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wide">Precis��o</div>
                 <div className="text-lg sm:text-xl text-purple-600 dark:text-purple-400">{accuracy}%</div>
               </div>
             </div>

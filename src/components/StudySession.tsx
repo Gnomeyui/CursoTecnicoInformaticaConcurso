@@ -26,8 +26,75 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
   const [sessionStats, setSessionStats] = useState({ correct: 0, total: 0 });
   const [reviewQuestionIds, setReviewQuestionIds] = useState<number[]>([]);
 
-  // Inicializar questões da sessão
+  // ⚠️ MIGRAÇÃO PARA SUPABASE: Mostrar mensagem se não houver dados
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-indigo-900 dark:to-gray-900 p-6">
+        <div className="max-w-2xl mx-auto">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors mb-6"
+          >
+            <ArrowLeft size={20} />
+            <span>Voltar</span>
+          </button>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
+            <div className="text-6xl mb-4">📚</div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Sistema de Questões Migrado
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Este componente foi migrado para usar o banco de dados Supabase.
+              <br />
+              Por favor, use o <strong>SmartQuizSession</strong> que já está integrado:
+            </p>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left space-y-3">
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                  ✅ Componente Recomendado:
+                </p>
+                <p className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                  /components/SmartQuizSession.tsx
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                  📖 Guia de Migração:
+                </p>
+                <p className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                  /GUIA_MIGRACAO_SUPABASE.md
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                  🛡️ Checklist Backend:
+                </p>
+                <p className="text-sm font-mono text-gray-800 dark:text-gray-200">
+                  /CHECKLIST_SEGURANCA_BACKEND.md
+                </p>
+              </div>
+            </div>
+            <div className="mt-6">
+              <button
+                onClick={onBack}
+                className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors"
+              >
+                Voltar ao Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ⚠️ MIGRAÇÃO PARA SUPABASE: Verificar se há questões disponíveis
   useEffect(() => {
+    if (questions.length === 0) {
+      return; // Renderizar mensagem de migração
+    }
+
     // Filtrar questões por dificuldade e matéria
     const filtered = filterQuestions(questions, difficulty, subject);
     
