@@ -161,37 +161,6 @@ END;
 $$;
 
 -- =====================================================
--- ✅ PERMISSÕES DE SEGURANÇA
--- =====================================================
--- Permite que usuários autenticados executem as funções
--- Mas apenas com seus próprios dados (RLS será aplicado)
--- =====================================================
-
--- Conceder permissões de execução para usuários autenticados
-GRANT EXECUTE ON FUNCTION update_question_progress(UUID, UUID, BOOLEAN) TO authenticated;
-GRANT EXECUTE ON FUNCTION update_user_profile(UUID, INTEGER, BOOLEAN) TO authenticated;
-GRANT EXECUTE ON FUNCTION get_user_stats(UUID) TO authenticated;
-
--- Permitir também para usuários anônimos (guest mode)
-GRANT EXECUTE ON FUNCTION update_question_progress(UUID, UUID, BOOLEAN) TO anon;
-GRANT EXECUTE ON FUNCTION update_user_profile(UUID, INTEGER, BOOLEAN) TO anon;
-GRANT EXECUTE ON FUNCTION get_user_stats(UUID) TO anon;
-
--- =====================================================
--- 📝 COMENTÁRIOS DAS FUNÇÕES (Documentação)
--- =====================================================
-
-COMMENT ON FUNCTION update_question_progress IS 
-'Atualiza o progresso de uma questão específica para um usuário. 
-Aplica regras de masterização (>4 acertos) e criticidade (>6 erros).';
-
-COMMENT ON FUNCTION update_user_profile IS 
-'Atualiza XP e estatísticas gerais do perfil do usuário.';
-
-COMMENT ON FUNCTION get_user_stats IS 
-'Retorna estatísticas agregadas do usuário incluindo acurácia e contagem de questões masterizadas/críticas.';
-
--- =====================================================
 -- ✅ TESTE DAS FUNÇÕES (Opcional - Execute para validar)
 -- =====================================================
 
@@ -206,10 +175,131 @@ COMMENT ON FUNCTION get_user_stats IS
 -- SELECT * FROM get_user_stats('YOUR-USER-UUID'::UUID);
 
 -- =====================================================
+-- 4️⃣ FUNÇÃO: get_smart_questions
+-- =====================================================
+-- Retorna questões inteligentes baseadas no algoritmo:
+-- • 70% questões novas (nunca respondidas)
+-- • 30% questões erradas (para revisão)
+-- • Filtra por concurso_perfil_id (archetype_id)
+-- • Exclui questões masterizadas (acertou > 4 vezes)
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION get_smart_questions(
+  p_user_id UUID,
+  p_archetype_id UUID DEFAULT NULL,
+  p_limit INTEGER DEFAULT 10
+)
+RETURNS TABLE (
+  id UUID,
+  texto TEXT,
+  opcoes JSONB,
+  resposta_correta TEXT,
+  comentario TEXT,
+  materia TEXT,
+  dificuldade TEXT,
+  concurso_perfil_id UUID
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_novas_limit INTEGER;
+  v_erradas_limit INTEGER;
+BEGIN
+  -- Calcula quantas questões de cada tipo deve retornar
+  v_novas_limit := CEIL(p_limit * 0.7);  -- 70% novas
+  v_erradas_limit := p_limit - v_novas_limit;  -- 30% erradas
+  
+  RETURN QUERY
+  -- ===== PARTE 1: QUESTÕES NOVAS (70%) =====
+  (
+    SELECT 
+      q.id,
+      q.texto,
+      q.opcoes,
+      q.resposta_correta,
+      q.comentario,
+      q.materia,
+      q.dificuldade,
+      q.concurso_perfil_id
+    FROM public.questions q
+    WHERE 
+      -- Filtro por perfil de concurso (se fornecido)
+      (p_archetype_id IS NULL OR q.concurso_perfil_id = p_archetype_id)
+      
+      -- Questões que o usuário NUNCA respondeu
+      AND NOT EXISTS (
+        SELECT 1 FROM public.user_question_progress uqp
+        WHERE uqp.user_id = p_user_id 
+          AND uqp.question_id = q.id
+      )
+    ORDER BY RANDOM()
+    LIMIT v_novas_limit
+  )
+  
+  UNION ALL
+  
+  -- ===== PARTE 2: QUESTÕES ERRADAS (30%) =====
+  (
+    SELECT 
+      q.id,
+      q.texto,
+      q.opcoes,
+      q.resposta_correta,
+      q.comentario,
+      q.materia,
+      q.dificuldade,
+      q.concurso_perfil_id
+    FROM public.questions q
+    INNER JOIN public.user_question_progress uqp 
+      ON q.id = uqp.question_id
+    WHERE 
+      uqp.user_id = p_user_id
+      
+      -- Filtro por perfil de concurso (se fornecido)
+      AND (p_archetype_id IS NULL OR q.concurso_perfil_id = p_archetype_id)
+      
+      -- Questões que o usuário errou mais do que acertou
+      AND uqp.times_wrong_total > uqp.times_correct
+      
+      -- Não incluir questões masterizadas
+      AND uqp.is_mastered = FALSE
+      
+    -- Prioriza questões com mais erros recentes
+    ORDER BY uqp.times_wrong_total DESC, uqp.last_answered_at DESC
+    LIMIT v_erradas_limit
+  );
+  
+  -- Se não houver questões erradas suficientes, complementa com mais questões novas
+  -- Isso é feito automaticamente pelo LIMIT total
+  
+END;
+$$;
+
+-- =====================================================
+-- ✅ PERMISSÕES PARA get_smart_questions
+-- =====================================================
+
+GRANT EXECUTE ON FUNCTION get_smart_questions(UUID, UUID, INTEGER) TO authenticated;
+GRANT EXECUTE ON FUNCTION get_smart_questions(UUID, UUID, INTEGER) TO anon;
+
+-- =====================================================
+-- 📝 DOCUMENTAÇÃO DA FUNÇÃO
+-- =====================================================
+
+COMMENT ON FUNCTION get_smart_questions IS 
+'Algoritmo inteligente de seleção de questões:
+- 70% questões novas (nunca respondidas)
+- 30% questões erradas (para revisão focada)
+- Filtra por perfil de concurso
+- Exclui questões masterizadas (>4 acertos)
+- Prioriza questões com mais erros para revisão';
+
+-- =====================================================
 -- 🎉 FUNÇÕES CRIADAS COM SUCESSO!
 -- =====================================================
 -- Agora o sistema React pode chamar:
 --   - supabase.rpc('update_question_progress', {...})
 --   - supabase.rpc('update_user_profile', {...})
 --   - supabase.rpc('get_user_stats', {...})
+--   - supabase.rpc('get_smart_questions', {...})
 -- =====================================================

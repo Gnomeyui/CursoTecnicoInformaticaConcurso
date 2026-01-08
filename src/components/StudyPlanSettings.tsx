@@ -52,8 +52,8 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
               {/* Slider 1 */}
               <div>
                 <div className="flex justify-between mb-4 items-center">
-                  <span className="font-medium text-gray-900 dark:text-white">Questões por rodada</span>
-                  <span className={`text-lg font-bold ${theme.text} bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-md`}>
+                  <span className="font-medium text-foreground">Questões por rodada</span>
+                  <span className={`text-lg font-bold ${theme.text} bg-muted px-3 py-1 rounded-md`}>
                     {questionsPerBatch}
                   </span>
                 </div>
@@ -63,14 +63,14 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
                   max={50} min={5} step={5} 
                   className="py-2"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Menos questões = Mais foco.</p>
+                <p className="text-xs text-muted-foreground mt-2">Menos questões = Mais foco.</p>
               </div>
 
               {/* Slider 2 */}
                <div>
                 <div className="flex justify-between mb-4 items-center">
-                  <span className="font-medium text-gray-900 dark:text-white">Intervalo</span>
-                  <span className={`text-lg font-bold ${theme.text} bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-md`}>
+                  <span className="font-medium text-foreground">Intervalo</span>
+                  <span className={`text-lg font-bold ${theme.text} bg-muted px-3 py-1 rounded-md`}>
                     {intervalMinutes} min
                   </span>
                 </div>
@@ -94,30 +94,30 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
             <h2 className="font-bold text-gray-900 dark:text-white text-sm uppercase tracking-wide">Notificações</h2>
           </div>
 
-          <Card className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm rounded-3xl overflow-hidden divide-y divide-gray-200 dark:divide-gray-700">
+          <Card className="border-border bg-card shadow-sm rounded-3xl overflow-hidden divide-y divide-border">
             
-             <div className="p-5 grid grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-700/50">
+             <div className="p-5 grid grid-cols-2 gap-4 bg-muted/30">
               <div>
-                <label className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 block uppercase">Início</label>
+                <label className="text-xs font-bold text-muted-foreground mb-2 block uppercase">Início</label>
                 <div className="relative">
-                  <Sun className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Sun className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input 
                     type="time" 
                     value={timeRange.start}
                     onChange={(e) => setTimeRange({...timeRange, start: e.target.value})}
-                    className="pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white font-medium h-10 rounded-xl"
+                    className="pl-9 bg-background border-border text-foreground font-medium h-10 rounded-xl"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 block uppercase">Fim</label>
+                <label className="text-xs font-bold text-muted-foreground mb-2 block uppercase">Fim</label>
                 <div className="relative">
-                  <Moon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Moon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input 
                     type="time" 
                     value={timeRange.end}
                     onChange={(e) => setTimeRange({...timeRange, end: e.target.value})}
-                    className="pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white font-medium h-10 rounded-xl"
+                    className="pl-9 bg-background border-border text-foreground font-medium h-10 rounded-xl"
                   />
                 </div>
               </div>
@@ -126,20 +126,20 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
             <div className="p-5 space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-yellow-100 dark:bg-yellow-900/30 p-2 rounded-full">
+                  <div className="bg-yellow-100 dark:bg-yellow-500/20 p-2 rounded-full">
                     <Volume2 size={18} className="text-yellow-600 dark:text-yellow-400" />
                   </div>
-                  <span className="font-medium text-gray-900 dark:text-white">Sons</span>
+                  <span className="font-medium text-foreground">Sons</span>
                 </div>
                 <Switch checked={alerts.sound} onCheckedChange={(v) => setAlerts({...alerts, sound: v})} />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full">
+                  <div className="bg-blue-100 dark:bg-blue-500/20 p-2 rounded-full">
                     <Smartphone size={18} className="text-blue-600 dark:text-blue-400" />
                   </div>
-                  <span className="font-medium text-gray-900 dark:text-white">Vibração</span>
+                  <span className="font-medium text-foreground">Vibração</span>
                 </div>
                 <Switch checked={alerts.vibration} onCheckedChange={(v) => setAlerts({...alerts, vibration: v})} />
               </div>

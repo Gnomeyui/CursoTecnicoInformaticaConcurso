@@ -135,28 +135,93 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
       // ID do arquétipo baseado no perfil selecionado
       const archetypeId = selectedProfile?.archetypeId || 1;
 
-      // Chamar função RPC do Supabase
-      const { data, error } = await supabase.rpc('get_smart_questions', {
-        p_user_id: userId,
-        p_archetype_id: archetypeId,
-        p_limit: questionCount
-      });
-
-      if (error) {
-        console.error('Erro ao buscar questões:', error);
-        alert('Erro ao carregar simulado. Verifique o console.');
-        setLoading(false);
-        return;
+      // ===== ALGORITMO INTELIGENTE 70/30 (SEM RPC) =====
+      
+      // 1️⃣ Calcular quantidades (70% novas + 30% erradas)
+      const novasLimit = Math.ceil(questionCount * 0.7);  // 70%
+      const erradasLimit = questionCount - novasLimit;    // 30%
+      
+      // 2️⃣ BUSCAR QUESTÕES NOVAS (nunca respondidas)
+      const { data: novasQuestions, error: novasError } = await supabase
+        .from('questions')
+        .select('*')
+        .eq('concurso_perfil_id', archetypeId)
+        .not('id', 'in', `(
+          SELECT question_id 
+          FROM user_question_progress 
+          WHERE user_id = '${userId}'
+        )`)
+        .limit(novasLimit);
+      
+      if (novasError && novasError.code !== 'PGRST116') {
+        console.error('Erro ao buscar questões novas:', novasError);
+      }
+      
+      // 3️⃣ BUSCAR QUESTÕES ERRADAS (para revisão)
+      const { data: progressData, error: progressError } = await supabase
+        .from('user_question_progress')
+        .select('question_id, times_wrong_total, times_correct, is_mastered')
+        .eq('user_id', userId)
+        .eq('is_mastered', false)
+        .gt('times_wrong_total', 0)
+        .order('times_wrong_total', { ascending: false })
+        .limit(erradasLimit);
+      
+      if (progressError) {
+        console.error('Erro ao buscar progresso:', progressError);
+      }
+      
+      // 4️⃣ Buscar detalhes das questões erradas
+      let erradasQuestions: any[] = [];
+      if (progressData && progressData.length > 0) {
+        const erradasIds = progressData
+          .filter(p => p.times_wrong_total > p.times_correct)
+          .map(p => p.question_id);
+        
+        if (erradasIds.length > 0) {
+          const { data: erradasData } = await supabase
+            .from('questions')
+            .select('*')
+            .eq('concurso_perfil_id', archetypeId)
+            .in('id', erradasIds);
+          
+          erradasQuestions = erradasData || [];
+        }
+      }
+      
+      // 5️⃣ COMBINAR E EMBARALHAR
+      const allQuestions = [
+        ...(novasQuestions || []),
+        ...(erradasQuestions || [])
+      ];
+      
+      // Se não conseguiu questões suficientes, busca mais novas como fallback
+      if (allQuestions.length < questionCount) {
+        const remaining = questionCount - allQuestions.length;
+        const { data: fallbackQuestions } = await supabase
+          .from('questions')
+          .select('*')
+          .eq('concurso_perfil_id', archetypeId)
+          .limit(remaining);
+        
+        if (fallbackQuestions) {
+          allQuestions.push(...fallbackQuestions);
+        }
       }
 
-      if (!data || data.length === 0) {
+      if (allQuestions.length === 0) {
         alert('Não há questões disponíveis para este perfil no momento!');
         setLoading(false);
         return;
       }
 
+      // Embaralhar questões
+      const shuffled = allQuestions.sort(() => Math.random() - 0.5);
+      
+      console.log(`✅ Simulado carregado: ${novasQuestions?.length || 0} novas + ${erradasQuestions.length} revisão = ${shuffled.length} total`);
+
       // Configurar simulado
-      setSelectedQuestions(data);
+      setSelectedQuestions(shuffled);
       setCurrentQuestionIndex(0);
       setAnswers({});
       setFlaggedQuestions(new Set());
@@ -365,7 +430,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
             <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-gray-900 dark:text-white">
+                <div className="text-sm text-foreground">
                   <p className="mb-2"><strong>Sistema Inteligente:</strong></p>
                   <ul className="list-disc list-inside space-y-1 text-xs">
                     <li>Questões adaptadas ao seu perfil de concurso</li>

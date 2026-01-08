@@ -142,28 +142,28 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
         </button>
         
         <div className="text-center flex-1">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-foreground">
             Questão {currentQuestionIndex + 1} de {sessionQuestions.length}
           </p>
-          <p className="text-lg text-gray-900 dark:text-gray-100">
+          <p className="text-lg text-black">
             {sessionStats.correct}/{sessionStats.total} corretas
           </p>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full mb-6 overflow-hidden">
+      <div className="h-2 bg-white rounded-full mb-6 overflow-hidden border border-black">
         <div 
-          className="h-full bg-blue-500 transition-all duration-300"
+          className="h-full bg-green-500 transition-all duration-300"
           style={{ width: `${((currentQuestionIndex + 1) / sessionQuestions.length) * 100}%` }}
         />
       </div>
 
       {/* Question Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg mb-6">
+      <div className="bg-card rounded-2xl p-6 shadow-lg mb-6 border border-border">
         {/* Subject & Difficulty Badge */}
         <div className="flex items-center gap-2 mb-4 flex-wrap">
-          <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm">
+          <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-sm">
             {currentQuestion.subject}
           </span>
           <span className={`px-3 py-1 rounded-full text-sm ${getDifficultyColor(currentQuestion.difficulty)}`}>
@@ -172,7 +172,7 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
             {currentQuestion.difficulty === 'hard' && 'Difícil'}
           </span>
           {reviewQuestionIds.includes(currentQuestion.id) && (
-            <span className="px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-sm flex items-center gap-1">
+            <span className="px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 text-sm flex items-center gap-1">
               <RotateCcw className="size-3" />
               Revisão
             </span>
@@ -181,8 +181,8 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
 
         {/* Informações da Prova (Banca, Ano, Concurso) */}
         {(currentQuestion.banca || currentQuestion.ano || currentQuestion.concurso) && (
-          <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-400">
+          <div className="mb-4 pb-4 border-b border-border">
+            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
               {currentQuestion.banca && (
                 <span className="flex items-center gap-1">
                   <span className="font-semibold">Banca:</span>
@@ -197,7 +197,7 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
               )}
             </div>
             {currentQuestion.concurso && (
-              <div className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+              <div className="mt-1 text-xs text-muted-foreground">
                 <span className="font-semibold">Concurso:</span> {currentQuestion.concurso}
               </div>
             )}
@@ -205,7 +205,7 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
         )}
 
         {/* Question */}
-        <h2 className="text-xl mb-6 leading-relaxed text-gray-900 dark:text-gray-100">
+        <h2 className="text-xl mb-6 leading-relaxed text-foreground">
           {currentQuestion.question}
         </h2>
 
@@ -220,15 +220,15 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
             
             if (!showResult) {
               buttonClass += isSelected 
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700';
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/20' 
+                : 'border-border hover:border-blue-300 dark:hover:border-blue-700';
             } else {
               if (isCorrect) {
-                buttonClass += 'border-green-500 bg-green-50 dark:bg-green-900/20';
+                buttonClass += 'border-green-500 bg-green-50 dark:bg-green-500/20';
               } else if (isSelected && !isCorrect) {
-                buttonClass += 'border-red-500 bg-red-50 dark:bg-red-900/20';
+                buttonClass += 'border-red-500 bg-red-50 dark:bg-red-500/20';
               } else {
-                buttonClass += 'border-gray-200 dark:border-gray-700';
+                buttonClass += 'border-border';
               }
             }
 
@@ -242,21 +242,21 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
                 <div className="flex items-center gap-3">
                   <span className={`
                     flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-semibold
-                    ${!showResult && !isSelected ? 'text-gray-700 border-gray-300' : ''}
-                    ${!showResult && isSelected ? 'text-blue-900 border-blue-500' : ''}
-                    ${showResult && isCorrect ? 'text-green-900 border-green-500' : ''}
-                    ${showResult && isSelected && !isCorrect ? 'text-red-900 border-red-500' : ''}
-                    ${showResult && !isCorrect && !isSelected ? 'text-gray-400 border-gray-300' : ''}
+                    ${!showResult && !isSelected ? 'text-foreground border-border' : ''}
+                    ${!showResult && isSelected ? 'text-blue-600 dark:text-blue-400 border-blue-500' : ''}
+                    ${showResult && isCorrect ? 'text-green-600 dark:text-green-400 border-green-500' : ''}
+                    ${showResult && isSelected && !isCorrect ? 'text-red-600 dark:text-red-400 border-red-500' : ''}
+                    ${showResult && !isCorrect && !isSelected ? 'text-muted-foreground border-border' : ''}
                   `}>
                     {String.fromCharCode(65 + index)}
                   </span>
                   <span className={`
                     flex-1 font-medium
-                    ${!showResult && !isSelected ? 'text-gray-900' : ''}
-                    ${!showResult && isSelected ? 'text-blue-900' : ''}
-                    ${showResult && isCorrect ? 'text-green-900 font-semibold' : ''}
-                    ${showResult && isSelected && !isCorrect ? 'text-red-900' : ''}
-                    ${showResult && !isCorrect && !isSelected ? 'text-gray-500' : ''}
+                    ${!showResult && !isSelected ? 'text-foreground' : ''}
+                    ${!showResult && isSelected ? 'text-blue-600 dark:text-blue-400' : ''}
+                    ${showResult && isCorrect ? 'text-green-600 dark:text-green-400 font-semibold' : ''}
+                    ${showResult && isSelected && !isCorrect ? 'text-red-600 dark:text-red-400' : ''}
+                    ${showResult && !isCorrect && !isSelected ? 'text-muted-foreground' : ''}
                   `}>
                     {option}
                   </span>
@@ -274,12 +274,12 @@ export function StudySession({ onBack, difficulty, subject }: StudySessionProps)
 
         {/* Explanation */}
         {showExplanation && (
-          <div className="mt-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 animate-slide-in-up">
+          <div className="mt-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-500/20 border-2 border-blue-200 dark:border-blue-800 animate-slide-in-up">
             <div className="flex items-start gap-3">
               <Lightbulb className="size-6 text-blue-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm mb-1 text-gray-900 dark:text-gray-100">Explicação:</p>
-                <p className="text-sm text-gray-900 dark:text-gray-100">
+                <p className="text-sm mb-1 font-semibold text-foreground">Explicação:</p>
+                <p className="text-sm text-foreground">
                   {currentQuestion.explanation}
                 </p>
               </div>

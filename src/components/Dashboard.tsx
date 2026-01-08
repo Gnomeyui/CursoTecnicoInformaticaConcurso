@@ -111,10 +111,10 @@ export function Dashboard({
           {onOpenStudyPlan && (
             <button 
               onClick={onOpenStudyPlan}
-              className={`p-2.5 rounded-full ${theme.button} hover:brightness-110 transition-all shadow-lg hover:shadow-xl active:scale-95`}
+              className="p-2.5 rounded-full border-2 border-border bg-transparent hover:bg-accent transition-all active:scale-95"
               aria-label="Plano de Estudos"
             >
-              <CalendarClock size={20} className="text-white" />
+              <CalendarClock size={20} className="text-foreground" />
             </button>
           )}
 
@@ -184,8 +184,8 @@ export function Dashboard({
               <span className="text-4xl font-black tracking-tighter">{Math.round(stats.accuracy)}</span>
               <span className="text-xl font-bold text-muted-foreground">%</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-green-600 bg-green-50 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-md w-fit font-bold">
-              <TrendingUp size={12} />
+            <div className="flex items-center gap-1.5 text-xs text-foreground bg-[rgba(201,0,0,0)] dark:bg-green-500/20 px-2 py-1 rounded-md w-fit font-bold">
+              <TrendingUp size={12} className="text-green-600 dark:text-green-400" />
               <span>Em alta</span>
             </div>
           </div>

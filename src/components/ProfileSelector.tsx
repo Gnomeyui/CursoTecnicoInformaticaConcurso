@@ -86,35 +86,35 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
   }[nivel] || 'bg-gray-100 dark:bg-gray-800');
 
   return (
-    <div className="min-h-screen bg-app pb-20">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header Fixo */}
-      <div className="sticky top-0 bg-app z-10 pb-4 pt-4 px-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="sticky top-0 bg-background z-10 pb-4 pt-4 px-4 border-b border-border">
         <div className="flex items-center gap-4 mb-4">
           <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="size-6" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold text-app">Gerenciar Perfis</h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Qual o seu foco hoje?</p>
+            <h1 className="text-xl font-bold text-foreground">Gerenciar Perfis</h1>
+            <p className="text-xs text-muted-foreground">Qual o seu foco hoje?</p>
           </div>
         </div>
 
         {/* Barra de Busca - Sempre visível quando não está criando */}
         {!showCreateForm && (
           <div className="relative">
-            <Search className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
             <input 
               placeholder="Buscar cargo (ex: Técnico, Agente, Analista)..." 
-              className="w-full pl-10 pr-10 py-3 rounded-xl border-none shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 placeholder:text-gray-400"
+              className="w-full pl-10 pr-10 py-3 rounded-xl border-none shadow-sm bg-card text-foreground focus:ring-2 focus:ring-primary placeholder:text-muted-foreground"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-3 p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                className="absolute right-3 top-3 p-0.5 hover:bg-accent rounded-full transition-colors"
               >
-                <X className="h-5 w-5 text-gray-400" />
+                <X className="h-5 w-5 text-muted-foreground" />
               </button>
             )}
           </div>
@@ -127,7 +127,7 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
           <Card className="border-blue-200 dark:border-blue-800 shadow-lg animate-in slide-in-from-bottom-4 duration-200">
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-lg text-app">Novo Objetivo</h3>
+                <h3 className="font-bold text-lg text-foreground">Novo Objetivo</h3>
                 <Button 
                   variant="ghost" 
                   size="icon"
@@ -136,37 +136,37 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                     setCustomProfile({ nome: '', nivel: 'medio', orgao: '', materias: [] });
                   }}
                 >
-                  <X className="text-gray-400" />
+                  <X className="text-muted-foreground" />
                 </Button>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase mb-1 block">
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
                     Cargo *
                   </label>
                   <input 
                     value={customProfile.nome}
                     onChange={e => setCustomProfile({...customProfile, nome: e.target.value})}
                     placeholder="Ex: Auditor Fiscal"
-                    className="w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600"
+                    className="w-full p-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary"
                   />
                 </div>
                 
                 <div>
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase mb-1 block">
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
                     Órgão / Banca
                   </label>
                   <input 
                     value={customProfile.orgao}
                     onChange={e => setCustomProfile({...customProfile, orgao: e.target.value})}
                     placeholder="Ex: FGV, CESPE, Prefeitura..."
-                    className="w-full p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600"
+                    className="w-full p-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase mb-2 block">
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-2 block">
                     Nível de Escolaridade
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -176,8 +176,8 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                         onClick={() => setCustomProfile({...customProfile, nivel})}
                         className={`text-sm px-3 py-2.5 rounded-lg border-2 font-medium transition-all ${
                           customProfile.nivel === nivel
-                            ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-400'
-                            : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
+                            ? 'bg-blue-100 dark:bg-blue-500/20 border-blue-500 text-blue-700 dark:text-blue-400'
+                            : 'bg-muted border-border text-muted-foreground hover:border-primary/50'
                         }`}
                       >
                         {getNivelLabel(nivel)}
@@ -187,7 +187,7 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                 </div>
                 
                 <div>
-                  <label className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase mb-2 block">
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-2 block">
                     Matérias Principais (opcional)
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -197,8 +197,8 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                         onClick={() => toggleMateria(m)}
                         className={`text-xs px-3 py-2 rounded-full border transition-all ${
                           customProfile.materias.includes(m)
-                            ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-400 text-blue-700 dark:text-blue-400 font-semibold'
-                            : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
+                            ? 'bg-blue-100 dark:bg-blue-500/20 border-blue-400 text-blue-700 dark:text-blue-400 font-semibold'
+                            : 'bg-muted border-border text-muted-foreground hover:border-primary/50'
                         }`}
                       >
                         {customProfile.materias.includes(m) && <Check size={12} className="inline mr-1" />}
@@ -226,18 +226,26 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
             {/* Seus Perfis Salvos */}
             {profiles.length > 0 && !searchTerm && (
               <section>
-                <h2 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-3 ml-1">
+                <h2 className="text-sm font-bold text-muted-foreground uppercase mb-3 ml-1">
                   Meus Perfis
                 </h2>
                 <div className="space-y-3">
                   {profiles.map(profile => (
                     <div 
                       key={profile.id}
-                      onClick={() => !profile.ativo && setActiveProfile(profile.id)}
-                      className={`relative p-4 rounded-xl border-2 transition-all group overflow-hidden ${
+                      onClick={() => {
+                        if (profile.ativo) {
+                          // Se já está ativo, desseleciona (passa null)
+                          setActiveProfile(null);
+                        } else {
+                          // Se não está ativo, seleciona
+                          setActiveProfile(profile.id);
+                        }
+                      }}
+                      className={`relative p-4 rounded-xl border-2 transition-all group overflow-hidden cursor-pointer active:scale-[0.98] ${ 
                         profile.ativo 
-                          ? `border-2 ${theme.border} bg-card cursor-default` 
-                          : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer active:scale-[0.98]'
+                          ? `border-2 ${theme.border} bg-card` 
+                          : 'bg-card border-border hover:border-primary/50'
                       }`}
                     >
                       {/* Efeito de brilho de fundo sutil baseado na cor do tema (apenas para perfil ativo) */}
@@ -248,26 +256,26 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                       <div className="flex justify-between items-start relative z-10">
                         <div className="flex-1">
                           {profile.ativo && (
-                            <span className={`text-[10px] font-extrabold uppercase tracking-widest mb-1 block ${theme.primaryText}`}>
+                            <span className="text-[10px] font-extrabold uppercase tracking-widest mb-1 block text-black dark:text-black">
                               Foco Atual
                             </span>
                           )}
-                          <h3 className={`font-bold ${profile.ativo ? 'text-xl' : ''} text-gray-800 dark:text-gray-100`}>
+                          <h3 className={`font-bold ${profile.ativo ? 'text-xl' : ''} text-foreground`}>
                             {profile.nome}
                           </h3>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{profile.orgao}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{profile.orgao}</p>
                           {profile.materias && profile.materias.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
                               {profile.materias.slice(0, 3).map((mat, idx) => (
                                 <span 
                                   key={idx}
-                                  className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded text-gray-600 dark:text-gray-400"
+                                  className="text-xs bg-muted px-2 py-0.5 rounded text-black dark:text-black"
                                 >
                                   {mat}
                                 </span>
                               ))}
                               {profile.materias.length > 3 && (
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-black dark:text-black">
                                   +{profile.materias.length - 3}
                                 </span>
                               )}
@@ -287,7 +295,7 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                                 deleteProfile(profile.id);
                               }
                             }}
-                            className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-1 transition-colors"
+                            className="text-muted-foreground hover:text-red-500 dark:hover:text-red-400 p-1 transition-colors"
                           >
                             <Trash2 size={18} />
                           </button>
@@ -302,7 +310,7 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
             {/* Sugestões / Resultados da Busca */}
             <section>
               <div className="flex justify-between items-center mb-3">
-                <h2 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase ml-1">
+                <h2 className="text-sm font-bold text-muted-foreground uppercase ml-1">
                   {searchTerm ? `Resultados (${filteredPredefined.length})` : 'Sugestões Populares'}
                 </h2>
                 <button 
@@ -324,22 +332,22 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                       createProfile(perfil);
                       setSearchTerm('');
                     }}
-                    className={`w-full text-left bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border transition-all flex justify-between items-center group active:scale-[0.98] border-gray-200 dark:border-gray-700 hover:${theme.border.replace('border-', 'border-')} hover:shadow-sm dark:hover:bg-muted/10`}
+                    className={`w-full text-left bg-card p-4 rounded-xl shadow-sm border transition-all flex justify-between items-center group active:scale-[0.98] border-border hover:${theme.border.replace('border-', 'border-')} hover:shadow-sm hover:bg-accent/50`}
                   >
                     <div className="flex-1">
-                      <div className={`font-bold text-gray-800 dark:text-gray-200 group-hover:${theme.primaryText} transition-colors`}>
+                      <div className={`font-bold text-foreground group-hover:${theme.primaryText} transition-colors`}>
                         {perfil.nome}
                       </div>
                       <div className="flex gap-2 mt-1.5 flex-wrap">
-                        <Badge variant="outline" className="text-xs font-normal text-gray-600 dark:text-gray-400">
+                        <Badge variant="outline" className="text-xs font-normal text-black dark:text-black">
                           {perfil.orgao}
                         </Badge>
-                        <Badge variant="outline" className={`text-xs font-normal border ${getNivelColor(perfil.nivel)}`}>
+                        <Badge variant="outline" className="text-xs font-normal border text-black dark:text-black">
                           {getNivelLabel(perfil.nivel)}
                         </Badge>
                       </div>
                     </div>
-                    <div className={`p-2 rounded-full transition-colors ml-3 text-gray-400 bg-gray-50 dark:bg-gray-700 group-hover:${theme.bgLight} group-hover:${theme.primaryText}`}>
+                    <div className={`p-2 rounded-full transition-colors ml-3 text-muted-foreground bg-muted group-hover:${theme.bgLight} group-hover:${theme.primaryText}`}>
                       <Plus size={20} />
                     </div>
                   </button>
@@ -347,11 +355,11 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                 
                 {searchTerm && filteredPredefined.length === 0 && (
                   <div className="text-center py-10 px-4">
-                    <div className="bg-gray-100 dark:bg-gray-800 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-                      <Search className="text-gray-400" size={32} />
+                    <div className="bg-muted rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                      <Search className="text-muted-foreground" size={32} />
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400 mb-2">Nenhum cargo encontrado</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">
+                    <p className="text-foreground mb-2">Nenhum cargo encontrado</p>
+                    <p className="text-sm text-muted-foreground mb-4">
                       Tente termos como "Técnico", "Agente" ou "Analista"
                     </p>
                     <button 
@@ -368,7 +376,7 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
 
                 {!searchTerm && (
                   <div className="text-center py-4">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       💡 Digite acima para buscar entre {perfisPredefinidos.length}+ cargos
                     </p>
                   </div>

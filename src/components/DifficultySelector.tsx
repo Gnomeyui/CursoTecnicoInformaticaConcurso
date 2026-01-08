@@ -49,18 +49,18 @@ export function DifficultySelector({ onSelectDifficulty, onBack }: DifficultySel
   ];
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen bg-background p-6">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <button
           onClick={onBack}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          className="p-2 hover:bg-muted rounded-lg transition-colors"
         >
-          <ArrowLeft className="size-6 text-gray-700 dark:text-gray-300" />
+          <ArrowLeft className="size-6 text-foreground" />
         </button>
         <div>
-          <h1 className="text-2xl text-gray-900 dark:text-gray-100">Escolha a Dificuldade</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <h1 className="text-2xl font-bold text-foreground">Escolha a Dificuldade</h1>
+          <p className="text-sm text-muted-foreground">
             Quanto maior a dificuldade, maior o XP
           </p>
         </div>
@@ -72,7 +72,7 @@ export function DifficultySelector({ onSelectDifficulty, onBack }: DifficultySel
           <button
             key={diff.id}
             onClick={() => onSelectDifficulty(diff.id)}
-            className="w-full bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all text-left"
+            className="w-full bg-card border border-border rounded-2xl p-6 shadow-md hover:shadow-xl hover:bg-muted/50 transition-all text-left"
           >
             <div className="flex items-start gap-4">
               <div className={`p-3 rounded-xl bg-gradient-to-br ${diff.color}`}>
@@ -80,11 +80,11 @@ export function DifficultySelector({ onSelectDifficulty, onBack }: DifficultySel
               </div>
               
               <div className="flex-1">
-                <h3 className="text-xl mb-1 text-gray-900 dark:text-gray-100">{diff.name}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                <h3 className="text-xl font-bold mb-1 text-foreground">{diff.name}</h3>
+                <p className="text-sm text-muted-foreground mb-2">
                   {diff.description}
                 </p>
-                <p className={`text-sm ${diff.textColor}`}>
+                <p className={`text-sm font-bold ${diff.textColor}`}>
                   {diff.xp}
                 </p>
               </div>

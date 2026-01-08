@@ -69,24 +69,93 @@ export function useSmartQuiz({
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.rpc('get_smart_questions', {
-        p_user_id: userId,
-        p_archetype_id: archetypeId,
-        p_limit: questionsPerBlock
-      });
+      // ===== ALGORITMO INTELIGENTE 70/30 (SEM RPC) =====
+      
+      // 1️⃣ Calcular quantidades (70% novas + 30% erradas)
+      const novasLimit = Math.ceil(questionsPerBlock * 0.7);  // 70%
+      const erradasLimit = questionsPerBlock - novasLimit;    // 30%
+      
+      // 2️⃣ BUSCAR QUESTÕES NOVAS (nunca respondidas)
+      const { data: novasQuestions, error: novasError } = await supabase
+        .from('questions')
+        .select('*')
+        .eq('concurso_perfil_id', archetypeId)
+        .not('id', 'in', `(
+          SELECT question_id 
+          FROM user_question_progress 
+          WHERE user_id = '${userId}'
+        )`)
+        .limit(novasLimit);
+      
+      if (novasError && novasError.code !== 'PGRST116') {
+        console.error('Erro ao buscar questões novas:', novasError);
+      }
+      
+      // 3️⃣ BUSCAR QUESTÕES ERRADAS (para revisão)
+      const { data: progressData, error: progressError } = await supabase
+        .from('user_question_progress')
+        .select('question_id, times_wrong_total, times_correct, is_mastered')
+        .eq('user_id', userId)
+        .eq('is_mastered', false)
+        .gt('times_wrong_total', 0)  // Pelo menos 1 erro
+        .order('times_wrong_total', { ascending: false })  // Mais erros primeiro
+        .limit(erradasLimit);
+      
+      if (progressError) {
+        console.error('Erro ao buscar progresso:', progressError);
+      }
+      
+      // 4️⃣ Buscar detalhes das questões erradas
+      let erradasQuestions: any[] = [];
+      if (progressData && progressData.length > 0) {
+        const erradasIds = progressData
+          .filter(p => p.times_wrong_total > p.times_correct)  // Mais erros que acertos
+          .map(p => p.question_id);
+        
+        if (erradasIds.length > 0) {
+          const { data: erradasData } = await supabase
+            .from('questions')
+            .select('*')
+            .eq('concurso_perfil_id', archetypeId)
+            .in('id', erradasIds);
+          
+          erradasQuestions = erradasData || [];
+        }
+      }
+      
+      // 5️⃣ COMBINAR E EMBARALHAR
+      const allQuestions = [
+        ...(novasQuestions || []),
+        ...(erradasQuestions || [])
+      ];
+      
+      // Se não conseguiu questões suficientes, busca mais novas como fallback
+      if (allQuestions.length < questionsPerBlock) {
+        const remaining = questionsPerBlock - allQuestions.length;
+        const { data: fallbackQuestions } = await supabase
+          .from('questions')
+          .select('*')
+          .eq('concurso_perfil_id', archetypeId)
+          .limit(remaining);
+        
+        if (fallbackQuestions) {
+          allQuestions.push(...fallbackQuestions);
+        }
+      }
 
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        const preparedQuestions = data.map(prepareQuestion);
+      // 6️⃣ PREPARAR QUESTÕES
+      if (allQuestions.length > 0) {
+        const preparedQuestions = shuffleArray(allQuestions).map(prepareQuestion);
         setQueue(preparedQuestions);
         setCurrentQuestionIndex(0);
         setCurrentMode('normal');
+        
+        console.log(`✅ Quiz carregado: ${novasQuestions?.length || 0} novas + ${erradasQuestions.length} revisão = ${preparedQuestions.length} total`);
       } else {
-        console.warn('Nenhuma questão encontrada para este arquétipo');
+        console.warn('⚠️ Nenhuma questão encontrada para este perfil');
       }
     } catch (error) {
-      console.error('Erro ao buscar questões:', error);
+      console.error('❌ Erro ao buscar questões:', error);
     } finally {
       setIsLoading(false);
     }
