@@ -299,7 +299,7 @@ const Dashboard = ({
           
           <button onClick={onOpenAchievements} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
             <Trophy size={20} strokeWidth={2.5} className="mb-0.5" />
-            <span className="text-[10px] font-medium">Rank</span>
+            <span className="text-[10px] font-medium">Conquistas</span>
           </button>
         </nav>
       </div>

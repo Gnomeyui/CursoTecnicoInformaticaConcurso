@@ -311,7 +311,7 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
             <section>
               <div className="flex justify-between items-center mb-3">
                 <h2 className="text-sm font-bold text-muted-foreground uppercase ml-1">
-                  {searchTerm ? `Resultados (${filteredPredefined.length})` : 'Sugestões Populares'}
+                  {searchTerm ? `Resultados (${filteredPredefined.length})` : `Todos os Cargos (${perfisPredefinidos.length})`}
                 </h2>
                 <button 
                   onClick={() => {
@@ -325,7 +325,7 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
               </div>
               
               <div className="space-y-3">
-                {filteredPredefined.map((perfil, idx) => (
+                {(searchTerm ? filteredPredefined : perfisPredefinidos).map((perfil, idx) => (
                   <button
                     key={idx}
                     onClick={() => {
@@ -374,10 +374,10 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                   </div>
                 )}
 
-                {!searchTerm && (
+                {!searchTerm && perfisPredefinidos.length === 0 && (
                   <div className="text-center py-4">
                     <p className="text-sm text-muted-foreground">
-                      💡 Digite acima para buscar entre {perfisPredefinidos.length}+ cargos
+                      Nenhum cargo disponível no momento
                     </p>
                   </div>
                 )}
