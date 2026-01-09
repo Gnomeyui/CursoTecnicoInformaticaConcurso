@@ -342,38 +342,50 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
   // Config View
   if (examState === 'config') {
     return (
-      <div className="min-h-screen bg-app pb-20">
-        <div className="bg-card-theme shadow-sm border-b border-gray-200 dark:border-gray-700 p-4">
+      <div className="h-[100dvh] bg-app flex flex-col">
+        {/* Header */}
+        <div className="bg-card-theme shadow-sm border-b border-gray-200 dark:border-gray-700 p-4 shrink-0">
           <div className="flex items-center gap-4">
-            <button onClick={onBack} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl">
-              <ArrowLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+            <button onClick={onBack} className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
+              <ArrowLeft className="w-6 h-6 text-foreground" />
             </button>
-            <h1 className="text-xl font-bold">Configurar Simulado</h1>
+            <h1 className="text-xl font-bold text-foreground">Configurar Simulado</h1>
           </div>
         </div>
 
-        <div className="px-[16px] py-[151px] w-full max-w-full mx-[0px] my-[-3px]">
-          <div className="bg-card rounded-2xl shadow-sm border border-border p-6 px-[25px] py-[83px] mx-[-1px] my-[-138px]">
-            <div className="text-center mb-[24px] mt-[-20px] mr-[-2px] ml-[0px] px-[12px] py-[18px]">
-              <div className={`w-16 h-16 bg-gradient-to-br ${theme.gradient} rounded-full flex items-center justify-center mx-auto mb-3`}>
-                <Trophy className="w-8 h-8 text-white" />
+        {/* Conteúdo Central com Scroll se precisar */}
+        <div className="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center">
+          <div className="w-full max-w-md space-y-8">
+            
+            {/* Hero Section */}
+            <div className="text-center space-y-4">
+              <div className={`w-20 h-20 bg-gradient-to-br ${theme.gradient} rounded-2xl rotate-3 flex items-center justify-center mx-auto shadow-xl`}>
+                <Trophy className="w-10 h-10 text-white -rotate-3" />
               </div>
-              <h2 className="text-xl font-bold">Simulado Inteligente</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                70% Questões novas • 30% Revisão baseada nos seus erros
-              </p>
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Simulado Inteligente</h2>
+                <p className="text-muted-foreground mt-2 max-w-xs mx-auto">
+                  Algoritmo que prioriza questões novas e revisa seus erros automaticamente.
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Quantidade de Questões</label>
-                <div className="grid grid-cols-4 gap-2">
+            {/* Configurações */}
+            <div className="bg-card rounded-2xl p-6 shadow-sm border border-border space-y-6 px-[21px] py-[47px]">
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Target className="w-4 h-4 text-muted-foreground" />
+                  Quantidade de Questões
+                </label>
+                <div className="grid grid-cols-4 gap-3">
                   {[10, 20, 30, 50].map(c => (
                     <button
                       key={c}
                       onClick={() => setQuestionCount(c)}
-                      className={`py-2 rounded-lg font-medium transition-all ${
-                        questionCount === c ? `${theme.button} text-white` : 'bg-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                      className={`h-12 rounded-xl font-bold text-sm transition-all border-2 ${
+                        questionCount === c 
+                          ? `border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300` 
+                          : 'border-transparent bg-secondary text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-700'
                       }`}
                     >
                       {c}
@@ -382,15 +394,20 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
                 </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium mb-2 block">Tempo (minutos)</label>
-                <div className="grid grid-cols-4 gap-2">
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  Tempo Limite (minutos)
+                </label>
+                <div className="grid grid-cols-4 gap-3">
                   {[30, 60, 90, 120].map(t => (
                     <button
                       key={t}
                       onClick={() => setTimeLimit(t)}
-                      className={`py-2 rounded-lg font-medium transition-all ${
-                        timeLimit === t ? `${theme.button} text-white` : 'bg-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                      className={`h-12 rounded-xl font-bold text-sm transition-all border-2 ${
+                        timeLimit === t 
+                          ? `border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300` 
+                          : 'border-transparent bg-secondary text-muted-foreground hover:bg-gray-200 dark:hover:bg-gray-700'
                       }`}
                     >
                       {t}
@@ -399,16 +416,19 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
                 </div>
               </div>
             </div>
-
-            <button
-              onClick={startExam}
-              disabled={loading}
-              className={`w-full mt-8 py-4 ${theme.button} rounded-xl text-white font-bold shadow-lg flex items-center justify-center gap-2 disabled:opacity-70`}
-            >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
-              {loading ? 'Gerando Prova...' : 'Começar Agora'}
-            </button>
           </div>
+        </div>
+
+        {/* Botão de Ação no Rodapé */}
+        <div className="p-6 bg-app shrink-0">
+          <button
+            onClick={startExam}
+            disabled={loading}
+            className={`w-full max-w-md mx-auto py-4 ${theme.button} rounded-xl text-white font-bold text-lg shadow-lg flex items-center justify-center gap-3 disabled:opacity-70 transition-transform active:scale-95`}
+          >
+            {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Play className="w-6 h-6 fill-current" />}
+            {loading ? 'Preparando Prova...' : 'Iniciar Agora'}
+          </button>
         </div>
       </div>
     );
@@ -417,79 +437,107 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
   // Running View
   if (examState === 'running' && selectedQuestions.length > 0) {
     const question = selectedQuestions[currentQuestionIndex];
+    const isLowTime = timeRemaining < 300;
+
     return (
-      <div className="min-h-screen bg-app flex flex-col">
-        {/* Header Compacto */}
-        <div className="bg-card-theme border-b border-border sticky top-0 z-10">
+      // h-[100dvh] garante altura total real do celular
+      <div className="h-[100dvh] bg-app flex flex-col overflow-hidden">
+        
+        {/* 1. HEADER (Fixo no Topo) */}
+        <div className="bg-card-theme shadow-sm border-b border-gray-200 dark:border-gray-700 z-20 shrink-0">
           <div className="px-4 py-3 flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">Questão</span>
-              <span className="font-bold text-lg">{currentQuestionIndex + 1}/{selectedQuestions.length}</span>
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Questão</span>
+              <span className="font-bold text-lg leading-none text-app">
+                {currentQuestionIndex + 1} <span className="text-gray-400 text-sm font-normal">/ {selectedQuestions.length}</span>
+              </span>
             </div>
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${timeRemaining < 300 ? 'bg-red-100 text-red-700' : 'bg-secondary'}`}>
+            
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border shadow-sm ${
+              isLowTime 
+                ? 'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/30 dark:border-red-800 dark:text-red-400 animate-pulse' 
+                : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-foreground'
+            }`}>
               <Clock className="w-4 h-4" />
-              <span className="font-mono font-bold">{formatTime(timeRemaining)}</span>
+              <span className="font-mono font-bold text-sm">{formatTime(timeRemaining)}</span>
             </div>
           </div>
-          <div className="h-1 bg-secondary w-full">
+          
+          {/* Barra de Progresso */}
+          <div className="h-1 bg-gray-100 dark:bg-gray-800 w-full">
             <div 
-              className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-300`}
+              className={`h-full ${theme.button} transition-all duration-500`}
               style={{ width: `${((currentQuestionIndex + 1) / selectedQuestions.length) * 100}%` }}
             />
           </div>
         </div>
 
-        {/* Conteúdo Scrollável */}
-        <div className="flex-1 overflow-y-auto p-4 max-w-3xl mx-auto w-full">
-          <div className="flex justify-between items-start mb-4">
-             <div className="flex gap-2">
-                <span className="px-2 py-1 bg-secondary rounded text-xs font-bold uppercase text-muted-foreground">
-                  {question.difficulty_level || 'Geral'}
-                </span>
-                {question.banca && (
-                  <span className="px-2 py-1 bg-secondary rounded text-xs font-bold uppercase text-muted-foreground">
-                    {question.banca}
-                  </span>
-                )}
-             </div>
-             <button onClick={toggleFlag}>
-               <Flag className={`w-5 h-5 ${flaggedQuestions.has(currentQuestionIndex) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-400'}`} />
-             </button>
-          </div>
+        {/* 2. CONTEÚDO (Expande no Meio - flex-1) */}
+        <div className="flex-1 overflow-y-auto p-4 w-full max-w-3xl mx-auto flex flex-col">
+          
+          <div className="space-y-6 my-auto"> {/* my-auto centraliza se for pequeno, mas deixa rolar se for grande */}
+            
+            {/* Cartão da Pergunta */}
+            <div className="bg-card-theme rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
+              <div className="flex justify-between items-start mb-4">
+                 <div className="flex flex-wrap gap-2">
+                    <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide bg-blue-50 text-blue-700 border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-900/30">
+                      {question.difficulty_level || 'Geral'}
+                    </span>
+                    {question.banca && (
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">
+                        {question.banca}
+                      </span>
+                    )}
+                 </div>
+                 <button onClick={toggleFlag} className="p-1 -mr-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+                   <Flag className={`w-5 h-5 ${flaggedQuestions.has(currentQuestionIndex) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} />
+                 </button>
+              </div>
 
-          <p className="text-lg leading-relaxed mb-8 font-medium">
-            {question.text}
-          </p>
+              <h3 className="text-lg font-medium text-app leading-relaxed">
+                {question.text}
+              </h3>
+            </div>
 
-          <div className="space-y-3 pb-20">
-            {question.options.map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => selectAnswer(opt.id)}
-                className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start gap-3 ${
-                  answers[currentQuestionIndex] === opt.id
-                    ? 'border-primary bg-primary/10'
-                    : 'border-border bg-card hover:bg-secondary'
-                }`}
-              >
-                <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center mt-0.5 ${
-                  answers[currentQuestionIndex] === opt.id ? 'border-primary bg-primary' : 'border-muted-foreground'
-                }`}>
-                  {answers[currentQuestionIndex] === opt.id && <div className="w-2 h-2 bg-white rounded-full" />}
-                </div>
-                <span>{opt.text}</span>
-              </button>
-            ))}
+            {/* Opções de Resposta (Separadas do enunciado) */}
+            <div className="space-y-3">
+              {question.options.map((opt) => {
+                 const isSelected = answers[currentQuestionIndex] === opt.id;
+                 return (
+                  <button
+                    key={opt.id}
+                    onClick={() => selectAnswer(opt.id)}
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start gap-4 active:scale-[0.99] group ${
+                      isSelected
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm'
+                        : 'border-transparent bg-white dark:bg-gray-800 shadow-sm hover:border-gray-200 dark:hover:border-gray-700'
+                    }`}
+                  >
+                    <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center mt-0.5 transition-colors ${
+                      isSelected 
+                        ? 'border-blue-500 bg-blue-500' 
+                        : 'border-gray-300 dark:border-gray-600 group-hover:border-gray-400'
+                    }`}>
+                      {isSelected && <div className="w-2.5 h-2.5 bg-white rounded-full" />}
+                    </div>
+                    <span className={`text-base ${isSelected ? 'text-blue-900 dark:text-blue-100 font-medium' : 'text-gray-700 dark:text-gray-300'}`}>
+                      {opt.text}
+                    </span>
+                  </button>
+                 );
+              })}
+            </div>
           </div>
         </div>
 
-        {/* Footer Navegação */}
-        <div className="bg-card-theme border-t border-border p-4 fixed bottom-0 w-full z-10">
-          <div className="max-w-3xl mx-auto flex gap-3">
+        {/* 3. FOOTER (Fixo no Fundo) */}
+        <div className="bg-card-theme border-t border-gray-200 dark:border-gray-800 p-4 shrink-0 z-20">
+          <div className="max-w-3xl mx-auto flex gap-4">
              <button 
                 disabled={currentQuestionIndex === 0}
                 onClick={() => setCurrentQuestionIndex(p => p - 1)}
-                className="flex-1 py-3 bg-secondary rounded-xl font-bold disabled:opacity-50"
+                className="flex-1 py-3.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold disabled:opacity-50 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
              >
                Anterior
              </button>
@@ -497,14 +545,14 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
              {currentQuestionIndex === selectedQuestions.length - 1 ? (
                <button 
                  onClick={finishExam}
-                 className="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700"
+                 className="flex-1 py-3.5 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 shadow-lg shadow-green-600/20 transition-all active:scale-95"
                >
-                 Finalizar
+                 Finalizar Prova
                </button>
              ) : (
                <button 
                  onClick={() => setCurrentQuestionIndex(p => p + 1)}
-                 className={`flex-1 py-3 ${theme.button} text-white rounded-xl font-bold`}
+                 className={`flex-1 py-3.5 ${theme.button} text-white rounded-xl font-bold shadow-lg transition-all active:scale-95`}
                >
                  Próxima
                </button>
@@ -518,35 +566,45 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
   // Result View
   if (examState === 'finished') {
     const accuracy = Math.round((score / selectedQuestions.length) * 100);
+    const isPassed = accuracy >= 70;
+    
     return (
-      <div className="min-h-screen bg-app p-6 flex flex-col items-center justify-center">
-        <div className="bg-card rounded-3xl p-8 shadow-xl w-full max-w-md text-center border border-border">
+      <div className="min-h-[100dvh] bg-app flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-lg bg-card-theme rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-800 text-center space-y-6">
+          {/* Ícone de Resultado */}
           <div className="mb-6 inline-flex p-4 rounded-full bg-secondary">
-             {accuracy >= 70 ? <Trophy className="w-12 h-12 text-yellow-500" /> : <Target className="w-12 h-12 text-blue-500" />}
+            {isPassed ? <Trophy className="w-12 h-12 text-yellow-500" /> : <Target className="w-12 h-12 text-blue-500" />}
           </div>
           
-          <h2 className="text-3xl font-bold mb-2">{accuracy >= 70 ? 'Aprovado!' : 'Treino Concluído'}</h2>
-          <p className="text-muted-foreground mb-8">
-            Você acertou {score} de {selectedQuestions.length} questões.
-          </p>
+          {/* Título e Mensagem */}
+          <div>
+            <h2 className="text-3xl font-bold mb-2">{isPassed ? 'Aprovado!' : 'Treino Concluído'}</h2>
+            <p className="text-muted-foreground">
+              Você acertou {score} de {selectedQuestions.length} questões.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          {/* Cards de Estatísticas */}
+          <div className="grid grid-cols-2 gap-4">
             <div className="bg-green-100 dark:bg-green-900/30 p-4 rounded-2xl">
               <div className="text-2xl font-bold text-green-700 dark:text-green-400">{accuracy}%</div>
-              <div className="text-xs text-green-600">Aproveitamento</div>
+              <div className="text-xs text-green-600 dark:text-green-500">Aproveitamento</div>
             </div>
             <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-2xl">
               <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">{score}</div>
-              <div className="text-xs text-blue-600">Questões Corretas</div>
+              <div className="text-xs text-blue-600 dark:text-blue-500">Questões Corretas</div>
             </div>
           </div>
 
-          <button 
-            onClick={onBack}
-            className={`w-full py-4 ${theme.button} text-white rounded-xl font-bold shadow-lg`}
-          >
-            Voltar ao Início
-          </button>
+          {/* Botão de Voltar */}
+          <div className="pt-4">
+            <button
+              onClick={onBack}
+              className={`w-full py-3.5 ${theme.button} text-white rounded-xl font-bold shadow-lg hover:brightness-110 active:scale-95 transition-all`}
+            >
+              VOLTAR AO INÍCIO
+            </button>
+          </div>
         </div>
       </div>
     );
