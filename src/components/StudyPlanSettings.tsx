@@ -123,7 +123,20 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
               <div>
                 <div className="flex justify-between mb-3">
                   <span className="text-sm font-medium">Questões por Rodada</span>
-                  <span className="text-lg font-bold text-blue-600">{batchSize}</span>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      value={batchSize[0]}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value) || 3;
+                        setBatchSize([Math.min(Math.max(val, 3), 9999)]);
+                      }}
+                      className="w-20 h-8 text-center text-lg font-bold text-blue-600 border-2 border-blue-200 focus:border-blue-400 rounded-lg px-2"
+                      min={3}
+                      max={9999}
+                    />
+                    <span className="text-sm font-medium text-blue-600">questões</span>
+                  </div>
                 </div>
                 <Slider value={batchSize} onValueChange={setBatchSize} max={500} min={3} step={1} className="py-2" />
                 <p className="text-xs text-gray-400 mt-2">De 3 a 500 questões por sessão.</p>
