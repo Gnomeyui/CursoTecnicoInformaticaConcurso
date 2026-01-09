@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   ArrowLeft, Clock, Flag, CheckCircle, XCircle, AlertCircle, 
-  Trophy, Target, Play 
+  Trophy, Target, Play, Loader2
 } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useTheme } from '../context/ThemeContext';
@@ -11,6 +11,7 @@ import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
 import { supabase } from '../utils/supabase/client';
 
+// Interfaces (Mantidas)
 interface QuestionOption {
   id: string;
   text: string;
@@ -26,6 +27,10 @@ interface Question {
   year?: string;
   banca?: string;
   exam_name?: string;
+  // Mapeamento caso o banco venha em português ou inglês, ajuste conforme seu DB
+  dificuldade?: string; 
+  opcoes?: any;
+  correta?: any;
 }
 
 interface SimulatedExamProps {
@@ -34,16 +39,16 @@ interface SimulatedExamProps {
 
 export function SimulatedExam({ onBack }: SimulatedExamProps) {
   const { isDarkMode } = useTheme();
-  const { recordSimulatedExam } = useGame();
+  const { addXP } = useGame();
   const { selectedProfile } = useConcursoProfile();
-  const { theme } = useCustomization();
+  const { settings } = useCustomization();
+  const theme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
   
-  // Estados principais
+  // Estados
   const [examState, setExamState] = useState<'config' | 'running' | 'finished'>('config');
   const [questionCount, setQuestionCount] = useState(30);
-  const [timeLimit, setTimeLimit] = useState(60); // minutos
+  const [timeLimit, setTimeLimit] = useState(60); 
   
-  // Estados da prova
   const [selectedQuestions, setSelectedQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
@@ -53,9 +58,8 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
   const [loading, setLoading] = useState(false);
   
   const endTimeRef = useRef<number>(0);
-  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
-  // Timer com Timestamp (funciona em background)
+  // Timer
   useEffect(() => {
     if (examState === 'running') {
       const timer = setInterval(() => {
@@ -72,7 +76,40 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
     }
   }, [examState]);
 
-  // Persistência automática do simulado
+  // Restauração de Backup (Melhorada para evitar loops)
+  useEffect(() => {
+    const checkBackup = () => {
+      const backup = localStorage.getItem('exam_backup');
+      if (backup && examState === 'config') { // Só restaura se estiver na config
+        try {
+          const data = JSON.parse(backup);
+          if (data.endTime > Date.now()) {
+            if (window.confirm("Existe um simulado em andamento. Deseja continuar?")) {
+              setSelectedQuestions(data.selectedQuestions);
+              setAnswers(data.answers);
+              setFlaggedQuestions(new Set(data.flaggedQuestions));
+              setCurrentQuestionIndex(data.currentQuestionIndex);
+              endTimeRef.current = data.endTime;
+              setQuestionCount(data.questionCount);
+              setTimeLimit(data.timeLimit);
+              setExamState('running');
+            } else {
+              localStorage.removeItem('exam_backup');
+            }
+          } else {
+            localStorage.removeItem('exam_backup');
+          }
+        } catch (error) {
+          console.error('Backup corrompido', error);
+          localStorage.removeItem('exam_backup');
+        }
+      }
+    };
+    checkBackup();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Executa apenas no mount
+
+  // Salvar Backup
   useEffect(() => {
     if (examState === 'running') {
       const examBackup = {
@@ -85,118 +122,96 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
         timeLimit
       };
       localStorage.setItem('exam_backup', JSON.stringify(examBackup));
-    } else {
+    } else if (examState === 'finished') {
       localStorage.removeItem('exam_backup');
     }
-  }, [examState, answers, currentQuestionIndex, flaggedQuestions]);
+  }, [examState, answers, currentQuestionIndex, flaggedQuestions, selectedQuestions, questionCount, timeLimit]);
 
-  // Restaurar simulado ao carregar
-  useEffect(() => {
-    const backup = localStorage.getItem('exam_backup');
-    if (backup) {
-      try {
-        const data = JSON.parse(backup);
-        const now = Date.now();
-        
-        // Só restaura se ainda tem tempo
-        if (data.endTime > now) {
-          setSelectedQuestions(data.selectedQuestions);
-          setAnswers(data.answers);
-          setFlaggedQuestions(new Set(data.flaggedQuestions));
-          setCurrentQuestionIndex(data.currentQuestionIndex);
-          endTimeRef.current = data.endTime;
-          setQuestionCount(data.questionCount);
-          setTimeLimit(data.timeLimit);
-          setExamState('running');
-        } else {
-          localStorage.removeItem('exam_backup');
-        }
-      } catch (error) {
-        console.error('Erro ao restaurar simulado:', error);
-        localStorage.removeItem('exam_backup');
-      }
-    }
-  }, []);
-
-  // 🔥 BUSCAR QUESTÕES INTELIGENTES DO SUPABASE
+  // 🔥 LÓGICA CORRIGIDA DE BUSCA DE QUESTÕES
   const startExam = async () => {
     setLoading(true);
-
     try {
-      // ID do usuário (pode vir de autenticação - por enquanto usa um ID fixo ou do localStorage)
-      const userId = localStorage.getItem('user_id') || 'guest-user';
-      
-      // ID do arquétipo baseado no perfil selecionado
-      const archetypeId = selectedProfile?.archetypeId || 1;
+      // 1. Obter Usuário Real
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
 
-      // ===== ALGORITMO INTELIGENTE 70/30 (SEM RPC) =====
-      
-      // 1️⃣ Calcular quantidades (70% novas + 30% erradas)
-      const novasLimit = Math.ceil(questionCount * 0.7);  // 70%
-      const erradasLimit = questionCount - novasLimit;    // 30%
-      
-      // 2️⃣ BUSCAR QUESTÕES NOVAS (nunca respondidas)
-      const { data: novasQuestions, error: novasError } = await supabase
+      if (!userId) {
+        alert("Você precisa estar logado para iniciar o simulado.");
+        setLoading(false);
+        return;
+      }
+
+      const archetypeId = selectedProfile?.archetypeId || 1;
+      const novasLimit = Math.ceil(questionCount * 0.7);
+      const erradasLimit = questionCount - novasLimit;
+
+      // 2. Buscar IDs de questões que o usuário JÁ respondeu
+      // Isso substitui a subquery SQL inválida
+      const { data: answeredData, error: answeredError } = await supabase
+        .from('user_question_progress')
+        .select('question_id')
+        .eq('user_id', userId);
+
+      if (answeredError) throw answeredError;
+
+      const answeredIds = answeredData?.map(item => item.question_id) || [];
+
+      // 3. Buscar Questões NOVAS (Excluindo as respondidas via filtro JS ou .not.in com array)
+      let queryNovas = supabase
         .from('questions')
         .select('*')
-        .eq('concurso_perfil_id', archetypeId)
-        .not('id', 'in', `(
-          SELECT question_id 
-          FROM user_question_progress 
-          WHERE user_id = '${userId}'
-        )`)
-        .limit(novasLimit);
+        .eq('concurso_perfil_id', archetypeId);
       
-      if (novasError && novasError.code !== 'PGRST116') {
-        console.error('Erro ao buscar questões novas:', novasError);
+      // Se houver questões respondidas, excluí-las
+      if (answeredIds.length > 0) {
+        // Nota: Se houver MUITAS questões (>1000), isso pode dar erro de URL length.
+        // O ideal é usar uma RPC (Stored Procedure) no futuro.
+        queryNovas = queryNovas.not('id', 'in', `(${answeredIds.join(',')})`);
       }
+
+      const { data: novasQuestions, error: novasError } = await queryNovas.limit(novasLimit);
       
-      // 3️⃣ BUSCAR QUESTÕES ERRADAS (para revisão)
-      const { data: progressData, error: progressError } = await supabase
+      if (novasError) throw novasError;
+
+      // 4. Buscar Questões Erradas (Revisão)
+      const { data: progressData } = await supabase
         .from('user_question_progress')
-        .select('question_id, times_wrong_total, times_correct, is_mastered')
+        .select('question_id')
         .eq('user_id', userId)
         .eq('is_mastered', false)
-        .gt('times_wrong_total', 0)
+        .gt('times_wrong_total', 0) // Só as que errou
         .order('times_wrong_total', { ascending: false })
         .limit(erradasLimit);
-      
-      if (progressError) {
-        console.error('Erro ao buscar progresso:', progressError);
-      }
-      
-      // 4️⃣ Buscar detalhes das questões erradas
+
       let erradasQuestions: any[] = [];
       if (progressData && progressData.length > 0) {
-        const erradasIds = progressData
-          .filter(p => p.times_wrong_total > p.times_correct)
-          .map(p => p.question_id);
-        
-        if (erradasIds.length > 0) {
-          const { data: erradasData } = await supabase
-            .from('questions')
-            .select('*')
-            .eq('concurso_perfil_id', archetypeId)
-            .in('id', erradasIds);
-          
-          erradasQuestions = erradasData || [];
-        }
-      }
-      
-      // 5️⃣ COMBINAR E EMBARALHAR
-      const allQuestions = [
-        ...(novasQuestions || []),
-        ...(erradasQuestions || [])
-      ];
-      
-      // Se não conseguiu questões suficientes, busca mais novas como fallback
-      if (allQuestions.length < questionCount) {
-        const remaining = questionCount - allQuestions.length;
-        const { data: fallbackQuestions } = await supabase
+        const idsRevisao = progressData.map(p => p.question_id);
+        const { data: questionsRevisao } = await supabase
           .from('questions')
           .select('*')
-          .eq('concurso_perfil_id', archetypeId)
-          .limit(remaining);
+          .in('id', idsRevisao);
+        erradasQuestions = questionsRevisao || [];
+      }
+
+      // 5. Combinar e Fallback
+      let allQuestions = [...(novasQuestions || []), ...erradasQuestions];
+
+      // Se ainda faltar questões, pegar aleatórias do banco (fallback)
+      if (allQuestions.length < questionCount) {
+        const remaining = questionCount - allQuestions.length;
+        // Pega IDs que já temos para não repetir
+        const currentIds = allQuestions.map(q => q.id);
+        
+        let queryFallback = supabase
+          .from('questions')
+          .select('*')
+          .eq('concurso_perfil_id', archetypeId);
+          
+        if (currentIds.length > 0) {
+           queryFallback = queryFallback.not('id', 'in', `(${currentIds.join(',')})`);
+        }
+          
+        const { data: fallbackQuestions } = await queryFallback.limit(remaining);
         
         if (fallbackQuestions) {
           allQuestions.push(...fallbackQuestions);
@@ -204,246 +219,194 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
       }
 
       if (allQuestions.length === 0) {
-        alert('Não há questões disponíveis para este perfil no momento!');
+        alert('Não foram encontradas questões para este perfil.');
         setLoading(false);
         return;
       }
 
-      // Embaralhar questões
+      // Embaralhar
       const shuffled = allQuestions.sort(() => Math.random() - 0.5);
-      
-      console.log(`✅ Simulado carregado: ${novasQuestions?.length || 0} novas + ${erradasQuestions.length} revisão = ${shuffled.length} total`);
 
-      // Configurar simulado
       setSelectedQuestions(shuffled);
       setCurrentQuestionIndex(0);
       setAnswers({});
       setFlaggedQuestions(new Set());
       endTimeRef.current = Date.now() + (timeLimit * 60 * 1000);
       setExamState('running');
-      setLoading(false);
-    } catch (error) {
-      console.error('Erro ao iniciar simulado:', error);
-      alert('Erro ao iniciar simulado');
+
+    } catch (error: any) {
+      console.error('Erro fatal ao iniciar simulado:', error);
+      alert(`Erro ao iniciar: ${error.message || 'Verifique sua conexão.'}`);
+    } finally {
       setLoading(false);
     }
   };
 
-  // 🔥 FINALIZAR SIMULADO E SALVAR NO BANCO
-  const finishExam = async () => {
-    // Calcular pontuação
-    let correctCount = 0;
-    const userId = localStorage.getItem('user_id') || 'guest-user';
+  // 🔥 FINALIZAR COM SEGURANÇA
+  const finishExam = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id; // Se não tiver user, não salva progresso, mas finaliza a UI
 
-    // Processar cada questão respondida
-    for (let index = 0; index < selectedQuestions.length; index++) {
-      const question = selectedQuestions[index];
+    let correctCount = 0;
+
+    selectedQuestions.forEach((question, index) => {
       const userAnswer = answers[index];
       const isCorrect = userAnswer === question.correct_option_id;
 
-      if (isCorrect) {
-        correctCount++;
-      }
+      if (isCorrect) correctCount++;
+    });
 
-      // 🔥 SALVAR PROGRESSO NO BANCO DE DADOS
-      if (userAnswer) {
-        try {
-          // Buscar progresso atual
-          const { data: progress } = await supabase
-            .from('user_question_progress')
-            .select('*')
-            .eq('user_id', userId)
-            .eq('question_id', question.id)
-            .single();
-
-          const currentStats = progress || {
-            times_viewed: 0,
-            times_correct: 0,
-            times_wrong_total: 0
-          };
-
-          const updates = {
-            user_id: userId,
-            question_id: question.id,
-            times_viewed: currentStats.times_viewed + 1,
-            last_answered_at: new Date().toISOString(),
-            times_correct: isCorrect 
-              ? currentStats.times_correct + 1 
-              : currentStats.times_correct,
-            times_wrong_total: !isCorrect 
-              ? currentStats.times_wrong_total + 1 
-              : currentStats.times_wrong_total,
-            is_mastered: false,
-            is_critical: false
-          };
-
-          // 🔥 APLICAR REGRAS DE OURO
-          if (isCorrect && updates.times_correct > 4) {
-            updates.is_mastered = true; // Nunca mais aparece
-          }
-          if (!isCorrect && updates.times_wrong_total > 6) {
-            updates.is_critical = true; // Vai para a UTI
-          }
-
-          // Salvar no banco
-          await supabase.from('user_question_progress').upsert(updates);
-        } catch (error) {
-          console.error('Erro ao salvar progresso:', error);
-        }
-      }
-    }
-
+    // Atualiza estado da UI primeiro para feedback rápido
     setScore(correctCount);
     setExamState('finished');
-    recordSimulatedExam();
+    
+    // Adicionar XP pelo simulado (10 XP por questão respondida)
+    const xpGained = selectedQuestions.length * 10;
+    addXP(xpGained);
+
+    // Salvar histórico de simulados
+    const examHistory = JSON.parse(localStorage.getItem('exam_history') || '[]');
+    examHistory.push({
+      date: new Date().toISOString(),
+      score: Math.round((correctCount / selectedQuestions.length) * 100),
+      totalQuestions: selectedQuestions.length,
+      correctAnswers: correctCount
+    });
+    localStorage.setItem('exam_history', JSON.stringify(examHistory));
+
+    // Processamento em Background (não bloqueia UI)
+    if (userId) {
+      processExamResultsBackground(userId, selectedQuestions, answers);
+    }
+  }, [selectedQuestions, answers, addXP]);
+
+  // Função auxiliar para salvar sem travar a tela
+  const processExamResultsBackground = async (userId: string, questions: Question[], userAnswers: {[key: number]: string}) => {
+    for (let index = 0; index < questions.length; index++) {
+      const question = questions[index];
+      const userAnswer = userAnswers[index];
+      if (!userAnswer) continue;
+
+      const isCorrect = userAnswer === question.correct_option_id;
+
+      try {
+        const { data: existing } = await supabase
+          .from('user_question_progress')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('question_id', question.id)
+          .single();
+
+        const current = existing || { times_correct: 0, times_wrong_total: 0, times_viewed: 0 };
+        
+        const updates = {
+          user_id: userId,
+          question_id: question.id,
+          times_viewed: current.times_viewed + 1,
+          last_answered_at: new Date().toISOString(),
+          times_correct: isCorrect ? current.times_correct + 1 : current.times_correct,
+          times_wrong_total: !isCorrect ? current.times_wrong_total + 1 : current.times_wrong_total,
+          is_mastered: (isCorrect && (current.times_correct + 1) > 4),
+          is_critical: (!isCorrect && (current.times_wrong_total + 1) > 6)
+        };
+
+        await supabase.from('user_question_progress').upsert(updates);
+      } catch (err) {
+        console.error('Erro sync background', err);
+      }
+    }
   };
 
+  // Funções de UI
   const selectAnswer = (answerOptionId: string) => {
-    // Feedback tátil
-    try {
-      Haptics.impact({ style: ImpactStyle.Light });
-    } catch (error) {
-      console.log('Haptics não disponível');
-    }
-    
-    setAnswers(prev => ({
-      ...prev,
-      [currentQuestionIndex]: answerOptionId
-    }));
+    try { Haptics.impact({ style: ImpactStyle.Light }); } catch (e) {}
+    setAnswers(prev => ({ ...prev, [currentQuestionIndex]: answerOptionId }));
   };
 
   const toggleFlag = () => {
     setFlaggedQuestions(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(currentQuestionIndex)) {
-        newSet.delete(currentQuestionIndex);
-      } else {
-        newSet.add(currentQuestionIndex);
-      }
+      newSet.has(currentQuestionIndex) ? newSet.delete(currentQuestionIndex) : newSet.add(currentQuestionIndex);
       return newSet;
     });
   };
 
-  const goToQuestion = (index: number) => {
-    setCurrentQuestionIndex(index);
-  };
-
-  const formatTime = (seconds: number): string => {
+  const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  const currentQuestion = selectedQuestions[currentQuestionIndex];
-  const progress = selectedQuestions.length > 0 
-    ? ((currentQuestionIndex + 1) / selectedQuestions.length) * 100 
-    : 0;
-  const answeredCount = Object.keys(answers).length;
+  // -- RENDERIZAÇÃO (VIEWS) --
 
-  // 🎨 TELA DE CONFIGURAÇÃO
+  // Config View
   if (examState === 'config') {
     return (
-      <div className="min-h-screen bg-app">
-        <div className="bg-card-theme shadow-sm border-b border-gray-200 dark:border-gray-700">
-          <div className="px-4 sm:px-6 py-4">
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={onBack}
-                aria-label="Voltar para o menu principal"
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
-              >
-                <ArrowLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-              </button>
-              <div>
-                <h1 className="text-2xl text-app">Modo Simulado</h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Configure seu simulado inteligente
-                </p>
-              </div>
-            </div>
+      <div className="min-h-screen bg-app pb-20">
+        <div className="bg-card-theme shadow-sm border-b border-gray-200 dark:border-gray-700 p-4">
+          <div className="flex items-center gap-4">
+            <button onClick={onBack} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl">
+              <ArrowLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+            </button>
+            <h1 className="text-xl font-bold">Configurar Simulado</h1>
           </div>
         </div>
 
-        <div className="px-4 sm:px-6 py-8 max-w-2xl mx-auto">
-          <div className="bg-card rounded-2xl p-8 shadow-lg border border-border space-y-6">
-            <div className="text-center">
-              <div className={`w-20 h-20 bg-gradient-to-br ${theme.gradient} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                <Trophy className="w-10 h-10 text-white" />
+        <div className="px-[16px] py-[151px] w-full max-w-full mx-[0px] my-[-3px]">
+          <div className="bg-card rounded-2xl shadow-sm border border-border p-6 px-[25px] py-[83px] mx-[-1px] my-[-138px]">
+            <div className="text-center mb-[24px] mt-[-20px] mr-[-2px] ml-[0px] px-[12px] py-[18px]">
+              <div className={`w-16 h-16 bg-gradient-to-br ${theme.gradient} rounded-full flex items-center justify-center mx-auto mb-3`}>
+                <Trophy className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Simulado Inteligente</h2>
-              <p className="text-muted-foreground">
-                Questões personalizadas do Supabase para {selectedProfile?.name || 'seu perfil'}
+              <h2 className="text-xl font-bold">Simulado Inteligente</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                70% Questões novas • 30% Revisão baseada nos seus erros
               </p>
             </div>
 
-            {/* Número de Questões */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Número de Questões
-              </label>
-              <div className="grid grid-cols-4 gap-2">
-                {[20, 30, 40, 50].map(count => (
-                  <button
-                    key={count}
-                    onClick={() => setQuestionCount(count)}
-                    className={`py-3 rounded-xl font-bold transition-all ${
-                      questionCount === count
-                        ? `${theme.button} shadow-md`
-                        : 'bg-secondary text-secondary-foreground hover:bg-muted'
-                    }`}
-                  >
-                    {count}
-                  </button>
-                ))}
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Quantidade de Questões</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[10, 20, 30, 50].map(c => (
+                    <button
+                      key={c}
+                      onClick={() => setQuestionCount(c)}
+                      className={`py-2 rounded-lg font-medium transition-all ${
+                        questionCount === c ? `${theme.button} text-white` : 'bg-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Tempo Limite */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Tempo Limite (minutos)
-              </label>
-              <div className="grid grid-cols-4 gap-2">
-                {[30, 45, 60, 90].map(time => (
-                  <button
-                    key={time}
-                    onClick={() => setTimeLimit(time)}
-                    className={`py-3 rounded-xl font-bold transition-all ${
-                      timeLimit === time
-                        ? `${theme.button} shadow-md`
-                        : 'bg-secondary text-secondary-foreground hover:bg-muted'
-                    }`}
-                  >
-                    {time}min
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Avisos */}
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-foreground">
-                  <p className="mb-2"><strong>Sistema Inteligente:</strong></p>
-                  <ul className="list-disc list-inside space-y-1 text-xs">
-                    <li>Questões adaptadas ao seu perfil de concurso</li>
-                    <li>Acertos salvos automaticamente (Mastered após 4 acertos)</li>
-                    <li>Erros rastreados para revisão (UTI após 6 erros)</li>
-                    <li>Estatísticas sincronizadas com o banco de dados</li>
-                  </ul>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Tempo (minutos)</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[30, 60, 90, 120].map(t => (
+                    <button
+                      key={t}
+                      onClick={() => setTimeLimit(t)}
+                      className={`py-2 rounded-lg font-medium transition-all ${
+                        timeLimit === t ? `${theme.button} text-white` : 'bg-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Botão Iniciar */}
             <button
               onClick={startExam}
               disabled={loading}
-              className={`w-full ${theme.button} py-4 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 font-bold`}
+              className={`w-full mt-8 py-4 ${theme.button} rounded-xl text-white font-bold shadow-lg flex items-center justify-center gap-2 disabled:opacity-70`}
             >
-              <Play className="w-5 h-5" />
-              {loading ? 'Carregando Questões...' : 'Iniciar Simulado'}
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />}
+              {loading ? 'Gerando Prova...' : 'Começar Agora'}
             </button>
           </div>
         </div>
@@ -451,335 +414,139 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
     );
   }
 
-  // 🎯 PROVA EM ANDAMENTO
-  if (examState === 'running' && currentQuestion) {
-    const isLowTime = timeRemaining < 300; // Menos de 5 minutos
-
+  // Running View
+  if (examState === 'running' && selectedQuestions.length > 0) {
+    const question = selectedQuestions[currentQuestionIndex];
     return (
-      <div className="min-h-screen bg-app">
-        {/* Header com Timer */}
-        <div className="bg-card-theme shadow-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
-          <div className="px-4 sm:px-6 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Questão {currentQuestionIndex + 1} de {selectedQuestions.length}
-                </div>
-              </div>
-              
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-                isLowTime 
-                  ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 animate-pulse'
-                  : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-              }`}>
-                <Clock className="w-5 h-5" />
-                <span className="font-mono font-bold">{formatTime(timeRemaining)}</span>
-              </div>
+      <div className="min-h-screen bg-app flex flex-col">
+        {/* Header Compacto */}
+        <div className="bg-card-theme border-b border-border sticky top-0 z-10">
+          <div className="px-4 py-3 flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground">Questão</span>
+              <span className="font-bold text-lg">{currentQuestionIndex + 1}/{selectedQuestions.length}</span>
             </div>
-
-            {/* Barra de Progresso */}
-            <div className="mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div 
-                className={`bg-gradient-to-r ${theme.gradient} h-2 rounded-full transition-all`}
-                style={{ width: `${progress}%` }}
-              />
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${timeRemaining < 300 ? 'bg-red-100 text-red-700' : 'bg-secondary'}`}>
+              <Clock className="w-4 h-4" />
+              <span className="font-mono font-bold">{formatTime(timeRemaining)}</span>
             </div>
+          </div>
+          <div className="h-1 bg-secondary w-full">
+            <div 
+              className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-300`}
+              style={{ width: `${((currentQuestionIndex + 1) / selectedQuestions.length) * 100}%` }}
+            />
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-4 p-4 max-w-7xl mx-auto">
-          {/* Questão Principal */}
-          <div className="flex-1 space-y-4">
-            <div className="bg-card-theme rounded-2xl p-6 shadow-lg">
-              {/* Metadados e Marcar */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex flex-wrap gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                  {currentQuestion.year && (
-                    <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                      📅 {currentQuestion.year}
-                    </span>
-                  )}
-                  {currentQuestion.banca && (
-                    <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                      🏛️ {currentQuestion.banca}
-                    </span>
-                  )}
-                  <span className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-1 rounded">
-                    {currentQuestion.difficulty_level}
+        {/* Conteúdo Scrollável */}
+        <div className="flex-1 overflow-y-auto p-4 max-w-3xl mx-auto w-full">
+          <div className="flex justify-between items-start mb-4">
+             <div className="flex gap-2">
+                <span className="px-2 py-1 bg-secondary rounded text-xs font-bold uppercase text-muted-foreground">
+                  {question.difficulty_level || 'Geral'}
+                </span>
+                {question.banca && (
+                  <span className="px-2 py-1 bg-secondary rounded text-xs font-bold uppercase text-muted-foreground">
+                    {question.banca}
                   </span>
-                </div>
-                <button
-                  onClick={toggleFlag}
-                  className={`p-2 rounded-lg transition-colors ${
-                    flaggedQuestions.has(currentQuestionIndex)
-                      ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  <Flag className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Pergunta */}
-              <h3 className="text-lg text-app mb-6 leading-relaxed">
-                {currentQuestion.text}
-              </h3>
-
-              {/* Opções */}
-              <div className="space-y-3">
-                {currentQuestion.options.map((option) => {
-                  const isSelected = answers[currentQuestionIndex] === option.id;
-                  
-                  return (
-                    <button
-                      key={option.id}
-                      onClick={() => selectAnswer(option.id)}
-                      className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
-                        isSelected
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                          isSelected
-                            ? 'border-blue-500 bg-blue-500'
-                            : 'border-gray-300 dark:border-gray-600'
-                        }`}>
-                          {isSelected && <div className="w-3 h-3 bg-white rounded-full" />}
-                        </div>
-                        <span className="uppercase text-sm font-bold opacity-60 w-6">
-                          {option.id})
-                        </span>
-                        <span className="text-gray-700 dark:text-gray-300 flex-1">
-                          {option.text}
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Navegação */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => goToQuestion(Math.max(0, currentQuestionIndex - 1))}
-                disabled={currentQuestionIndex === 0}
-                className="flex-1 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-              >
-                ← Anterior
-              </button>
-              <button
-                onClick={() => goToQuestion(Math.min(selectedQuestions.length - 1, currentQuestionIndex + 1))}
-                disabled={currentQuestionIndex === selectedQuestions.length - 1}
-                className={`flex-1 py-3 ${theme.button} rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium`}
-              >
-                Próxima →
-              </button>
-            </div>
-
-            {/* Finalizar */}
-            <button
-              onClick={finishExam}
-              className="w-full py-4 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors flex items-center justify-center gap-2 font-bold"
-            >
-              <CheckCircle className="w-5 h-5" />
-              Finalizar Simulado ({answeredCount}/{selectedQuestions.length} respondidas)
-            </button>
+                )}
+             </div>
+             <button onClick={toggleFlag}>
+               <Flag className={`w-5 h-5 ${flaggedQuestions.has(currentQuestionIndex) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-400'}`} />
+             </button>
           </div>
 
-          {/* Mapa de Questões */}
-          <div className="lg:w-80">
-            <div className="bg-card-theme rounded-2xl p-4 shadow-lg sticky top-24">
-              <h4 className="text-sm text-gray-700 dark:text-gray-300 mb-3 font-semibold">
-                Mapa de Questões
-              </h4>
-              <div className="grid grid-cols-5 gap-2 max-h-96 overflow-y-auto">
-                {selectedQuestions.map((_, index) => {
-                  const isAnswered = answers.hasOwnProperty(index);
-                  const isFlagged = flaggedQuestions.has(index);
-                  const isCurrent = index === currentQuestionIndex;
+          <p className="text-lg leading-relaxed mb-8 font-medium">
+            {question.text}
+          </p>
 
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => goToQuestion(index)}
-                      className={`aspect-square rounded-lg text-sm flex items-center justify-center relative font-semibold ${
-                        isCurrent
-                          ? 'bg-blue-500 text-white ring-2 ring-blue-300'
-                          : isAnswered
-                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                      }`}
-                    >
-                      {index + 1}
-                      {isFlagged && (
-                        <Flag className="w-3 h-3 absolute -top-1 -right-1 text-yellow-500" fill="currentColor" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+          <div className="space-y-3 pb-20">
+            {question.options.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => selectAnswer(opt.id)}
+                className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-start gap-3 ${
+                  answers[currentQuestionIndex] === opt.id
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border bg-card hover:bg-secondary'
+                }`}
+              >
+                <div className={`w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center mt-0.5 ${
+                  answers[currentQuestionIndex] === opt.id ? 'border-primary bg-primary' : 'border-muted-foreground'
+                }`}>
+                  {answers[currentQuestionIndex] === opt.id && <div className="w-2 h-2 bg-white rounded-full" />}
+                </div>
+                <span>{opt.text}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2 text-xs">
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <div className="w-4 h-4 bg-blue-500 rounded" />
-                  Atual
-                </div>
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <div className="w-4 h-4 bg-green-100 dark:bg-green-900/30 rounded" />
-                  Respondida
-                </div>
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <div className="w-4 h-4 bg-gray-100 dark:bg-gray-700 rounded" />
-                  Não respondida
-                </div>
-              </div>
-            </div>
+        {/* Footer Navegação */}
+        <div className="bg-card-theme border-t border-border p-4 fixed bottom-0 w-full z-10">
+          <div className="max-w-3xl mx-auto flex gap-3">
+             <button 
+                disabled={currentQuestionIndex === 0}
+                onClick={() => setCurrentQuestionIndex(p => p - 1)}
+                className="flex-1 py-3 bg-secondary rounded-xl font-bold disabled:opacity-50"
+             >
+               Anterior
+             </button>
+             
+             {currentQuestionIndex === selectedQuestions.length - 1 ? (
+               <button 
+                 onClick={finishExam}
+                 className="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700"
+               >
+                 Finalizar
+               </button>
+             ) : (
+               <button 
+                 onClick={() => setCurrentQuestionIndex(p => p + 1)}
+                 className={`flex-1 py-3 ${theme.button} text-white rounded-xl font-bold`}
+               >
+                 Próxima
+               </button>
+             )}
           </div>
         </div>
       </div>
     );
   }
 
-  // 🏆 RESULTADO
+  // Result View
   if (examState === 'finished') {
     const accuracy = Math.round((score / selectedQuestions.length) * 100);
-    const isPassed = accuracy >= 70;
-
     return (
-      <div className="min-h-screen bg-app">
-        <div className="px-4 sm:px-6 py-8 max-w-4xl mx-auto">
-          <div className="bg-card-theme rounded-2xl p-8 shadow-lg">
-            {/* Resultado Principal */}
-            <div className="text-center mb-8">
-              <div className={`w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center ${
-                isPassed 
-                  ? 'bg-gradient-to-br from-green-400 to-emerald-500'
-                  : 'bg-gradient-to-br from-orange-400 to-red-500'
-              }`}>
-                {isPassed ? (
-                  <Trophy className="w-16 h-16 text-white" />
-                ) : (
-                  <Target className="w-16 h-16 text-white" />
-                )}
-              </div>
-              
-              <h2 className="text-3xl text-app mb-2 font-bold">
-                {isPassed ? 'Parabéns!' : 'Continue Estudando!'}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                {isPassed 
-                  ? 'Você teve um excelente desempenho!'
-                  : 'Revise os conteúdos e tente novamente'
-                }
-              </p>
+      <div className="min-h-screen bg-app p-6 flex flex-col items-center justify-center">
+        <div className="bg-card rounded-3xl p-8 shadow-xl w-full max-w-md text-center border border-border">
+          <div className="mb-6 inline-flex p-4 rounded-full bg-secondary">
+             {accuracy >= 70 ? <Trophy className="w-12 h-12 text-yellow-500" /> : <Target className="w-12 h-12 text-blue-500" />}
+          </div>
+          
+          <h2 className="text-3xl font-bold mb-2">{accuracy >= 70 ? 'Aprovado!' : 'Treino Concluído'}</h2>
+          <p className="text-muted-foreground mb-8">
+            Você acertou {score} de {selectedQuestions.length} questões.
+          </p>
+
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="bg-green-100 dark:bg-green-900/30 p-4 rounded-2xl">
+              <div className="text-2xl font-bold text-green-700 dark:text-green-400">{accuracy}%</div>
+              <div className="text-xs text-green-600">Aproveitamento</div>
             </div>
-
-            {/* Estatísticas */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 text-center">
-                <div className="text-3xl text-blue-600 dark:text-blue-400 mb-1 font-bold">
-                  {accuracy}%
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Acurácia</div>
-              </div>
-              <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 text-center">
-                <div className="text-3xl text-green-600 dark:text-green-400 mb-1 font-bold">
-                  {score}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Acertos</div>
-              </div>
-              <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4 text-center">
-                <div className="text-3xl text-red-600 dark:text-red-400 mb-1 font-bold">
-                  {selectedQuestions.length - score}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Erros</div>
-              </div>
-            </div>
-
-            {/* Info do Sistema Inteligente */}
-            <div className="bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-xl p-4 mb-6">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-green-800 dark:text-green-200">
-                  <p className="font-bold mb-1">✅ Dados Salvos no Banco!</p>
-                  <ul className="list-disc list-inside space-y-1 text-xs">
-                    <li>Progresso sincronizado com o Supabase</li>
-                    <li>Questões certas contabilizadas para "Mastered"</li>
-                    <li>Questões erradas marcadas para revisão</li>
-                    <li>Estatísticas disponíveis no dashboard</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Revisão de Questões */}
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-6">
-              <h3 className="text-lg text-app mb-4 font-bold">Revisão das Questões</h3>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                {selectedQuestions.map((question, index) => {
-                  const userAnswer = answers[index];
-                  const isCorrect = userAnswer === question.correct_option_id;
-                  const wasAnswered = userAnswer !== undefined;
-
-                  return (
-                    <div 
-                      key={index}
-                      className="bg-white dark:bg-gray-800 rounded-lg p-4 border-2 border-gray-200 dark:border-gray-700"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0">
-                          {isCorrect ? (
-                            <CheckCircle className="w-6 h-6 text-green-500" />
-                          ) : wasAnswered ? (
-                            <XCircle className="w-6 h-6 text-red-500" />
-                          ) : (
-                            <AlertCircle className="w-6 h-6 text-orange-500" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                            Questão {index + 1} - {question.difficulty_level}
-                          </div>
-                          <div className="text-sm text-gray-900 dark:text-white mb-2">
-                            {question.text}
-                          </div>
-                          {wasAnswered && !isCorrect && (
-                            <div className="text-xs space-y-1">
-                              <div className="text-red-600 dark:text-red-400">
-                                ❌ Sua resposta: {question.options.find(o => o.id === userAnswer)?.text}
-                              </div>
-                              <div className="text-green-600 dark:text-green-400 font-medium">
-                                ✅ Correta: {question.options.find(o => o.id === question.correct_option_id)?.text}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Botões */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => setExamState('config')}
-                className={`flex-1 py-3 ${theme.button} rounded-xl hover:shadow-lg transition-all font-bold`}
-              >
-                🔄 Novo Simulado
-              </button>
-              <button
-                onClick={onBack}
-                className="flex-1 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-bold"
-              >
-                🏠 Voltar ao Início
-              </button>
+            <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-2xl">
+              <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">{score}</div>
+              <div className="text-xs text-blue-600">Questões Corretas</div>
             </div>
           </div>
+
+          <button 
+            onClick={onBack}
+            className={`w-full py-4 ${theme.button} text-white rounded-xl font-bold shadow-lg`}
+          >
+            Voltar ao Início
+          </button>
         </div>
       </div>
     );
