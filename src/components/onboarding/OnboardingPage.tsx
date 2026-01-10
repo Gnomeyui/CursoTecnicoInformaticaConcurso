@@ -110,7 +110,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
         {currentSlide === 1 && (
           <div className="text-center space-y-8">
             <div className="space-y-3">
-              <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+              <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight px-[4px] py-[0px] mt-[26px] mr-[0px] mb-[13px] ml-[0px]">
                 {currentSlideData.title}
               </h1>
               <p className="text-xl text-gray-700 dark:text-gray-300 font-medium">
