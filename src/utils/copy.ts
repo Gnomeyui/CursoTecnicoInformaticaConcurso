@@ -41,9 +41,11 @@ export const COPY = {
       button: 'Entendi'
     },
     slide3: {
-      title: 'Não precisa estudar muito. Precisa estudar sempre.',
-      text: 'Constância vence intensidade. Vamos juntos nessa jornada?',
-      button: 'Começar a estudar'
+      title: 'Pronto para começar?',
+      text: 'Você pode começar com apenas 5 minutos por dia. Sem pressão, no seu ritmo.',
+      commitment: 'Vamos juntos nessa jornada rumo à aprovação!',
+      button: 'Começar meu primeiro estudo',
+      skip: 'Ver depois'
     }
   },
 

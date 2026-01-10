@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Zap, Bell, Volume2, Smartphone, Save, Music, Upload } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, Bell, Volume2, Smartphone, Save, Music, Upload, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { Slider } from './ui/slider';
 import { Switch } from './ui/switch';
@@ -8,9 +8,10 @@ import { Input } from './ui/input';
 
 interface StudyPlanSettingsProps {
   onBack: () => void;
+  onOpenNotifications?: () => void;
 }
 
-export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
+export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSettingsProps) {
   // Inicializa estados com valores do localStorage ou padrão
   const [dailyGoal, setDailyGoal] = useState([20]);
   const [batchSize, setBatchSize] = useState([10]);
@@ -19,6 +20,10 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
   const [preferences, setPreferences] = useState({ sound: true, vibration: true });
   const [notificationSound, setNotificationSound] = useState('padrao');
   const [customSoundFile, setCustomSoundFile] = useState<string | null>(null);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
+    const saved = localStorage.getItem('alerr_notifications_enabled');
+    return saved ? JSON.parse(saved) : true;
+  });
 
   // Carregar dados ao abrir
   useEffect(() => {
@@ -194,13 +199,42 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
             <Bell size={18} /> Alertas
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-yellow-100 p-2 rounded-full text-yellow-600"><Volume2 size={18} /></div>
-                <span className="text-sm font-medium">Sons</span>
+            {/* Notificações Inteligentes */}
+            {onOpenNotifications ? (
+              <button 
+                onClick={onOpenNotifications}
+                className="w-full flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="bg-red-100 dark:bg-red-500/20 p-2 rounded-full text-red-600 dark:text-red-400">
+                    <Bell size={18} />
+                  </div>
+                  <div className="text-left">
+                    <span className="text-sm font-medium block">Notificações Inteligentes</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {notificationsEnabled ? 'Ativadas' : 'Desativadas'}
+                    </span>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="text-gray-400" />
+              </button>
+            ) : (
+              <div className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-red-100 dark:bg-red-500/20 p-2 rounded-full text-red-600 dark:text-red-400">
+                    <Bell size={18} />
+                  </div>
+                  <span className="text-sm font-medium">Notificações Inteligentes</span>
+                </div>
+                <Switch 
+                  checked={notificationsEnabled} 
+                  onCheckedChange={(v) => {
+                    setNotificationsEnabled(v);
+                    localStorage.setItem('alerr_notifications_enabled', JSON.stringify(v));
+                  }} 
+                />
               </div>
-              <Switch checked={preferences.sound} onCheckedChange={(v) => setPreferences({...preferences, sound: v})} />
-            </div>
+            )}
             
             {/* Toque de Alerta */}
             {preferences.sound && (
@@ -307,6 +341,14 @@ export function StudyPlanSettings({ onBack }: StudyPlanSettingsProps) {
                 <span className="text-sm font-medium">Vibração</span>
               </div>
               <Switch checked={preferences.vibration} onCheckedChange={(v) => setPreferences({...preferences, vibration: v})} />
+            </div>
+            
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-yellow-100 p-2 rounded-full text-yellow-600"><Volume2 size={18} /></div>
+                <span className="text-sm font-medium">Sons</span>
+              </div>
+              <Switch checked={preferences.sound} onCheckedChange={(v) => setPreferences({...preferences, sound: v})} />
             </div>
           </div>
         </section>

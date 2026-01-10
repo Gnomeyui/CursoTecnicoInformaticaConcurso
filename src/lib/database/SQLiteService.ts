@@ -142,6 +142,107 @@ class SQLiteService {
       this.isInitialized = false;
     }
   }
+
+  /**
+   * Importa um lote de questões (Bulk Insert)
+   * Essencial para performance ao carregar 5.000+ questões
+   */
+  async importQuestionsBatch(questions: any[]): Promise<void> {
+    if (!this.db) await this.initialize();
+
+    // Prepara os statements para transação única
+    const statements = questions.map(q => ({
+      sql: `
+        INSERT OR REPLACE INTO questions (
+          exam_id, question_number, discipline, statement, 
+          options, correct_option, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?);
+      `,
+      params: [
+        q.examId || 1,      // ID da prova (vincular na tabela exams antes se necessário)
+        q.number || q.id, 
+        q.discipline || q.subject, 
+        q.statement || q.question, 
+        JSON.stringify(q.options), // Converte objeto de opções para string JSON
+        q.correctOption || q.correct_answer,
+        new Date().toISOString()
+      ]
+    }));
+
+    try {
+      console.log(`📦 Iniciando importação de ${questions.length} questões...`);
+      await this.transaction(statements);
+      console.log('✅ Importação concluída com sucesso!');
+    } catch (error) {
+      console.error('❌ Erro na importação em massa:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Importa dados de uma prova/concurso
+   */
+  async importExam(exam: { banca: string; orgao: string; cargo: string; ano: number; nivel?: string }): Promise<number> {
+    if (!this.db) await this.initialize();
+
+    try {
+      await this.execute(`
+        INSERT OR REPLACE INTO exams (banca, orgao, cargo, ano, nivel)
+        VALUES (?, ?, ?, ?, ?)
+      `, [exam.banca, exam.orgao, exam.cargo, exam.ano, exam.nivel || 'Médio']);
+
+      // Retorna o ID da prova inserida
+      const result = await this.query(`
+        SELECT id FROM exams 
+        WHERE banca = ? AND orgao = ? AND cargo = ? AND ano = ?
+        LIMIT 1
+      `, [exam.banca, exam.orgao, exam.cargo, exam.ano]);
+
+      return result[0]?.id || 1;
+    } catch (error) {
+      console.error('❌ Erro ao importar prova:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Verifica se o banco já tem questões importadas
+   */
+  async hasQuestions(): Promise<boolean> {
+    if (!this.db) await this.initialize();
+
+    try {
+      const result = await this.query('SELECT COUNT(*) as total FROM questions');
+      return (result[0]?.total || 0) > 0;
+    } catch (error) {
+      console.error('❌ Erro ao verificar questões:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Retorna estatísticas do banco de dados
+   */
+  async getDatabaseStats(): Promise<{ exams: number; questions: number; userProgress: number }> {
+    if (!this.db) await this.initialize();
+
+    try {
+      const [examsResult, questionsResult, progressResult] = await Promise.all([
+        this.query('SELECT COUNT(*) as total FROM exams'),
+        this.query('SELECT COUNT(*) as total FROM questions'),
+        this.query('SELECT COUNT(*) as total FROM user_question_progress')
+      ]);
+
+      return {
+        exams: examsResult[0]?.total || 0,
+        questions: questionsResult[0]?.total || 0,
+        userProgress: progressResult[0]?.total || 0
+      };
+    } catch (error) {
+      console.error('❌ Erro ao obter estatísticas:', error);
+      return { exams: 0, questions: 0, userProgress: 0 };
+    }
+  }
 }
 
 // Singleton

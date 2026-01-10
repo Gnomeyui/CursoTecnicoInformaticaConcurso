@@ -168,18 +168,15 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
               <p className="text-xl text-gray-700 dark:text-gray-300 font-medium">
                 {currentSlideData.subtitle}
               </p>
-              <p className="text-base text-gray-500 dark:text-gray-400">
-                {currentSlideData.description}
+            </div>
+
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-5 rounded-2xl border-2 border-green-200 dark:border-green-800">
+              <p className="text-green-800 dark:text-green-300 font-bold text-lg">
+                {COPY.onboarding.slide3.commitment}
               </p>
             </div>
 
-            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-2xl border-2 border-green-200 dark:border-green-800">
-              <p className="text-green-800 dark:text-green-300 font-semibold">
-                💡 Você está a apenas 1 clique de começar sua jornada!
-              </p>
-            </div>
-
-            <div className="pt-8">
+            <div className="pt-8 space-y-3">
               <Button 
                 onClick={handleNext}
                 size="lg"
@@ -189,6 +186,16 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
                   {currentSlideData.buttonText} <Check className="w-5 h-5" />
                 </span>
               </Button>
+              
+              <button
+                onClick={() => {
+                  localStorage.setItem('hasSeenOnboarding', 'true');
+                  onComplete();
+                }}
+                className="w-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-sm py-2 transition-colors"
+              >
+                {COPY.onboarding.slide3.skip}
+              </button>
             </div>
           </div>
         )}

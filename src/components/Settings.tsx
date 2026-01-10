@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  Bell, Volume2, Trash2, LogOut, User, 
+  Bell, Trash2, LogOut, User, 
   ChevronRight, Palette, Clock, Shield, HelpCircle, Target, ArrowLeft
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
@@ -24,29 +24,11 @@ export function Settings({
   const { settings } = useCustomization();
   const theme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
 
-  // Estados para preferências
-  const [notifications, setNotifications] = React.useState(() => {
-    const saved = localStorage.getItem('alerr_notifications_enabled');
-    return saved ? JSON.parse(saved) : true;
-  });
-  
-  const [sound, setSound] = React.useState(() => {
-    const saved = localStorage.getItem('alerr_sound_enabled');
-    return saved ? JSON.parse(saved) : false;
-  });
-
+  // Estados para preferências  
   const [dailyGoal, setDailyGoal] = React.useState(() => {
     const saved = localStorage.getItem('alerr_settings');
     return saved ? JSON.parse(saved).dailyGoal || 50 : 50;
   });
-
-  React.useEffect(() => {
-    localStorage.setItem('alerr_notifications_enabled', JSON.stringify(notifications));
-  }, [notifications]);
-
-  React.useEffect(() => {
-    localStorage.setItem('alerr_sound_enabled', JSON.stringify(sound));
-  }, [sound]);
 
   const handleResetProgress = () => {
     if (window.confirm('⚠️ ATENÇÃO! Isso vai apagar TODAS as suas estatísticas, XP, nível e histórico de questões. Esta ação é IRREVERSÍVEL!\n\nTem certeza que deseja continuar?')) {
@@ -57,7 +39,6 @@ export function Settings({
           'alerr_answered_questions',
           'alerr_settings',
           'alerr_notifications_enabled',
-          'alerr_sound_enabled',
           'alerr_concurso_profile',
           'exam_backup'
         ];
@@ -194,30 +175,7 @@ export function Settings({
         <section>
           <h2 className="text-xs font-bold text-muted-foreground uppercase ml-4 mb-3 tracking-widest">App</h2>
           <div className="bg-card border border-border rounded-[1.5rem] shadow-sm overflow-hidden divide-y divide-border">
-            {onOpenNotifications ? (
-              <MenuItem 
-                icon={Bell} 
-                label="Notificações Inteligentes" 
-                desc={notifications ? 'Ativadas' : 'Desativadas'}
-                onClick={onOpenNotifications}
-                colorClass="bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400"
-              />
-            ) : (
-              <MenuItem 
-                icon={Bell} 
-                label="Notificações Inteligentes" 
-                desc={notifications ? 'Ativadas' : 'Desativadas'}
-                colorClass="bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400"
-                activeToggle={<Switch checked={notifications} onCheckedChange={setNotifications} />}
-              />
-            )}
-            <MenuItem 
-              icon={Volume2} 
-              label="Efeitos Sonoros" 
-              desc={sound ? 'Ativados' : 'Desativados'}
-              colorClass="bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400"
-              activeToggle={<Switch checked={sound} onCheckedChange={setSound} />}
-            />
+            {/* Notificações Inteligentes removidas - disponível em Meu Plano */}
             <MenuItem 
               icon={HelpCircle} 
               label="Ajuda e Suporte" 

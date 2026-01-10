@@ -18,6 +18,7 @@ import { LevelUpCelebration } from '../components/LevelUpCelebration';
 import { OnboardingPage } from '../components/onboarding/OnboardingPage';
 import { AppRoutes, View, Difficulty } from './AppRoutes';
 import { trackEvent } from '../utils/analytics/simple-metrics';
+import { syncService } from '../services/SyncService';
 
 export function AppShell() {
   const [currentView, setCurrentView] = useState<View>('dashboard');
@@ -41,6 +42,30 @@ export function AppShell() {
     setDailyScore(todayStats.correctAnswers);
     setTotalQuestions(todayStats.questionsAnswered);
   }, [getTodayStats]);
+
+  // ========================================
+  // 🔄 SINCRONIZAÇÃO AUTOMÁTICA NO BOOT
+  // ========================================
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        console.log('🚀 Inicializando aplicação...');
+        
+        // Sincroniza questões automaticamente
+        await syncService.autoSync();
+        
+        // Mostra estatísticas do banco
+        const stats = await syncService.getLocalStats();
+        console.log('📊 Banco de dados:', stats);
+        
+      } catch (error) {
+        console.error('⚠️ Erro na inicialização:', error);
+        // Não bloqueia o app
+      }
+    };
+
+    initializeApp();
+  }, []); // Executa apenas uma vez no mount
 
   // ========================================
   // ATUALIZAR COR DA STATUS BAR (ANDROID)
