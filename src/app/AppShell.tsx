@@ -1,0 +1,244 @@
+/**
+ * AppShell - Container Principal da Aplicação
+ * 
+ * Gerencia:
+ * - Estado global de navegação
+ * - Handlers de navegação
+ * - Celebrações e Onboarding
+ * - Listener do botão "Voltar" do Android
+ */
+
+import React, { useState, useEffect } from 'react';
+import { App as CapacitorApp } from '@capacitor/app';
+import { useGame } from '../context/GameContext';
+import { useStats } from '../context/StatsContext';
+import { useTheme } from '../context/ThemeContext';
+import { ConfettiCelebration } from '../components/ConfettiCelebration';
+import { LevelUpCelebration } from '../components/LevelUpCelebration';
+import { OnboardingPage } from '../components/onboarding/OnboardingPage';
+import { AppRoutes, View, Difficulty } from './AppRoutes';
+import { trackEvent } from '../utils/analytics/simple-metrics';
+
+export function AppShell() {
+  const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [selectedSubject, setSelectedSubject] = useState<string>('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('mix');
+  const [dailyScore, setDailyScore] = useState(0);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return !localStorage.getItem('hasSeenOnboarding');
+  });
+  
+  const { showLevelUpCelebration, dismissLevelUpCelebration, levelUpInfo, showGloriaCelebration, dismissGloriaCelebration } = useGame();
+  const { getTodayStats } = useStats();
+  const { isDarkMode, currentTheme } = useTheme();
+
+  // ========================================
+  // CARREGAR ESTATÍSTICAS DO DIA
+  // ========================================
+  useEffect(() => {
+    const todayStats = getTodayStats();
+    setDailyScore(todayStats.correctAnswers);
+    setTotalQuestions(todayStats.questionsAnswered);
+  }, [getTodayStats]);
+
+  // ========================================
+  // ATUALIZAR COR DA STATUS BAR (ANDROID)
+  // ========================================
+  useEffect(() => {
+    const updateStatusBar = async () => {
+      if (typeof window !== 'undefined' && 'StatusBar' in window) {
+        const StatusBar = (window as any).StatusBar;
+        
+        const themeColors: Record<string, { light: string; dark: string }> = {
+          default: { light: '#f8fafc', dark: '#0f172a' },
+          modern: { light: '#f9fafb', dark: '#030712' },
+          reading: { light: '#f5f5f4', dark: '#1c1917' },
+          focus: { light: '#ffffff', dark: '#000000' },
+          calm: { light: '#f0fdfa', dark: '#042f2e' },
+          forest: { light: '#f8fafc', dark: '#0f172a' },
+          ocean: { light: '#f8fafc', dark: '#0f172a' },
+          sunset: { light: '#f8fafc', dark: '#0f172a' },
+          purple: { light: '#f8fafc', dark: '#0f172a' },
+        };
+        
+        const color = isDarkMode 
+          ? themeColors[currentTheme]?.dark || '#0f172a'
+          : themeColors[currentTheme]?.light || '#ffffff';
+        
+        if (isDarkMode) {
+          StatusBar?.setStyle('dark-content');
+        } else {
+          StatusBar?.setStyle('light-content');
+        }
+        
+        StatusBar?.setBackgroundColor(color);
+      }
+    };
+    
+    updateStatusBar();
+  }, [isDarkMode, currentTheme]);
+
+  // ========================================
+  // 🔙 HANDLER DO BOTÃO FÍSICO "VOLTAR" DO ANDROID
+  // ========================================
+  useEffect(() => {
+    let backButtonListener: any;
+
+    const setupBackButton = async () => {
+      try {
+        backButtonListener = await CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+          console.log('🔙 Botão "Voltar" pressionado. View atual:', currentView);
+
+          if (currentView !== 'dashboard') {
+            handleBackToDashboard();
+          } else {
+            CapacitorApp.minimizeApp();
+          }
+        });
+
+        console.log('✅ Listener do botão "Voltar" configurado');
+      } catch (error) {
+        console.log('ℹ️ Plugin Capacitor App não disponível (provavelmente em web)');
+      }
+    };
+
+    setupBackButton();
+
+    return () => {
+      if (backButtonListener) {
+        backButtonListener.remove();
+      }
+    };
+  }, [currentView]);
+
+  // ========================================
+  // NAVIGATION HANDLERS
+  // ========================================
+  const handleStartQuiz = () => {
+    trackEvent.sessionStarted(); // 📊 Métrica
+    trackEvent.screenViewed('difficulty-selector');
+    setSelectedSubject('all');
+    setCurrentView('difficulty');
+  };
+
+  const handleSelectDifficulty = (difficulty: Difficulty) => {
+    trackEvent.screenViewed('study-session');
+    setSelectedDifficulty(difficulty);
+    setCurrentView('study');
+  };
+
+  const handleBackToDashboard = () => {
+    trackEvent.screenViewed('dashboard');
+    setCurrentView('dashboard');
+    setSelectedSubject('');
+    setSelectedDifficulty('mix');
+    
+    const todayStats = getTodayStats();
+    setDailyScore(todayStats.correctAnswers);
+    setTotalQuestions(todayStats.questionsAnswered);
+  };
+
+  const handleBackFromDifficulty = () => {
+    trackEvent.screenViewed('dashboard');
+    setCurrentView('dashboard');
+    setSelectedSubject('');
+  };
+
+  const handleOpenStatistics = () => {
+    trackEvent.screenViewed('statistics');
+    setCurrentView('statistics');
+  };
+  
+  const handleOpenAchievements = () => {
+    trackEvent.screenViewed('achievements');
+    setCurrentView('achievements');
+  };
+  
+  const handleOpenCustomization = () => {
+    trackEvent.screenViewed('customization');
+    setCurrentView('customization');
+  };
+  
+  const handleOpenSettings = () => {
+    trackEvent.screenViewed('settings');
+    setCurrentView('settings');
+  };
+  
+  const handleOpenSimulatedExam = () => {
+    trackEvent.screenViewed('simulated-exam');
+    setCurrentView('simulatedExam');
+  };
+  
+  const handleOpenFlashcards = () => {
+    trackEvent.screenViewed('flashcards');
+    setCurrentView('flashcards');
+  };
+  
+  const handleOpenRegimento = () => {
+    trackEvent.screenViewed('regimento');
+    setCurrentView('regimento');
+  };
+  
+  const handleOpenProfiles = () => {
+    trackEvent.screenViewed('profiles');
+    setCurrentView('profiles');
+  };
+  
+  const handleOpenStudyPlan = () => {
+    trackEvent.screenViewed('study-plan');
+    setCurrentView('studyPlan');
+  };
+
+  // ========================================
+  // RENDER
+  // ========================================
+  return (
+    <div className="min-h-screen bg-app text-app transition-colors duration-300">
+      
+      {/* Rotas/Telas */}
+      <AppRoutes 
+        currentView={currentView}
+        selectedSubject={selectedSubject}
+        selectedDifficulty={selectedDifficulty}
+        dailyScore={dailyScore}
+        totalQuestions={totalQuestions}
+        onStartQuiz={handleStartQuiz}
+        onSelectDifficulty={handleSelectDifficulty}
+        onBackToDashboard={handleBackToDashboard}
+        onBackFromDifficulty={handleBackFromDifficulty}
+        onOpenStatistics={handleOpenStatistics}
+        onOpenAchievements={handleOpenAchievements}
+        onOpenCustomization={handleOpenCustomization}
+        onOpenSettings={handleOpenSettings}
+        onOpenSimulatedExam={handleOpenSimulatedExam}
+        onOpenFlashcards={handleOpenFlashcards}
+        onOpenRegimento={handleOpenRegimento}
+        onOpenProfiles={handleOpenProfiles}
+        onOpenStudyPlan={handleOpenStudyPlan}
+      />
+
+      {/* Celebrações */}
+      {showGloriaCelebration && (
+        <ConfettiCelebration onDismiss={dismissGloriaCelebration} />
+      )}
+
+      {showLevelUpCelebration && levelUpInfo && (
+        <LevelUpCelebration
+          oldLevel={levelUpInfo.oldLevel}
+          newLevel={levelUpInfo.newLevel}
+          onDismiss={dismissLevelUpCelebration}
+        />
+      )}
+
+      {/* Onboarding (primeira vez) */}
+      {showOnboarding && (
+        <OnboardingPage 
+          onComplete={() => {
+            setShowOnboarding(false);
+          }} 
+        />
+      )}
+    </div>
+  );
+}

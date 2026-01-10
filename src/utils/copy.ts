@@ -15,35 +15,35 @@ export const COPY = {
   // ========================================
   onboarding: {
     slide1: {
-      title: 'Estude informática para concursos do jeito certo',
-      text: 'Aqui você foca no que realmente cai nas provas e acompanha sua evolução com clareza.',
-      button: 'Começar agora'
+      title: 'Você não está sozinho nessa jornada',
+      text: 'Este app foi criado para te ajudar a estudar com constância, usando questões reais de concurso.',
+      button: 'Vamos começar'
     },
     slide2: {
-      title: 'Seu estudo em poucos passos',
+      title: 'Seu estudo funciona assim',
       steps: [
         {
           icon: '📚',
-          title: 'Escolha o que estudar',
-          text: 'Conteúdos organizados para concursos.'
+          title: 'Pratique um pouco por dia',
+          text: 'Questões organizadas e adaptadas ao seu ritmo.'
         },
         {
           icon: '🧠',
-          title: 'Pratique com questões',
-          text: 'Aprenda resolvendo, sem complicação.'
+          title: 'Acompanhe sua evolução',
+          text: 'Veja onde você está melhorando e onde precisa de atenção.'
         },
         {
           icon: '📊',
-          title: 'Veja seu progresso',
-          text: 'Saiba onde está indo bem e onde melhorar.'
+          title: 'Foque no que importa',
+          text: 'O app identifica o que realmente precisa ser revisado.'
         }
       ],
-      button: 'Continuar'
+      button: 'Entendi'
     },
     slide3: {
-      title: 'O app acompanha o seu ritmo',
-      text: 'Conforme você estuda, mostramos o que precisa de mais atenção, sem pressão.',
-      button: 'Entrar no app'
+      title: 'Não precisa estudar muito. Precisa estudar sempre.',
+      text: 'Constância vence intensidade. Vamos juntos nessa jornada?',
+      button: 'Começar a estudar'
     }
   },
 
