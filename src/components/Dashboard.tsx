@@ -3,7 +3,7 @@ import {
   AlertTriangle, Trophy, Flame, TrendingUp, Target, 
   BookOpen, Settings as SettingsIcon, ChevronRight, Zap, Calendar
 } from 'lucide-react';
-import { supabase } from '../utils/supabase/client';
+// REMOVIDO: import { supabase } from '../utils/supabase/client';
 import { useCustomization } from '../context/CustomizationContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { COPY } from '../utils/copy';
@@ -53,19 +53,23 @@ const Dashboard = ({
   // Gera uma frase motivacional aleatória a cada renderização
   const [motivationalText] = useState(() => getRandomMotivationalCTA());
 
-  // Carrega dados do Supabase
+  // Carrega dados (Adaptado para Offline/SQLite)
   useEffect(() => {
     async function loadData() {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+      // Se não tiver usuário, apenas para o loading
+      // (Em modo offline puro, talvez nem precisemos checar user remoto)
       
       try {
-        // Simulação de carregamento (aqui entraria sua chamada real ao banco)
-        const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        const { count: critical } = await supabase.from('user_question_progress')
-          .select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('is_critical', true);
+        // MIGRADO: Substituída chamada do Supabase por dados locais/mock
+        // Futuramente: chamar sqliteService.getProfileStats()
+        
+        const profile = {
+          xp: 1250,
+          nivel: 3,
+          streak_atual: 5
+        };
+        
+        const critical = 0; // Futuramente: buscar do user_question_progress no SQLite
 
         setStats({
           xp: profile?.xp || 1250,

@@ -9,7 +9,6 @@ import { useGame } from '../context/GameContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
-import { supabase } from '../utils/supabase/client';
 
 // Interfaces (Mantidas)
 interface QuestionOption {
@@ -27,7 +26,6 @@ interface Question {
   year?: string;
   banca?: string;
   exam_name?: string;
-  // Mapeamento caso o banco venha em português ou inglês, ajuste conforme seu DB
   dificuldade?: string; 
   opcoes?: any;
   correta?: any;
@@ -36,6 +34,52 @@ interface Question {
 interface SimulatedExamProps {
   onBack: () => void;
 }
+
+// MOCK DE DADOS PARA FUNCIONAMENTO OFFLINE
+const MOCK_QUESTIONS: Question[] = [
+  {
+    id: '1',
+    text: 'No contexto de segurança da informação, qual o princípio que garante que a informação não foi alterada indevidamente?',
+    options: [
+      { id: 'a', text: 'Confidencialidade' },
+      { id: 'b', text: 'Integridade' },
+      { id: 'c', text: 'Disponibilidade' },
+      { id: 'd', text: 'Autenticidade' }
+    ],
+    correct_option_id: 'b',
+    subject_id: 'seg',
+    difficulty_level: 'medio',
+    banca: 'CESPE'
+  },
+  {
+    id: '2',
+    text: 'Qual protocolo é utilizado para enviar correio eletrônico na Internet?',
+    options: [
+      { id: 'a', text: 'POP3' },
+      { id: 'b', text: 'IMAP' },
+      { id: 'c', text: 'SMTP' },
+      { id: 'd', text: 'HTTP' }
+    ],
+    correct_option_id: 'c',
+    subject_id: 'redes',
+    difficulty_level: 'facil',
+    banca: 'FGV'
+  },
+  {
+    id: '3',
+    text: 'Qual atalho de teclado é comumente usado para abrir o Gerenciador de Tarefas no Windows?',
+    options: [
+      { id: 'a', text: 'Ctrl + Alt + Del' },
+      { id: 'b', text: 'Ctrl + Shift + Esc' },
+      { id: 'c', text: 'Alt + Tab' },
+      { id: 'd', text: 'Win + Tab' }
+    ],
+    correct_option_id: 'b',
+    subject_id: 'win',
+    difficulty_level: 'medio',
+    banca: 'VUNESP'
+  }
+];
 
 export function SimulatedExam({ onBack }: SimulatedExamProps) {
   const { isDarkMode } = useTheme();
@@ -76,11 +120,11 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
     }
   }, [examState]);
 
-  // Restauração de Backup (Melhorada para evitar loops)
+  // Restauração de Backup
   useEffect(() => {
     const checkBackup = () => {
       const backup = localStorage.getItem('exam_backup');
-      if (backup && examState === 'config') { // Só restaura se estiver na config
+      if (backup && examState === 'config') { 
         try {
           const data = JSON.parse(backup);
           if (data.endTime > Date.now()) {
@@ -107,7 +151,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
     };
     checkBackup();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Executa apenas no mount
+  }, []); 
 
   // Salvar Backup
   useEffect(() => {
@@ -127,96 +171,17 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
     }
   }, [examState, answers, currentQuestionIndex, flaggedQuestions, selectedQuestions, questionCount, timeLimit]);
 
-  // 🔥 LÓGICA CORRIGIDA DE BUSCA DE QUESTÕES
+  // 🔥 LÓGICA OFFLINE/MOCK DE BUSCA DE QUESTÕES
   const startExam = async () => {
     setLoading(true);
     try {
-      // 1. Obter Usuário Real
-      const { data: { user } } = await supabase.auth.getUser();
-      const userId = user?.id;
+      // Simulação de delay de rede
+      await new Promise(resolve => setTimeout(resolve, 800));
 
-      if (!userId) {
-        alert("Você precisa estar logado para iniciar o simulado.");
-        setLoading(false);
-        return;
-      }
-
-      const archetypeId = selectedProfile?.archetypeId || 1;
-      const novasLimit = Math.ceil(questionCount * 0.7);
-      const erradasLimit = questionCount - novasLimit;
-
-      // 2. Buscar IDs de questões que o usuário JÁ respondeu
-      // Isso substitui a subquery SQL inválida
-      const { data: answeredData, error: answeredError } = await supabase
-        .from('user_question_progress')
-        .select('question_id')
-        .eq('user_id', userId);
-
-      if (answeredError) throw answeredError;
-
-      const answeredIds = answeredData?.map(item => item.question_id) || [];
-
-      // 3. Buscar Questões NOVAS (Excluindo as respondidas via filtro JS ou .not.in com array)
-      let queryNovas = supabase
-        .from('questions')
-        .select('*')
-        .eq('concurso_perfil_id', archetypeId);
-      
-      // Se houver questões respondidas, excluí-las
-      if (answeredIds.length > 0) {
-        // Nota: Se houver MUITAS questões (>1000), isso pode dar erro de URL length.
-        // O ideal é usar uma RPC (Stored Procedure) no futuro.
-        queryNovas = queryNovas.not('id', 'in', `(${answeredIds.join(',')})`);
-      }
-
-      const { data: novasQuestions, error: novasError } = await queryNovas.limit(novasLimit);
-      
-      if (novasError) throw novasError;
-
-      // 4. Buscar Questões Erradas (Revisão)
-      const { data: progressData } = await supabase
-        .from('user_question_progress')
-        .select('question_id')
-        .eq('user_id', userId)
-        .eq('is_mastered', false)
-        .gt('times_wrong_total', 0) // Só as que errou
-        .order('times_wrong_total', { ascending: false })
-        .limit(erradasLimit);
-
-      let erradasQuestions: any[] = [];
-      if (progressData && progressData.length > 0) {
-        const idsRevisao = progressData.map(p => p.question_id);
-        const { data: questionsRevisao } = await supabase
-          .from('questions')
-          .select('*')
-          .in('id', idsRevisao);
-        erradasQuestions = questionsRevisao || [];
-      }
-
-      // 5. Combinar e Fallback
-      let allQuestions = [...(novasQuestions || []), ...erradasQuestions];
-
-      // Se ainda faltar questões, pegar aleatórias do banco (fallback)
-      if (allQuestions.length < questionCount) {
-        const remaining = questionCount - allQuestions.length;
-        // Pega IDs que já temos para não repetir
-        const currentIds = allQuestions.map(q => q.id);
-        
-        let queryFallback = supabase
-          .from('questions')
-          .select('*')
-          .eq('concurso_perfil_id', archetypeId);
-          
-        if (currentIds.length > 0) {
-           queryFallback = queryFallback.not('id', 'in', `(${currentIds.join(',')})`);
-        }
-          
-        const { data: fallbackQuestions } = await queryFallback.limit(remaining);
-        
-        if (fallbackQuestions) {
-          allQuestions.push(...fallbackQuestions);
-        }
-      }
+      // Em modo de produção real, aqui você chamaria o SQLiteService.
+      // Para este build funcionar agora, usamos o MOCK_QUESTIONS.
+      // Multiplicamos as questões do mock para simular uma prova maior se necessário
+      let allQuestions = [...MOCK_QUESTIONS, ...MOCK_QUESTIONS, ...MOCK_QUESTIONS, ...MOCK_QUESTIONS].slice(0, questionCount);
 
       if (allQuestions.length === 0) {
         alert('Não foram encontradas questões para este perfil.');
@@ -236,17 +201,14 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
 
     } catch (error: any) {
       console.error('Erro fatal ao iniciar simulado:', error);
-      alert(`Erro ao iniciar: ${error.message || 'Verifique sua conexão.'}`);
+      alert(`Erro ao iniciar: ${error.message || 'Tente novamente.'}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔥 FINALIZAR COM SEGURANÇA
+  // 🔥 FINALIZAR COM SEGURANÇA (OFFLINE)
   const finishExam = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    const userId = user?.id; // Se não tiver user, não salva progresso, mas finaliza a UI
-
     let correctCount = 0;
 
     selectedQuestions.forEach((question, index) => {
@@ -256,15 +218,15 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
       if (isCorrect) correctCount++;
     });
 
-    // Atualiza estado da UI primeiro para feedback rápido
+    // Atualiza estado da UI
     setScore(correctCount);
     setExamState('finished');
     
-    // Adicionar XP pelo simulado (10 XP por questão respondida)
+    // Adicionar XP
     const xpGained = selectedQuestions.length * 10;
     addXP(xpGained);
 
-    // Salvar histórico de simulados
+    // Salvar histórico localmente
     const examHistory = JSON.parse(localStorage.getItem('exam_history') || '[]');
     examHistory.push({
       date: new Date().toISOString(),
@@ -274,48 +236,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
     });
     localStorage.setItem('exam_history', JSON.stringify(examHistory));
 
-    // Processamento em Background (não bloqueia UI)
-    if (userId) {
-      processExamResultsBackground(userId, selectedQuestions, answers);
-    }
   }, [selectedQuestions, answers, addXP]);
-
-  // Função auxiliar para salvar sem travar a tela
-  const processExamResultsBackground = async (userId: string, questions: Question[], userAnswers: {[key: number]: string}) => {
-    for (let index = 0; index < questions.length; index++) {
-      const question = questions[index];
-      const userAnswer = userAnswers[index];
-      if (!userAnswer) continue;
-
-      const isCorrect = userAnswer === question.correct_option_id;
-
-      try {
-        const { data: existing } = await supabase
-          .from('user_question_progress')
-          .select('*')
-          .eq('user_id', userId)
-          .eq('question_id', question.id)
-          .single();
-
-        const current = existing || { times_correct: 0, times_wrong_total: 0, times_viewed: 0 };
-        
-        const updates = {
-          user_id: userId,
-          question_id: question.id,
-          times_viewed: current.times_viewed + 1,
-          last_answered_at: new Date().toISOString(),
-          times_correct: isCorrect ? current.times_correct + 1 : current.times_correct,
-          times_wrong_total: !isCorrect ? current.times_wrong_total + 1 : current.times_wrong_total,
-          is_mastered: (isCorrect && (current.times_correct + 1) > 4),
-          is_critical: (!isCorrect && (current.times_wrong_total + 1) > 6)
-        };
-
-        await supabase.from('user_question_progress').upsert(updates);
-      } catch (err) {
-        console.error('Erro sync background', err);
-      }
-    }
-  };
 
   // Funções de UI
   const selectAnswer = (answerOptionId: string) => {
@@ -353,7 +274,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
           </div>
         </div>
 
-        {/* Conteúdo Central com Scroll se precisar */}
+        {/* Conteúdo Central */}
         <div className="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center">
           <div className="w-full max-w-md space-y-8">
             
@@ -365,7 +286,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
               <div>
                 <h2 className="text-2xl font-bold text-foreground">Simulado Inteligente</h2>
                 <p className="text-muted-foreground mt-2 max-w-xs mx-auto">
-                  Algoritmo que prioriza questões novas e revisa seus erros automaticamente.
+                  Modo Offline: Treine com questões selecionadas do banco local.
                 </p>
               </div>
             </div>
@@ -419,7 +340,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
           </div>
         </div>
 
-        {/* Botão de Ação no Rodapé */}
+        {/* Botão de Ação */}
         <div className="p-6 bg-app shrink-0">
           <button
             onClick={startExam}
@@ -427,7 +348,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
             className={`w-full max-w-md mx-auto py-4 ${theme.button} rounded-xl text-white font-bold text-lg shadow-lg flex items-center justify-center gap-3 disabled:opacity-70 transition-transform active:scale-95`}
           >
             {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Play className="w-6 h-6 fill-current" />}
-            {loading ? 'Preparando Prova...' : 'Iniciar Agora'}
+            {loading ? 'Preparando...' : 'Iniciar Agora'}
           </button>
         </div>
       </div>
@@ -440,10 +361,9 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
     const isLowTime = timeRemaining < 300;
 
     return (
-      // h-[100dvh] garante altura total real do celular
       <div className="h-[100dvh] bg-app flex flex-col overflow-hidden">
         
-        {/* 1. HEADER (Fixo no Topo) */}
+        {/* 1. HEADER */}
         <div className="bg-card-theme shadow-sm border-b border-gray-200 dark:border-gray-700 z-20 shrink-0">
           <div className="px-4 py-3 flex items-center justify-between">
             <div className="flex flex-col">
@@ -472,10 +392,10 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
           </div>
         </div>
 
-        {/* 2. CONTEÚDO (Expande no Meio - flex-1) */}
+        {/* 2. CONTEÚDO */}
         <div className="flex-1 overflow-y-auto p-4 w-full max-w-3xl mx-auto flex flex-col">
           
-          <div className="space-y-6 my-auto"> {/* my-auto centraliza se for pequeno, mas deixa rolar se for grande */}
+          <div className="space-y-6 my-auto">
             
             {/* Cartão da Pergunta */}
             <div className="bg-card-theme rounded-xl p-5 shadow-sm border border-gray-100 dark:border-gray-800">
@@ -500,7 +420,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
               </h3>
             </div>
 
-            {/* Opções de Resposta (Separadas do enunciado) */}
+            {/* Opções de Resposta */}
             <div className="space-y-3">
               {question.options.map((opt) => {
                  const isSelected = answers[currentQuestionIndex] === opt.id;
@@ -531,7 +451,7 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
           </div>
         </div>
 
-        {/* 3. FOOTER (Fixo no Fundo) */}
+        {/* 3. FOOTER */}
         <div className="bg-card-theme border-t border-gray-200 dark:border-gray-800 p-4 shrink-0 z-20">
           <div className="max-w-3xl mx-auto flex gap-4">
              <button 
