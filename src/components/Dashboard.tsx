@@ -6,6 +6,8 @@ import {
 import { supabase } from '../utils/supabase/client';
 import { useCustomization } from '../context/CustomizationContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
+import { COPY } from '../utils/copy';
+import { getRandomMotivationalCTA } from '../utils/getRandomMotivationalCTA';
 
 // MAPA DE CORES: Define exatamente qual cor usar para cada tema
 const THEME_STYLES: Record<string, {
@@ -102,6 +104,9 @@ const Dashboard = ({
   });
   const [subjects, setSubjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Gera uma frase motivacional aleatória a cada renderização
+  const [motivationalText] = useState(() => getRandomMotivationalCTA());
 
   // Carrega dados do Supabase
   useEffect(() => {
@@ -181,16 +186,16 @@ const Dashboard = ({
           <div className="relative z-10 flex flex-col h-full justify-between min-h-[120px]">
             <div>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold text-white mb-3 border border-white/10">
-                <Flame size={12} fill="currentColor" /> {stats.streak} dias seguidos
+                <Flame size={12} fill="currentColor" /> {COPY.home.cards.streak(stats.streak)}
               </span>
-              <h2 className="text-3xl font-bold text-white mb-1">Modo Treino</h2>
+              <h2 className="text-3xl font-bold text-white mb-1">{COPY.home.title}</h2>
               <p className={`text-sm ${currentTheme.lightText} max-w-[85%]`}>
-                Algoritmo ajustado para o seu nível.
+                {motivationalText}
               </p>
             </div>
             
             <div className="flex items-center gap-2 mt-4 font-bold text-white bg-white/10 w-fit px-4 py-2 rounded-xl backdrop-blur-sm">
-              <span>Iniciar Sessão</span>
+              <span>{COPY.home.mainButton}</span>
               <ChevronRight size={16} />
             </div>
           </div>
@@ -238,12 +243,12 @@ const Dashboard = ({
                 <AlertTriangle size={24} />
               </div>
               <div>
-                <h3 className="font-bold text-gray-800 dark:text-white">Atenção!</h3>
-                <p className="text-xs text-red-600 dark:text-red-400 font-medium">{stats.criticalQuestions} erros críticos.</p>
+                <h3 className="font-bold text-gray-800 dark:text-white">{COPY.home.cards.attention}</h3>
+                <p className="text-xs text-red-600 dark:text-red-400 font-medium">{COPY.home.cards.criticalErrors(stats.criticalQuestions)}</p>
               </div>
             </div>
             <button onClick={() => console.log('Abrir UTI')} className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-red-700">
-              Corrigir
+              {COPY.home.cards.correctButton}
             </button>
           </div>
         ) : (
@@ -289,17 +294,17 @@ const Dashboard = ({
         <nav className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-gray-200 dark:border-gray-700 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1 pointer-events-auto w-full max-w-[320px] justify-between">
           <button onClick={onStartQuiz} className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl ${currentTheme.iconBg} ${currentTheme.iconColor} shadow-sm transition-all`}>
             <BookOpen size={20} strokeWidth={2.5} className="mb-0.5" />
-            <span className="text-[10px] font-bold">Estudar</span>
+            <span className="text-[10px] font-bold">{COPY.bottomNav.study}</span>
           </button>
           
           <button onClick={onOpenSimulatedExam} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
             <Target size={20} strokeWidth={2.5} className="mb-0.5" />
-            <span className="text-[10px] font-medium">Simulados</span>
+            <span className="text-[10px] font-medium">{COPY.bottomNav.simulated}</span>
           </button>
           
           <button onClick={onOpenAchievements} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
             <Trophy size={20} strokeWidth={2.5} className="mb-0.5" />
-            <span className="text-[10px] font-medium">Conquistas</span>
+            <span className="text-[10px] font-medium">{COPY.bottomNav.achievements}</span>
           </button>
         </nav>
       </div>

@@ -223,6 +223,26 @@ export function Settings({
               label="Ajuda e Suporte" 
               colorClass="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
             />
+            <MenuItem 
+              icon={HelpCircle} 
+              label="Ver Tutorial Novamente" 
+              desc="Reveja o tour guiado pelas funcionalidades"
+              onClick={() => {
+                localStorage.removeItem('hasSeenTutorial_v3');
+                window.location.reload();
+              }}
+              colorClass="bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400"
+            />
+            <MenuItem 
+              icon={HelpCircle} 
+              label="Ver Introdução Novamente" 
+              desc="Reveja a tela de boas-vindas inicial"
+              onClick={() => {
+                localStorage.removeItem('hasSeenOnboarding');
+                window.location.reload();
+              }}
+              colorClass="bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400"
+            />
           </div>
         </section>
 

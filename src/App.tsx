@@ -13,6 +13,8 @@ import { RegimentoInterno } from './components/RegimentoInterno';
 import { Settings } from './components/Settings';
 import { ProfileSelector } from './components/ProfileSelector';
 import { StudyPlanSettings } from './components/StudyPlanSettings';
+import { TutorialGuide } from './components/TutorialGuide';
+import { OnboardingPage } from './components/onboarding/OnboardingPage';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { GameProvider, useGame } from './context/GameContext';
 import { StatsProvider, useStats } from './context/StatsContext';
@@ -44,6 +46,9 @@ function AppContent() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('mix');
   const [dailyScore, setDailyScore] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return !localStorage.getItem('hasSeenOnboarding');
+  });
   
   const { showLevelUpCelebration, dismissLevelUpCelebration, levelUpInfo, showGloriaCelebration, dismissGloriaCelebration } = useGame();
   const { getTodayStats } = useStats();
@@ -242,6 +247,21 @@ function AppContent() {
           onDismiss={dismissLevelUpCelebration}
         />
       )}
+
+      {/* Onboarding (primeira vez) */}
+      {showOnboarding && (
+        <OnboardingPage 
+          onComplete={() => {
+            setShowOnboarding(false);
+          }} 
+        />
+      )}
+
+      {/* Tutorial de Boas-vindas (tour guiado) - DESATIVADO TEMPORARIAMENTE */}
+      {/* <TutorialGuide 
+        onComplete={() => console.log('Tutorial finalizado!')} 
+        setTab={setCurrentView}
+      /> */}
     </div>
   );
 }
