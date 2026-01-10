@@ -23,6 +23,8 @@ interface ThemeStyles {
   lightText: string;     // Texto em gradiente (sempre branco)
   progressBar: string;   // Mesmo que progress
   highlight: string;     // Fundo de destaque
+  iconBg: string;        // Alias para bgLight (compatibilidade)
+  softBg: string;        // Alias para bgLight (compatibilidade)
 }
 
 export const APP_THEMES: Record<ThemeType, ThemeStyles> = {
@@ -41,7 +43,9 @@ export const APP_THEMES: Record<ThemeType, ThemeStyles> = {
     iconColor: "text-blue-700 dark:text-blue-400",
     lightText: "text-white",
     progressBar: "bg-blue-600 dark:bg-blue-500",
-    highlight: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300"
+    highlight: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
+    iconBg: "bg-blue-50 dark:bg-blue-500/20",
+    softBg: "bg-blue-50 dark:bg-blue-500/20"
   },
   calm: {
     name: "Verde Sálvia",
@@ -56,7 +60,9 @@ export const APP_THEMES: Record<ThemeType, ThemeStyles> = {
     iconColor: "text-emerald-700 dark:text-emerald-400",
     lightText: "text-white",
     progressBar: "bg-emerald-600 dark:bg-emerald-500",
-    highlight: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
+    highlight: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
+    iconBg: "bg-emerald-50 dark:bg-emerald-500/20",
+    softBg: "bg-emerald-50 dark:bg-emerald-500/20"
   },
   creative: {
     name: "Roxo Místico",
@@ -71,7 +77,9 @@ export const APP_THEMES: Record<ThemeType, ThemeStyles> = {
     iconColor: "text-violet-700 dark:text-violet-400",
     lightText: "text-white",
     progressBar: "bg-violet-600 dark:bg-violet-500",
-    highlight: "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300"
+    highlight: "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300",
+    iconBg: "bg-violet-50 dark:bg-violet-500/20",
+    softBg: "bg-violet-50 dark:bg-violet-500/20"
   },
   energy: {
     name: "Laranja Energia",
@@ -86,7 +94,9 @@ export const APP_THEMES: Record<ThemeType, ThemeStyles> = {
     iconColor: "text-orange-700 dark:text-orange-400",
     lightText: "text-white",
     progressBar: "bg-orange-600 dark:bg-orange-500",
-    highlight: "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300"
+    highlight: "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300",
+    iconBg: "bg-orange-50 dark:bg-orange-500/20",
+    softBg: "bg-orange-50 dark:bg-orange-500/20"
   },
   comfort: {
     name: "Rosa Suave",
@@ -101,7 +111,9 @@ export const APP_THEMES: Record<ThemeType, ThemeStyles> = {
     iconColor: "text-pink-700 dark:text-pink-400",
     lightText: "text-white",
     progressBar: "bg-pink-600 dark:bg-pink-500",
-    highlight: "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300"
+    highlight: "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300",
+    iconBg: "bg-pink-50 dark:bg-pink-500/20",
+    softBg: "bg-pink-50 dark:bg-pink-500/20"
   },
   minimal: {
     name: "Cinza Grafite",
@@ -116,7 +128,9 @@ export const APP_THEMES: Record<ThemeType, ThemeStyles> = {
     iconColor: "text-slate-700 dark:text-slate-300",
     lightText: "text-white",
     progressBar: "bg-slate-700 dark:bg-slate-500",
-    highlight: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+    highlight: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    iconBg: "bg-slate-100 dark:bg-slate-800",
+    softBg: "bg-slate-100 dark:bg-slate-800"
   },
   ocean: {
     name: "Ciano Oceano",
@@ -131,7 +145,9 @@ export const APP_THEMES: Record<ThemeType, ThemeStyles> = {
     iconColor: "text-cyan-700 dark:text-cyan-400",
     lightText: "text-white",
     progressBar: "bg-cyan-600 dark:bg-cyan-500",
-    highlight: "bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300"
+    highlight: "bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300",
+    iconBg: "bg-cyan-50 dark:bg-cyan-500/20",
+    softBg: "bg-cyan-50 dark:bg-cyan-500/20"
   },
   warmth: {
     name: "Âmbar Dourado",
@@ -146,6 +162,8 @@ export const APP_THEMES: Record<ThemeType, ThemeStyles> = {
     iconColor: "text-amber-800 dark:text-amber-300",
     lightText: "text-white",
     progressBar: "bg-amber-500 dark:bg-amber-500",
-    highlight: "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300"
+    highlight: "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300",
+    iconBg: "bg-amber-50 dark:bg-amber-500/20",
+    softBg: "bg-amber-50 dark:bg-amber-500/20"
   }
 };

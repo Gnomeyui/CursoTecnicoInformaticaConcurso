@@ -9,59 +9,6 @@ import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { COPY } from '../utils/copy';
 import { getRandomMotivationalCTA } from '../utils/getRandomMotivationalCTA';
 
-// MAPA DE CORES: Define exatamente qual cor usar para cada tema
-const THEME_STYLES: Record<string, {
-  gradient: string;      // Para o fundo do botão principal
-  button: string;        // Para botões secundários
-  lightText: string;     // Texto claro sobre fundo escuro
-  iconBg: string;        // Fundo dos ícones circulares
-  iconColor: string;     // Cor do ícone
-  progressBar: string;   // Cor da barra de progresso
-  softBg: string;        // Fundos suaves
-  border: string;        // Bordas coloridas
-}> = {
-  blue: {
-    gradient: 'from-blue-600 to-indigo-600',
-    button: 'bg-blue-600 hover:bg-blue-700',
-    lightText: 'text-blue-50',
-    iconBg: 'bg-blue-50 dark:bg-blue-900/30',
-    iconColor: 'text-blue-600 dark:text-blue-400',
-    progressBar: 'bg-blue-600',
-    softBg: 'bg-blue-50 dark:bg-blue-900/10',
-    border: 'border-blue-100 dark:border-blue-800'
-  },
-  green: {
-    gradient: 'from-emerald-500 to-teal-600',
-    button: 'bg-emerald-600 hover:bg-emerald-700',
-    lightText: 'text-emerald-50',
-    iconBg: 'bg-emerald-50 dark:bg-emerald-900/30',
-    iconColor: 'text-emerald-600 dark:text-emerald-400',
-    progressBar: 'bg-emerald-600',
-    softBg: 'bg-emerald-50 dark:bg-emerald-900/10',
-    border: 'border-emerald-100 dark:border-emerald-800'
-  },
-  purple: {
-    gradient: 'from-violet-600 to-fuchsia-600',
-    button: 'bg-violet-600 hover:bg-violet-700',
-    lightText: 'text-violet-50',
-    iconBg: 'bg-violet-50 dark:bg-violet-900/30',
-    iconColor: 'text-violet-600 dark:text-violet-400',
-    progressBar: 'bg-violet-600',
-    softBg: 'bg-violet-50 dark:bg-violet-900/10',
-    border: 'border-violet-100 dark:border-violet-800'
-  },
-  orange: {
-    gradient: 'from-orange-500 to-red-500',
-    button: 'bg-orange-600 hover:bg-orange-700',
-    lightText: 'text-orange-50',
-    iconBg: 'bg-orange-50 dark:bg-orange-900/30',
-    iconColor: 'text-orange-600 dark:text-orange-400',
-    progressBar: 'bg-orange-600',
-    softBg: 'bg-orange-50 dark:bg-orange-900/10',
-    border: 'border-orange-100 dark:border-orange-800'
-  },
-};
-
 interface DashboardProps {
   dailyScore?: number;
   totalQuestions?: number;
@@ -93,12 +40,10 @@ const Dashboard = ({
   onOpenRegimento,
   onOpenStudyPlan
 }: DashboardProps) => {
-  const { primaryColor } = useCustomization();
+  // Usa o tema completo do contexto (já vem com todas as cores configuradas)
+  const { theme: currentTheme } = useCustomization();
   const { activeProfile } = useConcursoProfile();
   
-  // GARANTIA DE COR: Se falhar, usa blue
-  const currentTheme = THEME_STYLES[primaryColor] || THEME_STYLES['blue'];
-
   const [stats, setStats] = useState({
     xp: 0, level: 1, streak: 0, criticalQuestions: 0, masteredQuestions: 0, accuracy: 0
   });
