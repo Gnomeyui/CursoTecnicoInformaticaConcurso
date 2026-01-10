@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { NotificationScheduler } from '../utils/notifications/NotificationScheduler';
+import { NotificationService } from '../utils/notifications/NotificationService';
 
 export interface NotificationConfig {
   enabled: boolean;
@@ -41,6 +43,30 @@ export function SmartNotificationProvider({ children }: { children: ReactNode })
   });
 
   const [pendingQuestions, setPendingQuestions] = useState<PendingQuestions[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // 🔥 SOLICITAR PERMISSÕES E REGISTRAR LISTENERS AO INICIAR O APP
+  useEffect(() => {
+    async function initializeNotifications() {
+      try {
+        // Solicitar permissões
+        const granted = await NotificationScheduler.requestPermissions();
+        console.log('Permissão de notificações:', granted ? 'Concedida' : 'Negada');
+
+        // Registrar listeners para quando usuário clicar na notificação
+        await NotificationScheduler.registerActionHandlers(() => {
+          console.log('Usuário clicou em uma notificação de estudo');
+          // Aqui você pode abrir o app direto na tela de quiz
+        });
+
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Erro ao inicializar notificações:', error);
+      }
+    }
+
+    initializeNotifications();
+  }, []);
 
   // Carregar configurações salvas
   useEffect(() => {
@@ -73,8 +99,34 @@ export function SmartNotificationProvider({ children }: { children: ReactNode })
     localStorage.setItem('pending_questions', JSON.stringify(pendingQuestions));
   }, [pendingQuestions]);
 
-  const updateConfig = (updates: Partial<NotificationConfig>) => {
-    setConfig(prev => ({ ...prev, ...updates }));
+  // 🔥 REAGENDAR NOTIFICAÇÕES QUANDO A CONFIGURAÇÃO MUDAR
+  useEffect(() => {
+    if (!isInitialized) return; // Espera inicialização completar
+
+    async function rescheduleNotifications() {
+      try {
+        // Criar instância do serviço de notificações com dados genéricos
+        // Em produção, você pode obter stats reais do contexto de Game/User
+        const notificationService = new NotificationService(
+          { name: 'Estudante', nivel: 'intermediário' } as any,
+          { averageAccuracy: 65, streak: 3 } as any
+        );
+
+        // Agendar notificações nativas
+        await NotificationScheduler.scheduleStudyReminders(config, notificationService);
+      } catch (error) {
+        console.error('Erro ao reagendar notificações:', error);
+      }
+    }
+
+    rescheduleNotifications();
+  }, [config, isInitialized]);
+
+  const updateConfig = async (updates: Partial<NotificationConfig>) => {
+    const updatedConfig = { ...config, ...updates };
+    setConfig(updatedConfig);
+    
+    // As notificações serão reagendadas automaticamente pelo useEffect acima
   };
 
   const addPendingQuestions = (profileId: string, count: number) => {

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Zap, Bell, Volume2, Smartphone, Save, Music, Upload, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, Bell, Volume2, Smartphone, Save, Music, Upload, ChevronRight, CheckCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Slider } from './ui/slider';
 import { Switch } from './ui/switch';
 import { Card, CardContent } from './ui/card';
 import { Input } from './ui/input';
+import { NotificationScheduler } from '../utils/notifications/NotificationScheduler';
 
 interface StudyPlanSettingsProps {
   onBack: () => void;
