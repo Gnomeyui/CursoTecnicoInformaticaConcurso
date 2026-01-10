@@ -1,0 +1,199 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║                  📚 GABARITOO - INÍCIO RÁPIDO                   ║
+║             App de Estudos para Concursos Públicos              ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  🚀 COMEÇAR DESENVOLVIMENTO                                     │
+└─────────────────────────────────────────────────────────────────┘
+
+1️⃣  Instalar dependências:
+    npm install
+
+2️⃣  Iniciar servidor de desenvolvimento:
+    npm run dev
+
+3️⃣  Abrir no navegador:
+    http://localhost:5173
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  📱 BUILD PARA ANDROID                                          │
+└─────────────────────────────────────────────────────────────────┘
+
+1️⃣  Build completo + Android Studio:
+    npm run android:build
+
+    OU passo a passo:
+
+2️⃣  Build do projeto:
+    npm run build
+
+3️⃣  Sincronizar com Android:
+    npx cap sync android
+
+4️⃣  Abrir Android Studio:
+    npx cap open android
+
+5️⃣  No Android Studio:
+    - Conectar dispositivo ou emulador
+    - Clicar no botão ▶️ Run
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  📖 DOCUMENTAÇÃO                                                │
+└─────────────────────────────────────────────────────────────────┘
+
+📄 README.md
+   → Visão geral do projeto
+   → Funcionalidades
+   → Tecnologias
+
+📄 GUIA_ESSENCIAL.md
+   → Estrutura de arquivos
+   → Como adicionar features
+   → Troubleshooting
+   → Build Android detalhado
+
+📄 LIMPEZA_COMPLETA.md
+   → Resultado da limpeza
+   → Estrutura final do projeto
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  🎯 FUNCIONALIDADES PRINCIPAIS                                  │
+└─────────────────────────────────────────────────────────────────┘
+
+✅ Quiz Inteligente com dificuldade adaptativa
+✅ Estatísticas completas com gráficos
+✅ Gamificação (XP, níveis, badges)
+✅ Dashboard analítico
+✅ Modo simulado cronometrado
+✅ Múltiplos perfis de concurso
+✅ Revisão inteligente (30% erradas + 70% novas)
+✅ 8 temas personalizáveis
+✅ Notificações inteligentes
+✅ Flashcards
+✅ Regimento interno
+✅ Plano de estudos
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  🛠️ COMANDOS ÚTEIS                                              │
+└─────────────────────────────────────────────────────────────────┘
+
+npm run dev                  # Desenvolvimento
+npm run build                # Build produção
+npm run preview              # Preview do build
+npm run android:build        # Build + Android Studio
+npm run android:sync         # Sincronizar com Android
+npm run android:run          # Executar no device
+npm run android:clean        # Limpar e sincronizar
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  📂 ARQUIVOS IMPORTANTES                                        │
+└─────────────────────────────────────────────────────────────────┘
+
+/App.tsx                              → Componente raiz
+/app/AppRoutes.tsx                    → Sistema de rotas
+/components/Dashboard.tsx             → Tela principal
+/context/AppState/                    → Estado global
+/lib/database/SQLiteService.ts        → Banco de dados
+/data/questions.ts                    → Questões do quiz
+/utils/notifications/                 → Sistema de notificações
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  🐛 PROBLEMAS COMUNS                                            │
+└─────────────────────────────────────────────────────────────────┘
+
+❌ Erro de build:
+   rm -rf node_modules package-lock.json
+   npm install
+   npm run build
+
+❌ Erro no Android:
+   npx cap sync android --clean
+
+❌ Porta 5173 ocupada:
+   npm run dev -- --port 3000
+
+❌ Dados antigos/corrompidos:
+   Abra o app > Ajustes > Resetar Progresso
+   OU abra DevTools (F12) e execute:
+   localStorage.clear()
+   location.reload()
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  📞 ESTRUTURA DO PROJETO                                        │
+└─────────────────────────────────────────────────────────────────┘
+
+gabaritoo/
+├── app/                    → Arquitetura (Providers, Routes, Shell)
+├── components/             → Componentes React
+│   ├── Dashboard.tsx
+│   ├── Statistics.tsx
+│   ├── SmartQuizSession.tsx
+│   └── ui/                → Radix UI components
+├── context/               → Contexts (AppState, Theme, etc)
+├── lib/                   → Core libraries (SQLite, Engine)
+├── hooks/                 → Custom hooks
+├── data/                  → Dados estáticos (questions, badges)
+├── utils/                 → Utilitários
+├── styles/                → Estilos globais
+└── android/               → Build Android
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  ✨ TECNOLOGIAS                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+⚛️  React 18 + TypeScript
+📱 Capacitor 6 (Android)
+🗄️  SQLite (Banco local)
+🎨 Tailwind CSS 4.0
+🧩 Radix UI (Componentes)
+📊 Recharts (Gráficos)
+🎯 Lucide React (Ícones)
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  🎓 DICAS RÁPIDAS                                               │
+└─────────────────────────────────────────────────────────────────┘
+
+💡 Use o Dashboard.tsx como ponto de partida
+💡 O estado está centralizado em /context/AppState/
+💡 SQLiteService gerencia todo o banco de dados
+💡 Adicione questões em /data/questions.ts
+💡 Customize temas em /lib/themeConfig.ts
+💡 200+ mensagens em /utils/notifications/notificationMessages.ts
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  🎯 PRÓXIMOS PASSOS SUGERIDOS                                   │
+└─────────────────────────────────────────────────────────────────┘
+
+1. Ler README.md para entender o projeto
+2. npm install && npm run dev para testar
+3. Explorar /components/ para ver as telas
+4. Verificar /data/questions.ts e adicionar mais questões
+5. Testar no Android com npm run android:build
+
+
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║                  🎉 PROJETO PRONTO PARA USO!                    ║
+║                                                                  ║
+║             Todas as funcionalidades estão operacionais         ║
+║                   Documentação completa criada                  ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+
+Versão: 1.0.0-clean
+Última atualização: Janeiro 2025

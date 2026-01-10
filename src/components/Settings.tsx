@@ -33,19 +33,69 @@ export function Settings({
   const handleResetProgress = () => {
     if (window.confirm('⚠️ ATENÇÃO! Isso vai apagar TODAS as suas estatísticas, XP, nível e histórico de questões. Esta ação é IRREVERSÍVEL!\n\nTem certeza que deseja continuar?')) {
       if (window.confirm('✋ Última confirmação: TODOS os seus dados serão perdidos permanentemente. Deseja realmente resetar?')) {
+        // 🗑️ LISTA COMPLETA DE TODAS AS CHAVES DO LOCALSTORAGE
         const keysToRemove = [
+          // Estado Global
+          'gabaritoo_app_state',
+          
+          // Gamificação
+          'alerr_game_data',
+          
+          // Estatísticas
           'alerr_stats',
-          'alerr_game',
+          
+          // Questões
+          'alerr_wrong_questions',
           'alerr_answered_questions',
-          'alerr_settings',
-          'alerr_notifications_enabled',
+          
+          // Perfil e Settings
+          'concurso_profiles',
+          'concurso_active_profile',
           'alerr_concurso_profile',
-          'exam_backup'
+          'alerr_settings',
+          
+          // Customização
+          'alerr_customization',
+          
+          // Notificações
+          'alerr_notifications',
+          'alerr_notifications_enabled',
+          'alerr_last_scheduled',
+          'smart_notification_config',
+          'pending_questions',
+          
+          // Plano de Estudos
+          'studyPlan',
+          
+          // Simulados
+          'exam_backup',
+          'exam_history',
+          
+          // Tutorial/Onboarding
+          'hasSeenTutorial_v3',
+          'hasSeenOnboarding',
+          
+          // Tema
+          'alerr_theme'
         ];
         
-        keysToRemove.forEach(key => localStorage.removeItem(key));
+        // Remover todas as chaves
+        keysToRemove.forEach(key => {
+          try {
+            localStorage.removeItem(key);
+          } catch (e) {
+            console.error(`Erro ao remover ${key}:`, e);
+          }
+        });
         
-        alert('✅ Progresso resetado! A página será recarregada.');
+        // Limpar TUDO do localStorage (garantia absoluta)
+        try {
+          localStorage.clear();
+        } catch (e) {
+          console.error('Erro ao limpar localStorage:', e);
+        }
+        
+        alert('✅ TODOS os dados foram apagados! A página será recarregada.');
         window.location.reload();
       }
     }

@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { 
-  ArrowLeft, Clock, Flag, CheckCircle, XCircle, AlertCircle, 
-  Trophy, Target, Play, Loader2
-} from 'lucide-react';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useTheme } from '../context/ThemeContext';
 import { useGame } from '../context/GameContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
+import { seedData } from '../data/seedQuestions';
 
 // Interfaces (Mantidas)
 interface QuestionOption {
@@ -35,51 +30,21 @@ interface SimulatedExamProps {
   onBack: () => void;
 }
 
-// MOCK DE DADOS PARA FUNCIONAMENTO OFFLINE
-const MOCK_QUESTIONS: Question[] = [
-  {
-    id: '1',
-    text: 'No contexto de segurança da informação, qual o princípio que garante que a informação não foi alterada indevidamente?',
-    options: [
-      { id: 'a', text: 'Confidencialidade' },
-      { id: 'b', text: 'Integridade' },
-      { id: 'c', text: 'Disponibilidade' },
-      { id: 'd', text: 'Autenticidade' }
-    ],
-    correct_option_id: 'b',
-    subject_id: 'seg',
-    difficulty_level: 'medio',
-    banca: 'CESPE'
-  },
-  {
-    id: '2',
-    text: 'Qual protocolo é utilizado para enviar correio eletrônico na Internet?',
-    options: [
-      { id: 'a', text: 'POP3' },
-      { id: 'b', text: 'IMAP' },
-      { id: 'c', text: 'SMTP' },
-      { id: 'd', text: 'HTTP' }
-    ],
-    correct_option_id: 'c',
-    subject_id: 'redes',
-    difficulty_level: 'facil',
-    banca: 'FGV'
-  },
-  {
-    id: '3',
-    text: 'Qual atalho de teclado é comumente usado para abrir o Gerenciador de Tarefas no Windows?',
-    options: [
-      { id: 'a', text: 'Ctrl + Alt + Del' },
-      { id: 'b', text: 'Ctrl + Shift + Esc' },
-      { id: 'c', text: 'Alt + Tab' },
-      { id: 'd', text: 'Win + Tab' }
-    ],
-    correct_option_id: 'b',
-    subject_id: 'win',
-    difficulty_level: 'medio',
-    banca: 'VUNESP'
-  }
-];
+// CONVERSÃO DE SEED QUESTIONS PARA O FORMATO DO SIMULADO
+const MOCK_QUESTIONS: Question[] = seedData.questions.map((q, index) => ({
+  id: String(q.question_number || index + 1),
+  text: q.statement,
+  options: Object.entries(q.options).map(([key, value]) => ({
+    id: key.toLowerCase(),
+    text: `${key}) ${value}`
+  })),
+  correct_option_id: q.correct_option.toLowerCase(),
+  subject_id: q.discipline,
+  difficulty_level: index % 3 === 0 ? 'facil' : index % 3 === 1 ? 'medio' : 'dificil',
+  banca: seedData.exam.banca,
+  year: String(seedData.exam.ano),
+  exam_name: `${seedData.exam.orgao} - ${seedData.exam.cargo}`
+}));
 
 export function SimulatedExam({ onBack }: SimulatedExamProps) {
   const { isDarkMode } = useTheme();
