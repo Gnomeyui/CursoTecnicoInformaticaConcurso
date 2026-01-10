@@ -5,11 +5,19 @@
  * - Verifica se banco está vazio
  * - Insere prova + questões em transação
  * - Executa apenas uma vez (idempotente)
+ * 
+ * ⚠️ AUTO-SEED DESABILITADO POR PADRÃO
+ * Para habilitar, mude AUTO_SEED_ENABLED para true
  */
 
 import { useEffect, useState } from 'react';
 import { sqliteService } from '../lib/database/SQLiteService';
 import { seedData } from '../data/seedQuestions';
+
+// 🚨 CONTROLE DE AUTO-SEED
+// false = Banco começa vazio (precisa importar dados manualmente)
+// true = Banco auto-popula com seedQuestions na primeira vez
+const AUTO_SEED_ENABLED = false;
 
 export function useDatabaseSeed() {
   const [isSeeding, setIsSeeding] = useState(true);
@@ -23,6 +31,15 @@ export function useDatabaseSeed() {
 
         // 1. Inicializar SQLite
         await sqliteService.initialize();
+
+        // ⚠️ VERIFICAR SE AUTO-SEED ESTÁ HABILITADO
+        if (!AUTO_SEED_ENABLED) {
+          console.log('🚫 Auto-seed DESABILITADO. Banco permanece vazio.');
+          console.log('💡 Para popular o banco, mude AUTO_SEED_ENABLED para true em /hooks/useDatabaseSeed.ts');
+          setIsReady(true);
+          setIsSeeding(false);
+          return;
+        }
 
         // 2. Verificar se já tem questões
         const result = await sqliteService.query('SELECT COUNT(*) as count FROM questions');

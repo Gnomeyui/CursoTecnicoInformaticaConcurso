@@ -54,6 +54,37 @@ npm run android:sync     # Apenas sincronizar com Android
 npm run android:run      # Executar no dispositivo conectado
 ```
 
+## ⚙️ Configurações Importantes
+
+### Auto-Seed do Banco de Dados
+
+Por padrão, o banco de dados SQLite começa **VAZIO**.
+
+**Para habilitar auto-população com questões de teste:**
+
+Edite `/hooks/useDatabaseSeed.ts`:
+```typescript
+const AUTO_SEED_ENABLED = true;  // Mude para true
+```
+
+**Comportamento:**
+- `false` (padrão) = Banco vazio, precisa importar questões
+- `true` = Auto-popula com 12 questões de exemplo do seedQuestions.ts
+
+### Dashboard sem Dados Hardcoded
+
+O Dashboard agora usa **dados reais** dos contextos:
+- `useGame()` → XP e Nível
+- `useStats()` → Estatísticas e Precisão
+
+Se o banco estiver vazio, mostra:
+```
+Nível: 1
+XP: 0
+Precisão: 0%
+"Nenhuma estatística registrada ainda. Comece a estudar!"
+```
+
 ## 📱 Estrutura do Projeto
 
 ```

@@ -3,15 +3,14 @@ import {
   AlertTriangle, Trophy, Flame, TrendingUp, Target, 
   BookOpen, Settings as SettingsIcon, ChevronRight, Zap, Calendar
 } from 'lucide-react';
-// REMOVIDO: import { supabase } from '../utils/supabase/client';
 import { useCustomization } from '../context/CustomizationContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
+import { useGame } from '../context/GameContext'; // Importar contexto do Jogo
+import { useStats } from '../context/StatsContext'; // Importar contexto de Estatísticas
 import { COPY } from '../utils/copy';
 import { getRandomMotivationalCTA } from '../utils/getRandomMotivationalCTA';
 
 interface DashboardProps {
-  dailyScore?: number;
-  totalQuestions?: number;
   onStartQuiz?: () => void;
   onOpenStatistics?: () => void;
   onOpenAchievements?: () => void;
@@ -26,75 +25,24 @@ interface DashboardProps {
 }
 
 const Dashboard = ({ 
-  user, 
   onOpenSettings, 
   onOpenProfiles,
-  dailyScore = 0,
-  totalQuestions = 0,
   onStartQuiz,
-  onOpenStatistics,
-  onOpenAchievements,
-  onOpenCustomization,
   onOpenSimulatedExam,
-  onOpenFlashcards,
-  onOpenRegimento,
+  onOpenAchievements,
   onOpenStudyPlan
 }: DashboardProps) => {
-  // Usa o tema completo do contexto (já vem com todas as cores configuradas)
   const { theme: currentTheme } = useCustomization();
   const { activeProfile } = useConcursoProfile();
   
-  const [stats, setStats] = useState({
-    xp: 0, level: 1, streak: 0, criticalQuestions: 0, masteredQuestions: 0, accuracy: 0
-  });
-  const [subjects, setSubjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  // ✅ USAR DADOS REAIS DOS CONTEXTOS (NÃO HARDCODED!)
+  const { xp, level } = useGame();
+  const { detailedStats } = useStats();
   
-  // Gera uma frase motivacional aleatória a cada renderização
   const [motivationalText] = useState(() => getRandomMotivationalCTA());
 
-  // Carrega dados (Adaptado para Offline/SQLite)
-  useEffect(() => {
-    async function loadData() {
-      // Se não tiver usuário, apenas para o loading
-      // (Em modo offline puro, talvez nem precisemos checar user remoto)
-      
-      try {
-        // MIGRADO: Substituída chamada do Supabase por dados locais/mock
-        // Futuramente: chamar sqliteService.getProfileStats()
-        
-        const profile = {
-          xp: 1250,
-          nivel: 3,
-          streak_atual: 5
-        };
-        
-        const critical = 0; // Futuramente: buscar do user_question_progress no SQLite
-
-        setStats({
-          xp: profile?.xp || 1250,
-          level: profile?.nivel || 3,
-          streak: profile?.streak_atual || 5,
-          criticalQuestions: critical || 0,
-          masteredQuestions: 42,
-          accuracy: 68
-        });
-
-        setSubjects([
-          { name: 'Português', progress: 45, total: 120 },
-          { name: 'Informática', progress: 30, total: 50 },
-          { name: 'Direito Adm.', progress: 70, total: 80 },
-        ]);
-      } catch (error) {
-        console.log('Erro ao carregar dados:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, [user]);
-
-  if (loading) return <div className="h-screen flex items-center justify-center"><div className={`animate-spin rounded-full h-8 w-8 border-b-2 ${currentTheme.iconColor}`}></div></div>;
+  // Calcular progresso do nível (apenas visual)
+  const levelProgress = (xp % 1000) / 10; 
 
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 pb-32 font-sans animate-in fade-in duration-500">
@@ -122,12 +70,11 @@ const Dashboard = ({
 
       <main className="px-6 space-y-6 mt-6">
 
-        {/* 2. CARD PRINCIPAL (HERO) - A CORAGEM DA COR */}
+        {/* 2. CARD PRINCIPAL */}
         <button 
           onClick={onStartQuiz}
           className={`w-full group relative overflow-hidden rounded-3xl bg-gradient-to-br ${currentTheme.gradient} p-6 text-left shadow-lg hover:shadow-xl transition-all duration-300 transform active:scale-[0.98]`}
         >
-          {/* Ícone de fundo decorativo */}
           <div className="absolute top-0 right-0 p-4 opacity-10 transform group-hover:scale-110 transition-transform duration-500">
             <Zap size={140} fill="currentColor" className="text-white" />
           </div>
@@ -135,7 +82,7 @@ const Dashboard = ({
           <div className="relative z-10 flex flex-col h-full justify-between min-h-[120px]">
             <div>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold text-white mb-3 border border-white/10">
-                <Flame size={12} fill="currentColor" /> {COPY.home.cards.streak(stats.streak)}
+                <Flame size={12} fill="currentColor" /> {detailedStats.currentStreak} dias
               </span>
               <h2 className="text-3xl font-bold text-white mb-1">{COPY.home.title}</h2>
               <p className={`text-sm ${currentTheme.lightText} max-w-[85%]`}>
@@ -150,95 +97,66 @@ const Dashboard = ({
           </div>
         </button>
 
-        {/* 3. CARDS DE ESTATÍSTICAS (BENTO GRID) */}
+        {/* 3. CARDS DE ESTATÍSTICAS */}
         <div className="grid grid-cols-2 gap-4">
           
-          {/* Nível */}
+          {/* Nível (Dados Reais) */}
           <div className="bg-white dark:bg-gray-900 p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden">
             <div className={`absolute -right-4 -bottom-4 opacity-10 ${currentTheme.iconColor}`}>
               <Trophy size={80} />
             </div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Nível {stats.level}</p>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Nível {level}</p>
             <div className="mt-2 mb-3">
-              <span className="text-3xl font-bold text-gray-800 dark:text-white">{stats.xp}</span>
+              <span className="text-3xl font-bold text-gray-800 dark:text-white">{xp}</span>
               <span className="text-xs text-gray-400 font-medium ml-1">XP</span>
             </div>
             <div className="w-full bg-gray-100 dark:bg-gray-800 h-1.5 rounded-full overflow-hidden">
-              <div className={`h-full rounded-full ${currentTheme.progressBar}`} style={{ width: `${(stats.xp % 1000) / 10}%` }}></div>
+              <div className={`h-full rounded-full ${currentTheme.progressBar}`} style={{ width: `${levelProgress}%` }}></div>
             </div>
           </div>
 
-          {/* Precisão */}
+          {/* Precisão (Dados Reais) */}
           <div className="bg-white dark:bg-gray-900 p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden">
             <div className={`absolute -right-4 -bottom-4 opacity-10 ${currentTheme.iconColor}`}>
               <Target size={80} />
             </div>
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Precisão</p>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-gray-800 dark:text-white">{stats.accuracy}%</span>
+              <span className="text-3xl font-bold text-gray-800 dark:text-white">
+                {Math.round(detailedStats.overallAccuracy)}%
+              </span>
             </div>
             <div className="mt-3 flex items-center gap-1 text-[10px] text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-md w-fit font-bold">
               <TrendingUp size={10} />
-              <span>SUBINDO</span>
+              <span>GERAL</span>
             </div>
           </div>
         </div>
 
-        {/* 4. ALERTA DE REVISÃO (Só aparece se necessário) */}
-        {stats.criticalQuestions > 0 ? (
-          <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-3xl p-5 flex items-center justify-between animate-pulse-slow">
-            <div className="flex items-center gap-4">
-              <div className="bg-red-100 dark:bg-red-900/50 p-3 rounded-2xl text-red-600 dark:text-red-200">
-                <AlertTriangle size={24} />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-800 dark:text-white">{COPY.home.cards.attention}</h3>
-                <p className="text-xs text-red-600 dark:text-red-400 font-medium">{COPY.home.cards.criticalErrors(stats.criticalQuestions)}</p>
-              </div>
+        {/* 4. LISTA DE MATÉRIAS (Placeholder dinâmico se houver dados) */}
+        {detailedStats.subjectStats.length > 0 ? (
+          <div className="pt-2">
+            <h3 className="font-bold text-gray-800 dark:text-white mb-4 px-1 text-lg">Seu Progresso</h3>
+            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 divide-y divide-gray-50 dark:divide-gray-800">
+              {detailedStats.subjectStats.map((subj, index) => (
+                <div key={index} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-bold text-gray-800 dark:text-white">{subj.subject}</span>
+                  </div>
+                  <span className="text-xs font-bold">{Math.round(subj.accuracy)}%</span>
+                </div>
+              ))}
             </div>
-            <button onClick={() => console.log('Abrir UTI')} className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-red-700">
-              {COPY.home.cards.correctButton}
-            </button>
           </div>
         ) : (
-          // Mensagem positiva quando não há erros
-          <div className={`rounded-3xl p-5 flex items-center gap-4 border ${currentTheme.softBg} ${currentTheme.border}`}>
-             <div className={`p-2 rounded-full ${currentTheme.iconBg} ${currentTheme.iconColor}`}>
-                <Trophy size={18} />
-              </div>
-              <p className={`text-xs font-medium ${currentTheme.iconColor}`}>Tudo em dia! Sem erros pendentes.</p>
+          <div className="p-6 text-center text-gray-400 text-sm">
+            Nenhuma estatística registrada ainda. Comece a estudar!
           </div>
         )}
 
-        {/* 5. LISTA DE MATÉRIAS */}
-        <div className="pt-2">
-          <h3 className="font-bold text-gray-800 dark:text-white mb-4 px-1 text-lg">Seu Progresso</h3>
-          <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 divide-y divide-gray-50 dark:divide-gray-800">
-            {subjects.map((subj, index) => (
-              <div key={index} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                <div className="flex items-center gap-4">
-                  {/* Círculo de Progresso SVG */}
-                  <div className="relative size-10 flex items-center justify-center">
-                    <svg className="size-full -rotate-90" viewBox="0 0 36 36">
-                      <path className="text-gray-100 dark:text-gray-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
-                      <path className={currentTheme.iconColor} strokeDasharray={`${subj.progress}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
-                    </svg>
-                    <span className="absolute text-[10px] font-bold text-gray-600 dark:text-gray-400">{subj.progress}%</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-800 dark:text-white">{subj.name}</p>
-                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">{subj.total} questões</p>
-                  </div>
-                </div>
-                <ChevronRight size={16} className="text-gray-300" />
-              </div>
-            ))}
-          </div>
-        </div>
-
       </main>
 
-      {/* 6. MENU INFERIOR (ILHA FLUTUANTE) */}
+      {/* 6. MENU INFERIOR */}
       <div className="fixed bottom-6 left-0 w-full px-6 flex justify-center z-30 pointer-events-none">
         <nav className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-gray-200 dark:border-gray-700 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1 pointer-events-auto w-full max-w-[320px] justify-between">
           <button onClick={onStartQuiz} className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl ${currentTheme.iconBg} ${currentTheme.iconColor} shadow-sm transition-all`}>
