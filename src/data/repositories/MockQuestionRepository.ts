@@ -2,6 +2,8 @@
  * DATA LAYER - MOCK QUESTION REPOSITORY
  * Implementação mock do repositório (substitui hardcoded atual)
  * QUANDO TIVER BACKEND: Troca UMA linha no container.ts
+ * 
+ * ⚠️ REPOSITÓRIO APENAS ENTREGA DADOS - SEM LÓGICA DE NEGÓCIO
  */
 
 import { QuestionRepository, QuestionFilters } from '../../domain/repositories/QuestionRepository';
@@ -13,7 +15,7 @@ export class MockQuestionRepository implements QuestionRepository {
   async getAll(filters?: QuestionFilters): Promise<Question[]> {
     let data = QUESTIONS;
 
-    // Aplicar filtros
+    // Aplicar filtros simples (APENAS filtragem, sem regras de negócio)
     if (filters?.banca) {
       data = data.filter(q => q.banca === filters.banca);
     }
@@ -45,6 +47,11 @@ export class MockQuestionRepository implements QuestionRepository {
     if (filters?.perfil) {
       // Filtra por perfil de concurso
       data = data.filter(q => q.cargo === filters.perfil);
+    }
+
+    // Limite simples (sem regra de premium)
+    if (filters?.limit) {
+      data = data.slice(0, filters.limit);
     }
 
     return data;

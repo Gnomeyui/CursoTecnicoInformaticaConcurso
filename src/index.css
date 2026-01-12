@@ -3267,6 +3267,12 @@
   }
 
   @media (hover: hover) {
+    .hover\:bg-orange-100:hover {
+      background-color: var(--color-orange-100);
+    }
+  }
+
+  @media (hover: hover) {
     .hover\:bg-orange-200:hover {
       background-color: var(--color-orange-200);
     }
@@ -4919,6 +4925,20 @@
     @media (hover: hover) {
       .dark\:hover\:bg-input\/50:hover {
         background-color: color-mix(in oklab, oklch(.922 0 0) 50%, transparent);
+      }
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    @media (hover: hover) {
+      .dark\:hover\:bg-orange-900\/30:hover {
+        background-color: color-mix(in srgb, oklch(.408 .123 38.172) 30%, transparent);
+      }
+
+      @supports (color: color-mix(in lab, red, red)) {
+        .dark\:hover\:bg-orange-900\/30:hover {
+          background-color: color-mix(in oklab, var(--color-orange-900) 30%, transparent);
+        }
       }
     }
   }

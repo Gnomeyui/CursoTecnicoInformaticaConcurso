@@ -6,6 +6,7 @@ import { Switch } from './ui/switch';
 import { Card, CardContent } from './ui/card';
 import { Input } from './ui/input';
 import { NotificationScheduler } from '../utils/notifications/NotificationScheduler';
+import { NotificationSounds } from '../utils/notifications/NotificationSounds';
 
 interface StudyPlanSettingsProps {
   onBack: () => void;
@@ -77,6 +78,11 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
   const getCustomFileName = () => {
     if (!customSoundFile) return null;
     return 'Arquivo personalizado';
+  };
+
+  // Função para tocar o som de notificação
+  const playNotificationSound = (sound: string) => {
+    NotificationSounds.play(sound, customSoundFile || undefined);
   };
 
   return (
@@ -256,7 +262,18 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
                       onChange={(e) => setNotificationSound(e.target.value)}
                       className="w-4 h-4 text-orange-600" 
                     />
-                    <span className="text-sm">🔔 Padrão</span>
+                    <span className="text-sm flex-1">🔔 Padrão</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        playNotificationSound('padrao');
+                      }}
+                      className="p-1.5 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-full transition-colors"
+                      aria-label="Testar som padrão"
+                    >
+                      <Volume2 size={16} className="text-orange-600" />
+                    </button>
                   </label>
                   
                   <label className="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-orange-300 cursor-pointer transition-colors">
@@ -268,7 +285,18 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
                       onChange={(e) => setNotificationSound(e.target.value)}
                       className="w-4 h-4 text-orange-600" 
                     />
-                    <span className="text-sm">🎵 Suave</span>
+                    <span className="text-sm flex-1">🎵 Suave</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        playNotificationSound('suave');
+                      }}
+                      className="p-1.5 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-full transition-colors"
+                      aria-label="Testar som suave"
+                    >
+                      <Volume2 size={16} className="text-blue-600" />
+                    </button>
                   </label>
                   
                   <label className="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-orange-300 cursor-pointer transition-colors">
@@ -280,7 +308,18 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
                       onChange={(e) => setNotificationSound(e.target.value)}
                       className="w-4 h-4 text-orange-600" 
                     />
-                    <span className="text-sm">⚡ Enérgico</span>
+                    <span className="text-sm flex-1">⚡ Enérgico</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        playNotificationSound('energico');
+                      }}
+                      className="p-1.5 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-full transition-colors"
+                      aria-label="Testar som enérgico"
+                    >
+                      <Volume2 size={16} className="text-red-600" />
+                    </button>
                   </label>
                   
                   <label className="flex items-center gap-3 p-3 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-orange-300 cursor-pointer transition-colors">
@@ -292,7 +331,18 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
                       onChange={(e) => setNotificationSound(e.target.value)}
                       className="w-4 h-4 text-orange-600" 
                     />
-                    <span className="text-sm">🔕 Sino</span>
+                    <span className="text-sm flex-1">🔕 Sino</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        playNotificationSound('sino');
+                      }}
+                      className="p-1.5 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-full transition-colors"
+                      aria-label="Testar som sino"
+                    >
+                      <Volume2 size={16} className="text-purple-600" />
+                    </button>
                   </label>
                   
                   {/* Opção Personalizado */}
@@ -305,7 +355,20 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
                       onChange={(e) => setNotificationSound(e.target.value)}
                       className="w-4 h-4 text-orange-600" 
                     />
-                    <span className="text-sm">🎧 Personalizado</span>
+                    <span className="text-sm flex-1">🎧 Personalizado</span>
+                    {customSoundFile && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          playNotificationSound('personalizado');
+                        }}
+                        className="p-1.5 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-full transition-colors"
+                        aria-label="Testar som personalizado"
+                      >
+                        <Volume2 size={16} className="text-green-600" />
+                      </button>
+                    )}
                   </label>
                   
                   {/* Upload de arquivo quando personalizado está selecionado */}
