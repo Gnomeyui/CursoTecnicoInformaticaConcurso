@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Bell, Trash2, LogOut, User, 
-  ChevronRight, Palette, Clock, Shield, HelpCircle, Target, ArrowLeft
+  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Switch } from './ui/switch';
 import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
+import { authService } from '../services/AuthService';
+import { UpgradeScreen } from './UpgradeScreen';
+import { PlanSelector } from './PlanSelector';
 
 interface SettingsProps {
   onClose: () => void;
@@ -23,12 +26,19 @@ export function Settings({
   
   const { settings } = useCustomization();
   const theme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
+  const [showPlanSelector, setShowPlanSelector] = useState(false);
+  
+  const isPremium = authService.isPremium();
+  const user = authService.getUser();
+  const plan = authService.getPlan();
 
-  // Estados para preferências  
-  const [dailyGoal, setDailyGoal] = React.useState(() => {
-    const saved = localStorage.getItem('alerr_settings');
-    return saved ? JSON.parse(saved).dailyGoal || 50 : 50;
-  });
+  const handleCancelSubscription = () => {
+    if (confirm('⚠️ Tem certeza que deseja cancelar sua assinatura?\n\nVocê perderá acesso a todos os recursos premium.')) {
+      authService.cancelSubscription();
+      alert('Assinatura cancelada. Você voltou para o plano FREE.');
+      window.location.reload();
+    }
+  };
 
   const handleResetProgress = () => {
     if (window.confirm('⚠️ ATENÇÃO! Isso vai apagar TODAS as suas estatísticas, XP, nível e histórico de questões. Esta ação é IRREVERSÍVEL!\n\nTem certeza que deseja continuar?')) {
@@ -152,6 +162,13 @@ export function Settings({
   return (
     <div className="min-h-screen bg-background pb-20 animate-in slide-in-from-right">
       
+      {/* Se showPlanSelector estiver ativo, mostra tela de seleção de plano */}
+      {showPlanSelector && (
+        <div className="fixed inset-0 z-50 bg-background">
+          <PlanSelector onClose={() => setShowPlanSelector(false)} />
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-card/80 backdrop-blur-md px-6 py-5 border-b border-border sticky top-0 z-10 flex items-center gap-3">
         <button 
@@ -164,6 +181,93 @@ export function Settings({
       </div>
 
       <div className="p-6 space-y-8 max-w-2xl mx-auto">
+        
+        {/* GRUPO 0: PLANO (NOVO) */}
+        <section>
+          <h2 className="text-xs font-bold text-muted-foreground uppercase ml-4 mb-3 tracking-widest">Assinatura</h2>
+          <div className="bg-card border border-border rounded-[1.5rem] shadow-sm overflow-hidden">
+            {isPremium ? (
+              // Status PREMIUM
+              <div className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg">
+                    <Crown size={24} className="text-white" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-lg font-black text-foreground">Gabaritoo Premium</h3>
+                      <span className="px-2 py-0.5 text-xs font-bold bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 rounded-full">
+                        Ativo
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Você tem acesso completo a todos os recursos
+                    </p>
+                    
+                    {/* Benefícios ativos */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        <span>Estudo offline ilimitado</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        <span>Filtros avançados por banca e cargo</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        <span>Simulados cronometrados</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                        <span>Até 10.000 questões disponíveis</span>
+                      </div>
+                    </div>
+
+                    {user?.premiumExpiresAt && (
+                      <p className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border">
+                        Renovação: {new Date(user.premiumExpiresAt).toLocaleDateString('pt-BR')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // Chamada para upgrade (FREE)
+              <button
+                onClick={() => setShowPlanSelector(true)}
+                className="w-full p-6 hover:bg-muted/50 transition-all active:scale-[0.98] text-left"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg">
+                    <Zap size={24} className="text-white" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="text-lg font-black text-foreground">Assinar Premium</h3>
+                      <ChevronRight size={20} className="text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Desbloqueie todos os recursos por <span className="font-bold text-foreground">R$ 9,90/mês</span>
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-2.5 py-1 text-xs font-medium bg-muted text-foreground rounded-lg">
+                        📚 10.000 questões
+                      </span>
+                      <span className="px-2.5 py-1 text-xs font-medium bg-muted text-foreground rounded-lg">
+                        ✈️ Estudo offline
+                      </span>
+                      <span className="px-2.5 py-1 text-xs font-medium bg-muted text-foreground rounded-lg">
+                        🎯 Simulados ilimitados
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            )}
+          </div>
+        </section>
         
         {/* GRUPO 1: ESTUDO */}
         <section>
@@ -178,20 +282,6 @@ export function Settings({
                 colorClass="bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400"
               />
             )}
-            <MenuItem 
-              icon={Target} 
-              label="Meta Diária" 
-              desc={`${dailyGoal} questões por dia`}
-              onClick={() => {
-                const newGoal = prompt(`Qual sua meta diária de questões?\n\nAtual: ${dailyGoal} questões/dia`, dailyGoal.toString());
-                if (newGoal && !isNaN(Number(newGoal))) {
-                  const goal = Math.max(1, Math.min(1000, Number(newGoal)));
-                  setDailyGoal(goal);
-                  localStorage.setItem('alerr_settings', JSON.stringify({ dailyGoal: goal }));
-                }
-              }}
-              colorClass="bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400"
-            />
             {onOpenStudyPlan && (
               <MenuItem 
                 icon={Clock} 
@@ -237,16 +327,6 @@ export function Settings({
                 window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
               }}
               colorClass="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
-            />
-            <MenuItem 
-              icon={HelpCircle} 
-              label="Ver Tutorial Novamente" 
-              desc="Reveja o tour guiado pelas funcionalidades"
-              onClick={() => {
-                localStorage.removeItem('hasSeenTutorial_v3');
-                window.location.reload();
-              }}
-              colorClass="bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400"
             />
             <MenuItem 
               icon={HelpCircle} 
