@@ -4,7 +4,7 @@ import { ThemeType, APP_THEMES } from '../lib/themeConfig';
 
 export interface CustomizationSettings {
   fontSize: 'small' | 'medium' | 'large' | 'xlarge';
-  colorTheme: ThemeType; // <--- Atualizado para usar as 8 paletas
+  colorTheme: ThemeType; // <--- Atualizado para usar as 5 paletas científicas
   highContrast: boolean;
   reducedMotion: boolean;
   compactMode: boolean;
@@ -27,7 +27,7 @@ const STORAGE_KEY = 'alerr_customization_settings';
 export function CustomizationProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<CustomizationSettings>({
     fontSize: 'medium',
-    colorTheme: 'focus', // Padrão: Azul Foco
+    colorTheme: 'deepFocus', // Padrão: Concentração Profunda
     highContrast: false,
     reducedMotion: false,
     compactMode: false
@@ -48,13 +48,22 @@ export function CustomizationProvider({ children }: { children: ReactNode }) {
       if (saved) {
         const data = JSON.parse(saved);
         
-        // MIGRAÇÃO: Converter valores antigos para novos
+        // MIGRAÇÃO: Converter valores antigos para NOVAS PALETAS CIENTÍFICAS
         const colorThemeMap: Record<string, ThemeType> = {
-          'default': 'focus',
-          'blue': 'focus',
-          'green': 'calm',
-          'purple': 'creative',
-          'orange': 'energy'
+          // Valores antigos -> Novos temas científicos
+          'default': 'deepFocus',
+          'blue': 'deepFocus',
+          'focus': 'deepFocus',
+          'ocean': 'deepFocus',
+          'green': 'calmStudy',
+          'calm': 'calmStudy',
+          'purple': 'highAlert',
+          'creative': 'highAlert',
+          'orange': 'highAlert',
+          'energy': 'highAlert',
+          'comfort': 'calmStudy',
+          'minimal': 'minimalNeutral',
+          'warmth': 'nightMode'
         };
         
         // Se o colorTheme for um valor antigo, migrar
@@ -62,10 +71,10 @@ export function CustomizationProvider({ children }: { children: ReactNode }) {
           data.colorTheme = colorThemeMap[data.colorTheme];
         }
         
-        // Garantir que seja um valor válido
-        const validThemes: ThemeType[] = ['focus', 'calm', 'creative', 'energy', 'comfort', 'minimal', 'ocean', 'warmth'];
+        // Garantir que seja um valor válido das 5 novas paletas
+        const validThemes: ThemeType[] = ['deepFocus', 'calmStudy', 'highAlert', 'minimalNeutral', 'nightMode'];
         if (!validThemes.includes(data.colorTheme)) {
-          data.colorTheme = 'focus';
+          data.colorTheme = 'deepFocus';
         }
         
         setSettings(data);

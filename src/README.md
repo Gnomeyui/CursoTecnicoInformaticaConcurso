@@ -85,6 +85,28 @@ Precisão: 0%
 "Nenhuma estatística registrada ainda. Comece a estudar!"
 ```
 
+### Limpeza de Dados
+
+**Limpar TODO o app (recomendado):**
+```javascript
+// F12 > Console do navegador
+localStorage.clear();
+sessionStorage.clear();
+location.reload();
+```
+
+**Limpar apenas backup do simulado:**
+```javascript
+localStorage.removeItem('exam_backup');
+location.reload();
+```
+
+**Verificar se há backup:**
+```javascript
+const backup = localStorage.getItem('exam_backup');
+console.log(backup ? '📦 Backup encontrado' : '⚫ Sem backup');
+```
+
 ## 📱 Estrutura do Projeto
 
 ```

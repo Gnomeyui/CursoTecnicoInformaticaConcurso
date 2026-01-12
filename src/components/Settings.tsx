@@ -229,6 +229,13 @@ export function Settings({
             <MenuItem 
               icon={HelpCircle} 
               label="Ajuda e Suporte" 
+              desc="Fale conosco pelo WhatsApp"
+              onClick={() => {
+                // Abrir WhatsApp (substitua pelo número real)
+                const phoneNumber = '5595991234567'; // Formato: código país + DDD + número
+                const message = encodeURIComponent('Olá! Preciso de ajuda com o Gabaritoo.');
+                window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+              }}
               colorClass="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
             />
             <MenuItem 

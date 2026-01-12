@@ -75,13 +75,14 @@ export function Customization({ onBack }: CustomizationProps) {
         {/* Info adicional */}
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
           <p className="text-sm text-foreground">
-            💡 <strong>Dica Científica:</strong> Escolha cores baseadas no seu objetivo:
+            🧠 <strong>Ciência das Cores:</strong> Cada paleta foi projetada para otimizar sua cognição:
           </p>
           <ul className="text-xs text-muted-foreground mt-2 space-y-1 ml-4">
-            <li>• <strong>Azul/Ciano:</strong> Concentração e raciocínio lógico</li>
-            <li>• <strong>Verde:</strong> Reduz ansiedade em revisões</li>
-            <li>• <strong>Roxo:</strong> Estimula criatividade</li>
-            <li>• <strong>Laranja:</strong> Energia quando estiver com sono</li>
+            <li>• <strong>Concentração Profunda:</strong> Azul petróleo reduz ansiedade em sessões longas</li>
+            <li>• <strong>Calma Cognitiva:</strong> Verde musgo favorece memorização e leitura</li>
+            <li>• <strong>Alta Atenção:</strong> Amarelo + Verde aumenta alerta sem estresse</li>
+            <li>• <strong>Minimalismo Neutro:</strong> Cinza elimina distrações visuais</li>
+            <li>• <strong>Modo Noturno:</strong> Preto azulado protege seus olhos à noite</li>
           </ul>
         </div>
 

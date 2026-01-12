@@ -1,8 +1,9 @@
 import React from 'react';
-import { ArrowLeft, TrendingUp, Target, Award, Clock } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ArrowLeft, TrendingUp, Target, Award, Clock, Zap, BookOpen, Calendar } from 'lucide-react';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useStats } from '../context/StatsContext';
 import { useGame } from '../context/GameContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface StatisticsProps {
   onBack: () => void;
@@ -11,6 +12,7 @@ interface StatisticsProps {
 export function Statistics({ onBack }: StatisticsProps) {
   const { detailedStats } = useStats();
   const { xp, level } = useGame();
+  const { theme } = useTheme();
 
   // Preparar dados para gráficos
   const last7Days = detailedStats.dailyStats
@@ -87,6 +89,24 @@ export function Statistics({ onBack }: StatisticsProps) {
             <p className="text-2xl font-bold mb-1 text-foreground">{Math.round(detailedStats.totalStudyTime / 60)}</p>
             <p className="text-xs text-muted-foreground">horas</p>
           </div>
+
+          {/* 🆕 NOVO: Card de Nível */}
+          <div className="bg-card rounded-2xl p-4 shadow-md border border-border col-span-2">
+            <div className="flex items-center gap-2 mb-2">
+              <Zap className="size-5 text-yellow-500" />
+              <p className="text-sm text-muted-foreground">Progresso</p>
+            </div>
+            <div className="flex items-baseline gap-2 mb-2">
+              <p className="text-2xl font-bold text-foreground">Nível {level}</p>
+              <span className="text-sm text-muted-foreground">• {xp} XP</span>
+            </div>
+            <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all"
+                style={{ width: `${(xp % 1000) / 10}%` }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Distribution Chart */}
@@ -154,6 +174,62 @@ export function Statistics({ onBack }: StatisticsProps) {
         ) : (
           <div className="bg-card rounded-2xl p-6 shadow-md border border-border text-center">
             <p className="text-muted-foreground">Nenhum dado dos últimos 7 dias disponível ainda</p>
+          </div>
+        )}
+
+        {/* 🆕 NOVO: Gráfico de Área (Evolução Semanal) */}
+        {last7Days.length > 0 && (
+          <div className="bg-card rounded-2xl p-6 shadow-md border border-border">
+            <div className="flex items-center gap-2 mb-4">
+              <Calendar className="size-5 text-purple-500" />
+              <h3 className="text-lg font-bold text-foreground">Atividade Semanal (Área)</h3>
+            </div>
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={last7Days}>
+                <defs>
+                  <linearGradient id="colorQuestoes" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorAcertos" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#9ca3af" 
+                  tick={{ fontSize: 11 }}
+                  tickLine={false}
+                />
+                <YAxis stroke="#9ca3af" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#1f2937', 
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }} 
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="questões" 
+                  stroke="#3b82f6" 
+                  fillOpacity={1} 
+                  fill="url(#colorQuestoes)" 
+                  strokeWidth={3}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="acertos" 
+                  stroke="#10b981" 
+                  fillOpacity={1} 
+                  fill="url(#colorAcertos)" 
+                  strokeWidth={3}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         )}
 

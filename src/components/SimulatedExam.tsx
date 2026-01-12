@@ -1,9 +1,15 @@
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { 
+  ArrowLeft, Clock, Trophy, Target, Play, Loader2, 
+  Flag, ChevronLeft, ChevronRight, AlertCircle
+} from 'lucide-react';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useTheme } from '../context/ThemeContext';
 import { useGame } from '../context/GameContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
-import { seedData } from '../data/seedQuestions';
+import { sqliteService } from '../lib/database/SQLiteService';
 
 // Interfaces (Mantidas)
 interface QuestionOption {
@@ -29,22 +35,6 @@ interface Question {
 interface SimulatedExamProps {
   onBack: () => void;
 }
-
-// CONVERSÃO DE SEED QUESTIONS PARA O FORMATO DO SIMULADO
-const MOCK_QUESTIONS: Question[] = seedData.questions.map((q, index) => ({
-  id: String(q.question_number || index + 1),
-  text: q.statement,
-  options: Object.entries(q.options).map(([key, value]) => ({
-    id: key.toLowerCase(),
-    text: `${key}) ${value}`
-  })),
-  correct_option_id: q.correct_option.toLowerCase(),
-  subject_id: q.discipline,
-  difficulty_level: index % 3 === 0 ? 'facil' : index % 3 === 1 ? 'medio' : 'dificil',
-  banca: seedData.exam.banca,
-  year: String(seedData.exam.ano),
-  exam_name: `${seedData.exam.orgao} - ${seedData.exam.cargo}`
-}));
 
 export function SimulatedExam({ onBack }: SimulatedExamProps) {
   const { isDarkMode } = useTheme();
@@ -92,7 +82,9 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
       if (backup && examState === 'config') { 
         try {
           const data = JSON.parse(backup);
-          if (data.endTime > Date.now()) {
+          
+          // ⚠️ VALIDAR SE O BACKUP É VÁLIDO E NÃO EXPIROU
+          if (data.endTime > Date.now() && data.selectedQuestions && data.selectedQuestions.length > 0) {
             if (window.confirm("Existe um simulado em andamento. Deseja continuar?")) {
               setSelectedQuestions(data.selectedQuestions);
               setAnswers(data.answers);
@@ -102,14 +94,18 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
               setQuestionCount(data.questionCount);
               setTimeLimit(data.timeLimit);
               setExamState('running');
+              console.log('✅ Simulado restaurado do backup');
             } else {
               localStorage.removeItem('exam_backup');
+              console.log('🗑️ Backup descartado pelo usuário');
             }
           } else {
+            // Backup inválido ou expirado
             localStorage.removeItem('exam_backup');
+            console.log('🗑️ Backup expirado ou inválido removido');
           }
         } catch (error) {
-          console.error('Backup corrompido', error);
+          console.error('❌ Backup corrompido:', error);
           localStorage.removeItem('exam_backup');
         }
       }
@@ -136,20 +132,66 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
     }
   }, [examState, answers, currentQuestionIndex, flaggedQuestions, selectedQuestions, questionCount, timeLimit]);
 
-  // 🔥 LÓGICA OFFLINE/MOCK DE BUSCA DE QUESTÕES
+  // 🔥 BUSCAR QUESTÕES DO BANCO SQLITE REAL
   const startExam = async () => {
     setLoading(true);
     try {
-      // Simulação de delay de rede
-      await new Promise(resolve => setTimeout(resolve, 800));
+      console.log('📚 Buscando questões do banco SQLite...');
 
-      // Em modo de produção real, aqui você chamaria o SQLiteService.
-      // Para este build funcionar agora, usamos o MOCK_QUESTIONS.
-      // Multiplicamos as questões do mock para simular uma prova maior se necessário
-      let allQuestions = [...MOCK_QUESTIONS, ...MOCK_QUESTIONS, ...MOCK_QUESTIONS, ...MOCK_QUESTIONS].slice(0, questionCount);
+      // Inicializar SQLite
+      await sqliteService.initialize();
+
+      // Buscar questões do banco real
+      const result = await sqliteService.query(
+        'SELECT * FROM questions ORDER BY RANDOM() LIMIT ?',
+        [questionCount]
+      );
+
+      console.log(`📊 ${result.length} questões encontradas no banco`);
+
+      // ⚠️ SE NÃO HOUVER QUESTÕES, MOSTRAR ERRO
+      if (result.length === 0) {
+        alert(
+          '⚠️ Nenhuma Questão Encontrada!\n\n' +
+          'O banco de dados está vazio.\n' +
+          'Por favor, importe questões antes de iniciar o simulado.'
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Converter do formato do banco para o formato do componente
+      const allQuestions: Question[] = result.map((q: any) => {
+        let options: QuestionOption[] = [];
+        
+        try {
+          const parsedOptions = typeof q.options === 'string' 
+            ? JSON.parse(q.options) 
+            : q.options;
+          
+          options = Object.entries(parsedOptions).map(([key, value]) => ({
+            id: key.toLowerCase(),
+            text: `${key}) ${value}`
+          }));
+        } catch (error) {
+          console.error('Erro ao parsear opções:', error);
+        }
+
+        return {
+          id: String(q.id),
+          text: q.statement,
+          options,
+          correct_option_id: q.correct_option.toLowerCase(),
+          subject_id: q.discipline,
+          difficulty_level: 'medio',
+          banca: q.banca,
+          year: String(q.year || ''),
+          exam_name: q.exam_name || 'Simulado'
+        };
+      });
 
       if (allQuestions.length === 0) {
-        alert('Não foram encontradas questões para este perfil.');
+        alert('Erro ao processar questões. Tente novamente.');
         setLoading(false);
         return;
       }
@@ -164,9 +206,14 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
       endTimeRef.current = Date.now() + (timeLimit * 60 * 1000);
       setExamState('running');
 
+      console.log('✅ Simulado iniciado com sucesso!');
+
     } catch (error: any) {
-      console.error('Erro fatal ao iniciar simulado:', error);
-      alert(`Erro ao iniciar: ${error.message || 'Tente novamente.'}`);
+      console.error('❌ Erro ao iniciar simulado:', error);
+      alert(
+        '❌ Erro ao Iniciar Simulado\n\n' +
+        `${error.message || 'Erro desconhecido. Tente novamente.'}`
+      );
     } finally {
       setLoading(false);
     }

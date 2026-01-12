@@ -30,7 +30,8 @@ const Dashboard = ({
   onStartQuiz,
   onOpenSimulatedExam,
   onOpenAchievements,
-  onOpenStudyPlan
+  onOpenStudyPlan,
+  onOpenStatistics
 }: DashboardProps) => {
   const { theme: currentTheme } = useCustomization();
   const { activeProfile } = useConcursoProfile();
@@ -149,8 +150,21 @@ const Dashboard = ({
             </div>
           </div>
         ) : (
-          <div className="p-6 text-center text-gray-400 text-sm">
-            Nenhuma estatística registrada ainda. Comece a estudar!
+          <div className="pt-2">
+            <h3 className="font-bold text-gray-800 dark:text-white mb-4 px-1 text-lg">Suas Matérias</h3>
+            <div className={`p-6 rounded-2xl ${currentTheme.iconBg} border border-gray-100 dark:border-gray-800`}>
+              <div className="flex items-start gap-3">
+                <TrendingUp size={20} className={currentTheme.iconColor} />
+                <div>
+                  <p className="text-sm font-bold text-gray-800 dark:text-white mb-1">
+                    Comece a estudar!
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    Responda questões para acompanhar seu progresso por matéria. Veja suas estatísticas completas na aba Stats.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -158,7 +172,7 @@ const Dashboard = ({
 
       {/* 6. MENU INFERIOR */}
       <div className="fixed bottom-6 left-0 w-full px-6 flex justify-center z-30 pointer-events-none">
-        <nav className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-gray-200 dark:border-gray-700 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1 pointer-events-auto w-full max-w-[320px] justify-between">
+        <nav className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-gray-200 dark:border-gray-700 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1 pointer-events-auto w-full max-w-[400px] justify-between">
           <button onClick={onStartQuiz} className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl ${currentTheme.iconBg} ${currentTheme.iconColor} shadow-sm transition-all`}>
             <BookOpen size={20} strokeWidth={2.5} className="mb-0.5" />
             <span className="text-[10px] font-bold">{COPY.bottomNav.study}</span>
@@ -167,6 +181,11 @@ const Dashboard = ({
           <button onClick={onOpenSimulatedExam} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
             <Target size={20} strokeWidth={2.5} className="mb-0.5" />
             <span className="text-[10px] font-medium">{COPY.bottomNav.simulated}</span>
+          </button>
+          
+          <button onClick={onOpenStatistics} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+            <TrendingUp size={20} strokeWidth={2.5} className="mb-0.5" />
+            <span className="text-[10px] font-medium">Stats</span>
           </button>
           
           <button onClick={onOpenAchievements} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
