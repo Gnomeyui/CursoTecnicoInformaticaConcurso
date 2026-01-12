@@ -1,36 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="96dp"
-    android:height="96dp"
+    android:width="108dp"
+    android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     
-    <!-- Circular background -->
+    <!-- Background gradient -->
     <path
-        android:fillColor="#7C3AED"
-        android:pathData="M54,54m-54,0a54,54 0,1,1 108,0a54,54 0,1,1 -108,0"/>
+        android:fillColor="#3B82F6"
+        android:pathData="M0,0 Q54,0 108,0 L108,108 Q54,108 0,108 Z"/>
     
-    <!-- Book with Letter A -->
     <group
         android:translateX="54"
         android:translateY="54">
         
-        <!-- Book outline -->
+        <!-- Paper with rounded corners for round icon -->
         <path
             android:fillColor="#FFFFFF"
-            android:pathData="M-20,-25 L-20,25 L20,25 L20,-25 Z"
-            android:strokeWidth="3"
-            android:strokeColor="#FFFFFF"/>
+            android:pathData="M-18,-28 Q-16,-28 -16,-26 L-16,26 Q-16,28 -14,28 L14,28 Q16,28 16,26 L16,-26 Q16,-28 18,-28 L18,-28 Q18,-28 18,-26 L18,26 Q18,28 14,28 L-14,28 Q-18,28 -18,26 Z"/>
         
-        <!-- Book pages -->
+        <!-- Paper header -->
         <path
-            android:fillColor="#E0E7FF"
-            android:pathData="M-15,-20 L-15,20 L0,20 L0,-20 Z"/>
+            android:fillColor="#F1F5F9"
+            android:pathData="M-18,-28 L18,-28 Q18,-28 18,-26 L18,-20 L-18,-20 L-18,-26 Q-18,-28 -16,-28 Z"/>
         
-        <!-- Letter A -->
+        <!-- Simplified question indicators -->
+        <circle android:fillColor="#E2E8F0" cx="-10" cy="-8" r="1.5"/>
+        <circle android:fillColor="#E2E8F0" cx="-10" cy="0" r="1.5"/>
+        <circle android:fillColor="#3B82F6" cx="-10" cy="8" r="1.5"/>
+        <circle android:fillColor="#E2E8F0" cx="-10" cy="16" r="1.5"/>
+        
+        <!-- Question lines -->
+        <path android:strokeColor="#E2E8F0" android:strokeWidth="1.2" android:strokeLineCap="round" 
+              android:pathData="M-6,-8 L12,-8"/>
+        <path android:strokeColor="#E2E8F0" android:strokeWidth="1.2" android:strokeLineCap="round" 
+              android:pathData="M-6,0 L12,0"/>
+        <path android:strokeColor="#E2E8F0" android:strokeWidth="1.2" android:strokeLineCap="round" 
+              android:pathData="M-6,8 L12,8"/>
+        <path android:strokeColor="#E2E8F0" android:strokeWidth="1.2" android:strokeLineCap="round" 
+              android:pathData="M-6,16 L12,16"/>
+        
+        <!-- Checkmark on question 3 -->
         <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M-5,-10 L0,-20 L5,-10 L3,-10 L0,-15 L-3,-10 Z
-                         M-4,-8 L4,-8 L4,0 L7,0 L7,10 L-7,10 L-7,0 L-4,0 Z"/>
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="0.8"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M-11,8 L-9.5,9.5 L-8,7"/>
+        
+        <!-- Pen (simplified for round icon) -->
+        <group android:translateX="10" android:translateY="-20" android:rotation="-35">
+            <path android:fillColor="#334155" android:pathData="M-1.5,-6 L1.5,-6 L1.5,6 L-1.5,6 Z"/>
+            <path android:fillColor="#64748B" android:pathData="M-1.5,3 L1.5,3 L1.5,6 L-1.5,6 Z"/>
+            <path android:fillColor="#1E293B" android:pathData="M-1,6 L0,8.5 L1,6 Z"/>
+        </group>
     </group>
 </vector>

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">ALE-RR TOP 1</string>
-    <string name="title_activity_main">ALE-RR TOP 1</string>
+    <string name="app_name">Gabaritoo</string>
+    <string name="title_activity_main">Gabaritoo</string>
     <string name="package_name">com.alerr.top5</string>
     <string name="custom_url_scheme">alerr</string>
 </resources>

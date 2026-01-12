@@ -1,7 +1,7 @@
 {
-  "name": "ALE-RR TOP 1 - Técnico em Informática",
-  "short_name": "ALE-RR TOP 1",
-  "description": "Aplicativo de estudos para concurso da ALE-RR - Técnico em Informática",
+  "name": "Gabaritoo - Estudos para Concursos",
+  "short_name": "Gabaritoo",
+  "description": "Aplicativo de estudos para concursos públicos com sistema de quiz, gamificação e estatísticas",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

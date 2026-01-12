@@ -230,7 +230,7 @@ export default function RegimentoReader({ onClose, theme }: RegimentoReaderProps
         <div className="flex items-center justify-between text-white mb-4">
           <div className="flex items-center gap-3">
             <BookOpen size={24} />
-            <h1 className="text-lg font-semibold">Regimento Interno ALE-RR</h1>
+            <h1 className="text-lg font-semibold">Regimento Interno</h1>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
             <X size={24} />

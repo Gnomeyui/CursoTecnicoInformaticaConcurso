@@ -1,99 +1,125 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background Gradient -->
+  <!-- Background with theme support -->
   <defs>
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="themeBg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563EB;stop-opacity:1" />
     </linearGradient>
-    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FCD34D;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
-    </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.3"/>
+    <filter id="paperShadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-opacity="0.15"/>
+    </filter>
+    <filter id="penShadow">
+      <feDropShadow dx="2" dy="4" stdDeviation="6" flood-opacity="0.3"/>
     </filter>
   </defs>
   
   <!-- Background Circle -->
-  <circle cx="256" cy="256" r="256" fill="url(#bgGradient)"/>
+  <circle cx="256" cy="256" r="256" fill="url(#themeBg)"/>
   
-  <!-- Assembly Building (Simplified) -->
-  <g filter="url(#shadow)">
-    <!-- Building Base -->
-    <rect x="120" y="280" width="272" height="120" rx="8" fill="#FFFFFF" opacity="0.95"/>
+  <!-- Paper/Test Sheet -->
+  <g filter="url(#paperShadow)">
+    <!-- Main paper rectangle -->
+    <rect x="140" y="100" width="232" height="312" rx="12" fill="#FFFFFF"/>
     
-    <!-- Columns -->
-    <rect x="140" y="220" width="28" height="60" rx="4" fill="#FFFFFF" opacity="0.95"/>
-    <rect x="198" y="220" width="28" height="60" rx="4" fill="#FFFFFF" opacity="0.95"/>
-    <rect x="256" y="220" width="28" height="60" rx="4" fill="#FFFFFF" opacity="0.95"/>
-    <rect x="314" y="220" width="28" height="60" rx="4" fill="#FFFFFF" opacity="0.95"/>
+    <!-- Paper header line -->
+    <rect x="140" y="100" width="232" height="48" rx="12" fill="#F1F5F9"/>
+    <rect x="140" y="136" width="232" height="12" fill="#FFFFFF"/>
     
-    <!-- Roof/Pediment -->
-    <path d="M 100 220 L 256 140 L 412 220 L 380 220 L 256 160 L 132 220 Z" fill="#FFFFFF" opacity="0.95"/>
+    <!-- Checkboxes and lines (test questions) -->
+    <!-- Question 1 -->
+    <circle cx="170" cy="180" r="8" fill="none" stroke="#CBD5E1" stroke-width="2"/>
+    <line x1="190" y1="180" x2="342" y2="180" stroke="#E2E8F0" stroke-width="3" stroke-linecap="round"/>
     
-    <!-- Stars decoration on building -->
-    <circle cx="256" cy="330" r="6" fill="#3B82F6"/>
-    <circle cx="276" cy="330" r="4" fill="#60A5FA"/>
-    <circle cx="236" cy="330" r="4" fill="#60A5FA"/>
+    <!-- Question 2 -->
+    <circle cx="170" cy="215" r="8" fill="none" stroke="#CBD5E1" stroke-width="2"/>
+    <line x1="190" y1="215" x2="342" y2="215" stroke="#E2E8F0" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Question 3 with check mark -->
+    <circle cx="170" cy="250" r="8" fill="#3B82F6" stroke="#3B82F6" stroke-width="2"/>
+    <path d="M 167 250 L 169 253 L 174 247" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="190" y1="250" x2="342" y2="250" stroke="#E2E8F0" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Question 4 -->
+    <circle cx="170" cy="285" r="8" fill="none" stroke="#CBD5E1" stroke-width="2"/>
+    <line x1="190" y1="285" x2="342" y2="285" stroke="#E2E8F0" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Question 5 -->
+    <circle cx="170" cy="320" r="8" fill="none" stroke="#CBD5E1" stroke-width="2"/>
+    <line x1="190" y1="320" x2="342" y2="320" stroke="#E2E8F0" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Question 6 -->
+    <circle cx="170" cy="355" r="8" fill="none" stroke="#CBD5E1" stroke-width="2"/>
+    <line x1="190" y1="355" x2="342" y2="355" stroke="#E2E8F0" stroke-width="3" stroke-linecap="round"/>
   </g>
   
-  <!-- Trophy/Medal for TOP 1 -->
-  <g filter="url(#shadow)">
-    <!-- Trophy Base -->
-    <ellipse cx="256" cy="380" rx="35" ry="8" fill="url(#goldGradient)" opacity="0.8"/>
-    <rect x="241" y="360" width="30" height="20" rx="2" fill="url(#goldGradient)"/>
+  <!-- Pen Writing -->
+  <g filter="url(#penShadow)">
+    <!-- Pen body -->
+    <defs>
+      <linearGradient id="penGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#1E293B;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#334155;stop-opacity:1" />
+      </linearGradient>
+    </defs>
     
-    <!-- Trophy Cup -->
-    <path d="M 226 310 L 220 340 Q 220 350 230 355 L 256 360 L 282 355 Q 292 350 292 340 L 286 310 Z" 
-          fill="url(#goldGradient)" stroke="#F59E0B" stroke-width="2"/>
+    <!-- Pen clip -->
+    <path d="M 285 145 L 288 135 L 291 145 Z" fill="#94A3B8"/>
     
-    <!-- Handles -->
-    <path d="M 220 320 Q 210 320 210 330 Q 210 340 220 340" 
-          fill="none" stroke="url(#goldGradient)" stroke-width="4" stroke-linecap="round"/>
-    <path d="M 292 320 Q 302 320 302 330 Q 302 340 292 340" 
-          fill="none" stroke="url(#goldGradient)" stroke-width="4" stroke-linecap="round"/>
+    <!-- Main pen body (tilted) -->
+    <rect x="275" y="135" width="28" height="120" rx="4" 
+          fill="url(#penGradient)" 
+          transform="rotate(-25 289 195)"/>
     
-    <!-- Number 1 on Trophy -->
-    <text x="256" y="338" font-family="Arial, sans-serif" font-size="32" font-weight="bold" 
-          fill="#1D4ED8" text-anchor="middle">1</text>
+    <!-- Pen grip section -->
+    <rect x="275" y="200" width="28" height="35" rx="2" 
+          fill="#64748B" 
+          transform="rotate(-25 289 217)"/>
+    
+    <!-- Pen tip/nib -->
+    <path d="M 240 270 L 250 245 L 260 270 Z" 
+          fill="#1E293B" 
+          transform="rotate(-25 250 257)"/>
+    
+    <!-- Pen tip point -->
+    <path d="M 244 275 L 250 268 L 256 275 Z" 
+          fill="#0F172A"/>
+    
+    <!-- Writing line being drawn -->
+    <path d="M 245 275 Q 230 290 220 295" 
+          stroke="#3B82F6" 
+          stroke-width="3" 
+          fill="none" 
+          stroke-linecap="round"
+          opacity="0.8"/>
   </g>
   
-  <!-- Circuit/Tech Elements -->
-  <g opacity="0.3">
-    <circle cx="90" cy="150" r="4" fill="#FFFFFF"/>
-    <circle cx="422" cy="150" r="4" fill="#FFFFFF"/>
-    <circle cx="90" cy="400" r="4" fill="#FFFFFF"/>
-    <circle cx="422" cy="400" r="4" fill="#FFFFFF"/>
-    <line x1="90" y1="150" x2="110" y2="170" stroke="#FFFFFF" stroke-width="2"/>
-    <line x1="422" y1="150" x2="402" y2="170" stroke="#FFFFFF" stroke-width="2"/>
-    <line x1="90" y1="400" x2="110" y2="380" stroke="#FFFFFF" stroke-width="2"/>
-    <line x1="422" y1="400" x2="402" y2="380" stroke="#FFFFFF" stroke-width="2"/>
-  </g>
-  
-  <!-- Badge/Shield Background -->
-  <g filter="url(#shadow)">
-    <path d="M 256 80 L 296 100 Q 310 110 310 130 L 310 180 Q 310 200 290 210 L 256 230 L 222 210 Q 202 200 202 180 L 202 130 Q 202 110 216 100 Z" 
-          fill="#FFFFFF" opacity="0.95"/>
-  </g>
-  
-  <!-- Book/Study Icon in Badge -->
+  <!-- Subtle corner accent -->
+  <path d="M 372 100 L 372 112 L 360 112" 
+        stroke="#3B82F6" 
+        stroke-width="3" 
+        fill="none" 
+        stroke-linecap="round"
+        opacity="0.3"/>
+        
+  <!-- App name badge -->
   <g>
-    <rect x="235" y="125" width="42" height="50" rx="3" fill="#3B82F6"/>
-    <rect x="237" y="127" width="38" height="46" rx="2" fill="#60A5FA"/>
-    <line x1="256" y1="127" x2="256" y2="173" stroke="#3B82F6" stroke-width="2"/>
-    <line x1="245" y1="140" x2="250" y2="140" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="245" y1="150" x2="252" y2="150" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="262" y1="140" x2="267" y2="140" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="262" y1="150" x2="267" y2="150" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round"/>
+    <rect x="156" y="375" width="200" height="32" rx="16" fill="#3B82F6" opacity="0.95"/>
+    <text x="256" y="397" 
+          font-family="Arial, sans-serif" 
+          font-size="18" 
+          font-weight="700" 
+          fill="#FFFFFF" 
+          text-anchor="middle"
+          letter-spacing="1">GABARITOO</text>
   </g>
   
-  <!-- Text TOP 1 at bottom -->
-  <text x="256" y="470" font-family="Arial, sans-serif" font-size="42" font-weight="900" 
-        fill="#FFFFFF" text-anchor="middle" letter-spacing="2">TOP 1</text>
-  
-  <!-- Decorative stars -->
-  <g fill="#FCD34D" opacity="0.9">
-    <path d="M 180 95 L 183 105 L 193 105 L 185 111 L 188 121 L 180 115 L 172 121 L 175 111 L 167 105 L 177 105 Z"/>
-    <path d="M 332 95 L 335 105 L 345 105 L 337 111 L 340 121 L 332 115 L 324 121 L 327 111 L 319 105 L 329 105 Z"/>
+  <!-- Decorative dots pattern -->
+  <g opacity="0.15" fill="#FFFFFF">
+    <circle cx="80" cy="100" r="4"/>
+    <circle cx="432" cy="100" r="4"/>
+    <circle cx="80" cy="412" r="4"/>
+    <circle cx="432" cy="412" r="4"/>
+    <circle cx="60" cy="256" r="3"/>
+    <circle cx="452" cy="256" r="3"/>
   </g>
 </svg>

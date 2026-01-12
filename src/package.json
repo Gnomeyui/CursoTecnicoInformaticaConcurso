@@ -1,7 +1,7 @@
 {
-  "name": "alerr-top5",
-  "version": "1.0.0",
-  "description": "App de estudos para concurso ALE-RR - Técnico em Informática",
+  "name": "gabaritoo",
+  "version": "2.0.0",
+  "description": "Gabaritoo - Aplicativo de estudos para concursos públicos",
   "type": "module",
   "scripts": {
     "dev": "vite",

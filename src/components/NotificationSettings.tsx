@@ -714,7 +714,7 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
               </div>
 
               <p className="text-xs text-slate-600 dark:text-gray-400 mb-3">
-                🧠 <strong>Aquecimento cerebral:</strong> Revise flashcards do Regimento ALE-RR ANTES de responder questões!
+                🧠 <strong>Aquecimento cerebral:</strong> Revise flashcards do Regimento Interno ANTES de responder questões!
               </p>
 
               <div className="grid grid-cols-5 gap-2 mb-3">
