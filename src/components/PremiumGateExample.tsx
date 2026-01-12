@@ -1,12 +1,13 @@
 /**
- * EXEMPLO DE USO - PREMIUM GATE
- * Demonstra como bloquear features premium nas telas
+ * EXEMPLO DE USO - PREMIUM GATE (NOVA ARQUITETURA)
+ * Demonstra como bloquear features premium usando EntitlementService
+ * ✅ Premium GOVERNA o app
  */
 
 import React, { useState } from 'react';
 import { Lock, Zap } from 'lucide-react';
 import { Button } from './ui/button';
-import { FeatureGate } from '../core/FeatureGate';
+import { useEntitlement } from '../hooks/useEntitlement';
 import { UpgradeScreen } from './UpgradeScreen';
 
 /**
@@ -14,9 +15,10 @@ import { UpgradeScreen } from './UpgradeScreen';
  */
 export function SimuladoButton() {
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const { canAccessSimulados, getBlockMessage } = useEntitlement();
 
   const handleClick = () => {
-    if (!FeatureGate.canUseSimulado()) {
+    if (!canAccessSimulados) {
       setShowUpgrade(true);
       return;
     }
@@ -31,11 +33,11 @@ export function SimuladoButton() {
         onClick={handleClick}
         className="relative"
       >
-        {!FeatureGate.canUseSimulado() && (
+        {!canAccessSimulados && (
           <Lock className="w-4 h-4 mr-2" />
         )}
         Simulado
-        {!FeatureGate.canUseSimulado() && (
+        {!canAccessSimulados && (
           <span className="ml-2 px-2 py-0.5 text-xs bg-amber-100 text-amber-700 rounded-full font-bold">
             Premium
           </span>
@@ -59,8 +61,9 @@ export function SimuladoButton() {
  */
 export function FiltrosAvancados() {
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const { canAccessFilters, getBlockMessage } = useEntitlement();
 
-  if (!FeatureGate.canUseFiltrosAvancados()) {
+  if (!canAccessFilters) {
     return (
       <>
         <div 
@@ -77,7 +80,7 @@ export function FiltrosAvancados() {
             </span>
           </div>
           <p className="text-sm text-muted-foreground">
-            Filtre questões por banca, cargo, disciplina e muito mais.
+            {getBlockMessage('filters')}
           </p>
         </div>
 
@@ -111,8 +114,8 @@ export function FiltrosAvancados() {
  * Exemplo 3: Mostrar limite de questões
  */
 export function QuestionCounter({ current }: { current: number }) {
-  const max = FeatureGate.maxQuestoes();
-  const percentage = (current / max) * 100;
+  const { questionLimit, isPremium } = useEntitlement();
+  const percentage = (current / questionLimit) * 100;
   const isNearLimit = percentage > 80;
 
   return (
@@ -120,7 +123,7 @@ export function QuestionCounter({ current }: { current: number }) {
       <div className="flex items-center justify-between text-sm">
         <span className="text-muted-foreground">Questões respondidas</span>
         <span className={isNearLimit ? 'text-amber-600 font-bold' : 'text-foreground'}>
-          {current} / {max}
+          {current} / {questionLimit}
         </span>
       </div>
       
@@ -133,9 +136,9 @@ export function QuestionCounter({ current }: { current: number }) {
         />
       </div>
 
-      {isNearLimit && !FeatureGate.maxQuestoes() && (
+      {isNearLimit && !isPremium && (
         <p className="text-xs text-amber-600">
-          ⚠️ Você está próximo do limite gratuito.
+          ⚠️ Você está próximo do limite gratuito. Assine Premium para 10.000 questões!
         </p>
       )}
     </div>
