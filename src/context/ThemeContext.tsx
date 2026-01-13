@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { Capacitor } from '@capacitor/core';
 
 type Theme = 'default' | 'forest' | 'ocean' | 'sunset' | 'purple' | 'modern' | 'focus' | 'calm' | 'reading';
 
@@ -14,22 +16,47 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [currentTheme, setCurrentTheme] = useState<Theme>('default');
   
-  // 1. Inicialização Inteligente: LocalStorage -> Sistema -> Padrão (Light)
+  // 1. Inicialização: Recupera do localStorage ou usa o sistema
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Verifica se já existe preferência salva
     const savedMode = localStorage.getItem('alerr_dark_mode');
+    console.log('🔍 ThemeContext Init - Saved Mode:', savedMode);
     if (savedMode !== null) {
       return savedMode === 'true';
     }
-    // Se não, usa a preferência do sistema (mas não força)
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return true;
-    }
-    // Padrão: Light Mode
-    return false;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
-  // Carregar tema de cores (azul, roxo, etc)
+  // 2. Efeito: Aplica a classe .dark ao HTML e muda a StatusBar
+  useEffect(() => {
+    console.log('🎨 ThemeContext Effect - isDarkMode:', isDarkMode);
+    const html = document.documentElement;
+    const body = document.body;
+    
+    if (isDarkMode) {
+      html.classList.add('dark');
+      body.classList.add('dark'); // Garante compatibilidade
+      console.log('✅ Dark classes ADDED to html & body');
+      
+      if (Capacitor.isNativePlatform()) {
+        StatusBar.setStyle({ style: Style.Dark }).catch(() => {});
+        StatusBar.setBackgroundColor({ color: '#020817' }).catch(() => {}); // Cor escura
+      }
+    } else {
+      html.classList.remove('dark');
+      body.classList.remove('dark');
+      console.log('✅ Dark classes REMOVED from html & body');
+      
+      if (Capacitor.isNativePlatform()) {
+        StatusBar.setStyle({ style: Style.Light }).catch(() => {});
+        StatusBar.setBackgroundColor({ color: '#ffffff' }).catch(() => {}); // Cor clara
+      }
+    }
+
+    localStorage.setItem('alerr_dark_mode', String(isDarkMode));
+    console.log('💾 Saved to localStorage:', isDarkMode);
+  }, [isDarkMode]);
+
+  // 3. Efeito: Aplica o tema de cores (azul, roxo, etc)
   useEffect(() => {
     const savedTheme = localStorage.getItem('alerr_theme') as Theme | null;
     if (savedTheme) {
@@ -37,51 +64,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // 2. Efeito Principal: Aplica a classe .dark e atualiza meta tag
-  useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-    
-    if (isDarkMode) {
-      html.classList.add('dark');
-      body.classList.add('dark');
-      
-      // Atualiza meta tag theme-color para modo escuro
-      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', '#020817'); // Slate 950
-      }
-    } else {
-      html.classList.remove('dark');
-      body.classList.remove('dark');
-      
-      // Atualiza meta tag theme-color para modo claro
-      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', '#3b82f6'); // Blue 500
-      }
-    }
-
-    // Salva preferência no localStorage
-    localStorage.setItem('alerr_dark_mode', String(isDarkMode));
-  }, [isDarkMode]);
-
-  // Aplica o tema de cores (data-theme)
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('alerr_theme', currentTheme);
   }, [currentTheme]);
 
-  const setTheme = (theme: Theme) => {
-    setCurrentTheme(theme);
-  };
-
   const toggleDarkMode = () => {
+    console.log('🌙 toggleDarkMode CALLED! Current:', isDarkMode, '→ New:', !isDarkMode);
     setIsDarkMode(prev => !prev);
   };
 
   return (
-    <ThemeContext.Provider value={{ currentTheme, setTheme, isDarkMode, toggleDarkMode }}>
+    <ThemeContext.Provider value={{ currentTheme, setTheme: setCurrentTheme, isDarkMode, toggleDarkMode }}>
       {children}
     </ThemeContext.Provider>
   );
