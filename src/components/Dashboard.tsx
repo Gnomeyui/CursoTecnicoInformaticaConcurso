@@ -55,17 +55,35 @@ const Dashboard = ({
   const levelProgress = (xp % 1000) / 10; 
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 pb-32 font-sans animate-in fade-in duration-500">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-32 font-sans animate-in fade-in duration-500">
+      
+      {/* TESTE DEFINITIVO COM CSS INLINE */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        padding: '8px',
+        backgroundColor: isDarkMode ? '#000000' : '#ffffff',
+        color: isDarkMode ? '#ffff00' : '#000000',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: '12px',
+        zIndex: 9999,
+        borderBottom: `2px solid ${isDarkMode ? '#ffff00' : '#000000'}`
+      }}>
+        {isDarkMode ? '🌙 DARK MODE ATIVO (CSS INLINE)' : '☀️ LIGHT MODE ATIVO (CSS INLINE)'}
+      </div>
       
       {/* 1. TOP BAR */}
-      <div className="px-6 pt-6 pb-2 flex justify-between items-center bg-white dark:bg-gray-900 sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800">
+      <div className="px-6 pt-6 pb-2 flex justify-between items-center bg-white dark:bg-gray-900 sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800" style={{ marginTop: '40px' }}>
         <div onClick={onOpenProfiles} className="cursor-pointer">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Foco Atual</p>
+          <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-0.5">Foco Atual</p>
           <div className="flex items-center gap-1 group">
-            <h1 className="text-lg font-bold text-gray-800 dark:text-white truncate max-w-[200px]">
+            <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100 truncate max-w-[200px]">
               {activeProfile ? activeProfile.nome : 'Selecionar Cargo'}
             </h1>
-            <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
+            <ChevronRight size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -77,10 +95,10 @@ const Dashboard = ({
               toggleDarkMode();
             }}
             aria-label={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
-            className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-yellow-500 dark:text-blue-400 hover:text-yellow-600 dark:hover:text-blue-300"
+            className="p-2 hover:bg-accent rounded-lg transition-colors"
           >
-            <Sun size={20} className="block dark:hidden" />
-            <Moon size={20} className="hidden dark:block" />
+            <Sun size={20} className="block dark:hidden text-muted-foreground" />
+            <Moon size={20} className="hidden dark:block text-muted-foreground" />
           </button>
           
           <button onClick={onOpenStudyPlan} className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">

@@ -3,112 +3,921 @@
 @tailwind utilities;
  
 @layer base {
-  :root {
-    /* --- MODO CLARO (Padrão) --- */
-    --background: 210 40% 98%;    /* Slate 50 */
-    --foreground: 222.2 84% 4.9%; /* Slate 950 */
- 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
- 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
- 
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
- 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
- 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
- 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
- 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
- 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
- 
-    --radius: 1rem;
-
-    /* Importante: Define que este bloco é Light por natureza */
-    color-scheme: light;
-  }
-
-  /* --- PROTEÇÃO CONTRA O BUG DAS CORES --- */
-  /* Se o dispositivo estiver em modo escuro, mas o usuário escolheu claro (sem classe .dark),
-     forçamos as variáveis a permanecerem claras. */
-  @media (prefers-color-scheme: dark) {
-    :root:not(.dark) {
-      --background: 210 40% 98%;
-      --foreground: 222.2 84% 4.9%;
-      --card: 0 0% 100%;
-      --card-foreground: 222.2 84% 4.9%;
-      --popover: 0 0% 100%;
-      --popover-foreground: 222.2 84% 4.9%;
-      --primary: 221.2 83.2% 53.3%;
-      --primary-foreground: 210 40% 98%;
-      --secondary: 210 40% 96.1%;
-      --secondary-foreground: 222.2 47.4% 11.2%;
-      --muted: 210 40% 96.1%;
-      --muted-foreground: 215.4 16.3% 46.9%;
-      --accent: 210 40% 96.1%;
-      --accent-foreground: 222.2 47.4% 11.2%;
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 210 40% 98%;
-      --border: 214.3 31.8% 91.4%;
-      --input: 214.3 31.8% 91.4%;
-      --ring: 221.2 83.2% 53.3%;
-      
-      /* O Navegador saberá que aqui ainda é Light */
-      color-scheme: light;
-    }
-  }
- 
-  /* --- MODO ESCURO (Ativado pela classe .dark) --- */
-  .dark {
-    --background: 222.2 84% 4.9%;  /* Slate 950 */
-    --foreground: 210 40% 98%;     /* Slate 50 */
- 
-    --card: 222.2 84% 9%;          /* Ligeiramente mais claro que o fundo */
-    --card-foreground: 210 40% 98%;
- 
-    --popover: 222.2 84% 9%;
-    --popover-foreground: 210 40% 98%;
- 
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
- 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
- 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 75%;
- 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
- 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
- 
-    --border: 217.2 32.6% 20%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-
-    /* Informa ao sistema que agora estamos em Dark */
-    color-scheme: dark;
-  }
-}
- 
-@layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground transition-colors duration-300;
   }
+}
+
+/* ========================================
+   DARK MODE MANUAL - FORÇAR CLASSES
+   ======================================== */
+
+/* Background principal */
+.dark {
+  background-color: hsl(222.2, 84%, 4.9%) !important;
+  color: hsl(210, 40%, 98%) !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: hsl(222.2, 84%, 4.9%) !important;
+}
+
+.dark .bg-white {
+  background-color: hsl(222.2, 84%, 9%) !important;
+}
+
+.dark .bg-gray-900 {
+  background-color: hsl(222.2, 84%, 9%) !important;
+}
+
+.dark .bg-gray-800 {
+  background-color: hsl(222.2, 84%, 12%) !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+/* Textos */
+.dark .text-gray-800 {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+.dark .text-gray-700 {
+  color: hsl(210, 40%, 95%) !important;
+}
+
+.dark .text-gray-600 {
+  color: hsl(215, 20.2%, 75%) !important;
+}
+
+.dark .text-gray-500 {
+  color: hsl(215, 20.2%, 65%) !important;
+}
+
+.dark .text-gray-400 {
+  color: hsl(215.4, 16.3%, 56.9%) !important;
+}
+
+.dark .text-white {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* Bordas */
+.dark .border-gray-100 {
+  border-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+.dark .border-gray-200 {
+  border-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+.dark .border-gray-700 {
+  border-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+.dark .border-gray-800 {
+  border-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+/* Dividers */
+.dark .divide-gray-50 > * + * {
+  border-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark .divide-gray-800 > * + * {
+  border-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+/* Hover states */
+.dark .hover\:bg-gray-50:hover {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+.dark .hover\:bg-gray-700:hover {
+  background-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+.dark .hover\:text-gray-700:hover {
+  color: hsl(210, 40%, 95%) !important;
+}
+
+.dark .hover\:text-gray-600:hover {
+  color: hsl(215, 20.2%, 75%) !important;
+}
+
+.dark .hover\:text-gray-300:hover {
+  color: hsl(210, 40%, 85%) !important;
+}
+
+/* Group hover */
+.dark .group:hover .group-hover\:text-gray-600 {
+  color: hsl(215, 20.2%, 75%) !important;
+}
+
+.dark .group:hover .group-hover\:text-gray-300 {
+  color: hsl(210, 40%, 85%) !important;
+}
+
+/* Backgrounds especiais */
+.dark .bg-green-50 {
+  background-color: hsl(142, 76%, 15%) !important;
+}
+
+.dark .bg-green-900\/20 {
+  background-color: hsla(142, 76%, 15%, 0.3) !important;
+}
+
+.dark .text-green-600 {
+  color: hsl(142, 76%, 45%) !important;
+}
+
+/* Shadow fix para dark mode */
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl,
+.dark .shadow-2xl {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+}
+
+/* ========================================
+   CLASSES ADICIONAIS PARA COBERTURA TOTAL
+   ======================================== */
+
+/* Mais backgrounds */
+.dark .bg-gray-200 {
+  background-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+.dark .bg-gray-300 {
+  background-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: hsl(222.2, 84%, 4.9%) !important;
+}
+
+.dark .bg-slate-100 {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark .bg-blue-50 {
+  background-color: hsl(217.2, 91.2%, 15%) !important;
+}
+
+.dark .bg-blue-100 {
+  background-color: hsl(217.2, 91.2%, 20%) !important;
+}
+
+.dark .bg-blue-500 {
+  background-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+.dark .bg-blue-600 {
+  background-color: hsl(217.2, 91.2%, 50%) !important;
+}
+
+.dark .bg-purple-50 {
+  background-color: hsl(270, 91.2%, 15%) !important;
+}
+
+.dark .bg-purple-100 {
+  background-color: hsl(270, 91.2%, 20%) !important;
+}
+
+.dark .bg-yellow-50 {
+  background-color: hsl(48, 96%, 15%) !important;
+}
+
+.dark .bg-red-50 {
+  background-color: hsl(0, 84.2%, 15%) !important;
+}
+
+.dark .bg-orange-50 {
+  background-color: hsl(24, 95%, 15%) !important;
+}
+
+/* Mais textos */
+.dark .text-gray-900 {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+.dark .text-gray-300 {
+  color: hsl(215, 20.2%, 85%) !important;
+}
+
+.dark .text-gray-200 {
+  color: hsl(215, 20.2%, 90%) !important;
+}
+
+.dark .text-blue-600 {
+  color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+.dark .text-blue-500 {
+  color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+.dark .text-purple-600 {
+  color: hsl(270, 91.2%, 59.8%) !important;
+}
+
+.dark .text-yellow-600 {
+  color: hsl(48, 96%, 53%) !important;
+}
+
+.dark .text-red-600 {
+  color: hsl(0, 84.2%, 60.2%) !important;
+}
+
+.dark .text-orange-600 {
+  color: hsl(24, 95%, 53%) !important;
+}
+
+.dark .text-green-700 {
+  color: hsl(142, 76%, 50%) !important;
+}
+
+/* Mais bordas */
+.dark .border-gray-300 {
+  border-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+.dark .border-gray-400 {
+  border-color: hsl(217.2, 32.6%, 30%) !important;
+}
+
+.dark .border-gray-500 {
+  border-color: hsl(217.2, 32.6%, 35%) !important;
+}
+
+.dark .border-gray-600 {
+  border-color: hsl(217.2, 32.6%, 30%) !important;
+}
+
+/* Rings (focus states) */
+.dark .ring-gray-200 {
+  --tw-ring-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+.dark .ring-blue-500 {
+  --tw-ring-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+/* Placeholders */
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: hsl(215.4, 16.3%, 56.9%) !important;
+}
+
+/* Cards e containers */
+.dark [class*="card"],
+.dark [class*="container"] {
+  background-color: hsl(222.2, 84%, 9%) !important;
+  border-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+/* Buttons */
+.dark button:not(.bg-blue-500):not(.bg-blue-600):not(.bg-green-600):not(.bg-red-600) {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+  color: hsl(210, 40%, 98%) !important;
+}
+
+.dark button:hover:not(.bg-blue-500):not(.bg-blue-600):not(.bg-green-600):not(.bg-red-600) {
+  background-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+/* Scrollbars */
+.dark ::-webkit-scrollbar-track {
+  background-color: hsl(222.2, 84%, 9%) !important;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(217.2, 32.6%, 30%) !important;
+}
+
+/* Opacity variants */
+.dark .bg-gray-900\/50 {
+  background-color: hsla(222.2, 84%, 9%, 0.5) !important;
+}
+
+.dark .bg-gray-900\/80 {
+  background-color: hsla(222.2, 84%, 9%, 0.8) !important;
+}
+
+.dark .bg-black\/50 {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Divide borders */
+.dark .divide-gray-100 > * + * {
+  border-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark .divide-gray-200 > * + * {
+  border-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+/* ========================================
+   FIXES PARA ELEMENTOS ESPECÍFICOS
+   ======================================== */
+
+/* Backgrounds azuis escuros (modals, cards especiais) */
+.dark .bg-blue-900 {
+  background-color: hsl(217.2, 32.6%, 12%) !important;
+}
+
+.dark .bg-blue-950 {
+  background-color: hsl(222.2, 84%, 6%) !important;
+}
+
+.dark .bg-slate-800 {
+  background-color: hsl(217.2, 32.6%, 12%) !important;
+}
+
+.dark .bg-slate-900 {
+  background-color: hsl(222.2, 84%, 8%) !important;
+}
+
+.dark .bg-slate-950 {
+  background-color: hsl(222.2, 84%, 4%) !important;
+}
+
+/* Backgrounds com opacity */
+.dark .bg-blue-900\/50 {
+  background-color: hsla(217.2, 32.6%, 12%, 0.5) !important;
+}
+
+.dark .bg-blue-950\/50 {
+  background-color: hsla(222.2, 84%, 6%, 0.5) !important;
+}
+
+.dark .bg-slate-900\/50 {
+  background-color: hsla(222.2, 84%, 8%, 0.5) !important;
+}
+
+/* Textos em cards escuros */
+.dark .text-slate-200 {
+  color: hsl(215, 20.2%, 90%) !important;
+}
+
+.dark .text-slate-300 {
+  color: hsl(215, 20.2%, 85%) !important;
+}
+
+.dark .text-slate-400 {
+  color: hsl(215.4, 16.3%, 56.9%) !important;
+}
+
+.dark .text-blue-200 {
+  color: hsl(217.2, 91.2%, 80%) !important;
+}
+
+.dark .text-blue-300 {
+  color: hsl(217.2, 91.2%, 70%) !important;
+}
+
+.dark .text-blue-400 {
+  color: hsl(217.2, 91.2%, 60%) !important;
+}
+
+/* Bordas azuis */
+.dark .border-blue-500 {
+  border-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+.dark .border-blue-600 {
+  border-color: hsl(217.2, 91.2%, 50%) !important;
+}
+
+.dark .border-blue-700 {
+  border-color: hsl(217.2, 91.2%, 40%) !important;
+}
+
+.dark .border-slate-700 {
+  border-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+.dark .border-slate-800 {
+  border-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+/* Hover de botões azuis */
+.dark .hover\:bg-blue-800:hover {
+  background-color: hsl(217.2, 91.2%, 40%) !important;
+}
+
+.dark .hover\:bg-blue-900:hover {
+  background-color: hsl(217.2, 32.6%, 15%) !important;
+}
+
+.dark .hover\:bg-slate-800:hover {
+  background-color: hsl(217.2, 32.6%, 15%) !important;
+}
+
+.dark .hover\:bg-slate-700:hover {
+  background-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+/* Ring borders para focus */
+.dark .ring-blue-600 {
+  --tw-ring-color: hsl(217.2, 91.2%, 50%) !important;
+}
+
+.dark .focus\:ring-blue-500:focus {
+  --tw-ring-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+/* Backgrounds de destaque (verde para sucesso) */
+.dark .bg-green-600 {
+  background-color: hsl(142, 76%, 36%) !important;
+}
+
+.dark .bg-green-700 {
+  background-color: hsl(142, 76%, 30%) !important;
+}
+
+.dark .bg-green-800 {
+  background-color: hsl(142, 76%, 25%) !important;
+}
+
+.dark .hover\:bg-green-700:hover {
+  background-color: hsl(142, 76%, 30%) !important;
+}
+
+/* Text variants para badges/labels */
+.dark .text-green-500 {
+  color: hsl(142, 76%, 50%) !important;
+}
+
+.dark .text-green-400 {
+  color: hsl(142, 76%, 60%) !important;
+}
+
+/* Fixes para SVGs e ícones */
+.dark svg {
+  color: inherit !important;
+}
+
+/* Inputs e selects */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+  border-color: hsl(217.2, 32.6%, 25%) !important;
+  color: hsl(210, 40%, 98%) !important;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  background-color: hsl(217.2, 32.6%, 20%) !important;
+  border-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+/* Disabled states */
+.dark input:disabled,
+.dark button:disabled {
+  opacity: 0.5 !important;
+  background-color: hsl(217.2, 32.6%, 12%) !important;
+  color: hsl(215.4, 16.3%, 46.9%) !important;
+}
+
+/* Modals e overlays */
+.dark [role="dialog"],
+.dark [class*="modal"],
+.dark [class*="overlay"] {
+  background-color: hsl(222.2, 84%, 9%) !important;
+  border-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+/* Backdrop */
+.dark .bg-black\/30 {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark .bg-black\/40 {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.dark .bg-black\/60 {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* ========================================
+   FIXES PARA PÁGINAS ESPECÍFICAS
+   ======================================== */
+
+/* Headers azuis/cinza */
+.dark .bg-blue-700 {
+  background-color: hsl(217.2, 91.2%, 35%) !important;
+}
+
+.dark .bg-blue-800 {
+  background-color: hsl(217.2, 91.2%, 30%) !important;
+}
+
+.dark .bg-gray-700 {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark .bg-gray-600 {
+  background-color: hsl(217.2, 32.6%, 22%) !important;
+}
+
+.dark .bg-gray-500 {
+  background-color: hsl(217.2, 32.6%, 27%) !important;
+}
+
+.dark .bg-gray-400 {
+  background-color: hsl(217.2, 32.6%, 32%) !important;
+}
+
+/* Textos em headers */
+.dark .text-white {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+.dark .text-gray-100 {
+  color: hsl(215, 20.2%, 95%) !important;
+}
+
+/* Cards de progresso/badges */
+.dark .bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .bg-white\/20 {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Progress bars */
+.dark progress {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark progress::-webkit-progress-bar {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark progress::-webkit-progress-value {
+  background-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+.dark progress::-moz-progress-bar {
+  background-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+/* Ranges/Sliders */
+.dark input[type="range"] {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark input[type="range"]::-webkit-slider-thumb {
+  background-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+.dark input[type="range"]::-moz-range-thumb {
+  background-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+.dark input[type="range"]::-webkit-slider-runnable-track {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark input[type="range"]::-moz-range-track {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+/* Toggle switches */
+.dark [role="switch"] {
+  background-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+.dark [role="switch"][aria-checked="true"] {
+  background-color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+/* Headings */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* Paragraphs */
+.dark p {
+  color: hsl(215, 20.2%, 85%) !important;
+}
+
+/* Links */
+.dark a {
+  color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+.dark a:hover {
+  color: hsl(217.2, 91.2%, 70%) !important;
+}
+
+/* Labels */
+.dark label {
+  color: hsl(215, 20.2%, 85%) !important;
+}
+
+/* Small text */
+.dark small,
+.dark .text-sm,
+.dark .text-xs {
+  color: hsl(215.4, 16.3%, 56.9%) !important;
+}
+
+/* Lists */
+.dark ul,
+.dark ol,
+.dark li {
+  color: hsl(215, 20.2%, 85%) !important;
+}
+
+/* HR */
+.dark hr {
+  border-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+/* Badges e pills */
+.dark .badge,
+.dark .pill,
+.dark [class*="badge"],
+.dark [class*="tag"] {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+  color: hsl(210, 40%, 98%) !important;
+  border-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+/* Tooltips */
+.dark [role="tooltip"],
+.dark .tooltip {
+  background-color: hsl(222.2, 84%, 12%) !important;
+  color: hsl(210, 40%, 98%) !important;
+  border-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+/* Alerts */
+.dark .alert,
+.dark [role="alert"] {
+  background-color: hsl(217.2, 32.6%, 12%) !important;
+  border-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+/* Tables */
+.dark table {
+  background-color: hsl(222.2, 84%, 9%) !important;
+  color: hsl(210, 40%, 98%) !important;
+}
+
+.dark thead,
+.dark th {
+  background-color: hsl(217.2, 32.6%, 12%) !important;
+  color: hsl(210, 40%, 98%) !important;
+  border-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+.dark tbody tr {
+  border-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark tbody tr:hover {
+  background-color: hsl(217.2, 32.6%, 12%) !important;
+}
+
+.dark td {
+  color: hsl(215, 20.2%, 85%) !important;
+  border-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+/* Específico para texto preto que precisa ficar branco */
+.dark .text-black {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* Ícones de cadeado e símbolos */
+.dark svg.text-gray-400,
+.dark svg.text-gray-500 {
+  color: hsl(215.4, 16.3%, 56.9%) !important;
+}
+
+/* Fix para qualquer div, span ou section sem classe específica */
+.dark div:not([class*="bg-"]):not([class*="text-"]) {
+  color: hsl(215, 20.2%, 85%);
+}
+
+/* Container principal das páginas */
+.dark main,
+.dark section,
+.dark article {
+  background-color: hsl(222.2, 84%, 4.9%) !important;
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* ========================================
+   FIXES FINAIS - CASOS EXTREMOS
+   ======================================== */
+
+/* Backgrounds bege/creme que precisam ficar escuros */
+.dark .bg-amber-50,
+.dark .bg-yellow-100,
+.dark .bg-orange-100,
+.dark .bg-lime-50,
+.dark .bg-emerald-50 {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark .bg-amber-100 {
+  background-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+/* Textos âmbar/laranja que ficam difíceis de ler */
+.dark .text-amber-600,
+.dark .text-amber-700,
+.dark .text-amber-800 {
+  color: hsl(48, 96%, 60%) !important;
+}
+
+.dark .text-orange-700,
+.dark .text-orange-800 {
+  color: hsl(24, 95%, 60%) !important;
+}
+
+/* Bordas âmbar */
+.dark .border-amber-200,
+.dark .border-amber-300 {
+  border-color: hsl(217.2, 32.6%, 25%) !important;
+}
+
+/* Backgrounds neutros */
+.dark .bg-neutral-50 {
+  background-color: hsl(222.2, 84%, 4.9%) !important;
+}
+
+.dark .bg-neutral-100 {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+}
+
+.dark .bg-neutral-200 {
+  background-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+/* Textos neutros */
+.dark .text-neutral-600,
+.dark .text-neutral-700,
+.dark .text-neutral-800,
+.dark .text-neutral-900 {
+  color: hsl(215, 20.2%, 85%) !important;
+}
+
+/* IMPORTANTE: Força todos os spans, divs e strong sem classe a serem claros */
+.dark span:not([class*="bg-"]):not([class*="text-"]),
+.dark strong:not([class*="bg-"]):not([class*="text-"]) {
+  color: hsl(215, 20.2%, 85%) !important;
+}
+
+/* Force específico para elementos com texto comum */
+.dark [class*="text-"]:not([class*="text-white"]):not([class*="text-gray-"]):not([class*="text-blue-"]):not([class*="text-green-"]) {
+  color: hsl(215, 20.2%, 85%) !important;
+}
+
+/* Checkmarks e ícones de check */
+.dark svg[class*="check"],
+.dark svg[class*="Check"] {
+  color: hsl(142, 76%, 50%) !important;
+}
+
+/* Ícones de foguete, estrela, etc */
+.dark svg[class*="star"],
+.dark svg[class*="Star"],
+.dark svg[class*="rocket"],
+.dark svg[class*="Rocket"] {
+  color: hsl(48, 96%, 60%) !important;
+}
+
+/* Ribbons e badges de destaque */
+.dark .ribbon,
+.dark [class*="ribbon"],
+.dark [class*="badge-highlight"] {
+  background-color: hsl(142, 76%, 36%) !important;
+  color: white !important;
+}
+
+/* Preços e valores monetários */
+.dark [class*="price"],
+.dark [class*="Price"],
+.dark .text-2xl:not([class*="text-white"]):not([class*="text-gray-"]),
+.dark .text-3xl:not([class*="text-white"]):not([class*="text-gray-"]),
+.dark .text-4xl:not([class*="text-white"]):not([class*="text-gray-"]) {
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* Lista de features/benefícios */
+.dark ul li::marker,
+.dark ol li::marker {
+  color: hsl(217.2, 91.2%, 59.8%) !important;
+}
+
+/* Strikethrough (preço riscado) */
+.dark .line-through,
+.dark [class*="line-through"] {
+  color: hsl(215.4, 16.3%, 56.9%) !important;
+}
+
+/* Destaque verde (economia) */
+.dark [class*="savings"],
+.dark [class*="economy"],
+.dark .text-green-800 {
+  color: hsl(142, 76%, 50%) !important;
+}
+
+/* Botões primários laranja/vermelho */
+.dark .bg-orange-500,
+.dark .bg-orange-600 {
+  background-color: hsl(24, 95%, 53%) !important;
+}
+
+.dark .hover\:bg-orange-600:hover,
+.dark .hover\:bg-orange-700:hover {
+  background-color: hsl(24, 95%, 45%) !important;
+}
+
+.dark .bg-red-500,
+.dark .bg-red-600 {
+  background-color: hsl(0, 84.2%, 60.2%) !important;
+}
+
+.dark .hover\:bg-red-600:hover,
+.dark .hover\:bg-red-700:hover {
+  background-color: hsl(0, 84.2%, 50%) !important;
+}
+
+/* Texto em botões coloridos (deve permanecer branco) */
+.dark .bg-orange-500 *,
+.dark .bg-orange-600 *,
+.dark .bg-red-500 *,
+.dark .bg-red-600 *,
+.dark .bg-blue-500 *,
+.dark .bg-blue-600 *,
+.dark .bg-green-500 *,
+.dark .bg-green-600 * {
+  color: white !important;
+}
+
+/* Caps/uppercase text (headers) */
+.dark .uppercase {
+  color: hsl(215.4, 16.3%, 56.9%) !important;
+}
+
+/* Chips e tags pequenos */
+.dark .chip,
+.dark [class*="chip"],
+.dark .tag,
+.dark [class*="tag-"] {
+  background-color: hsl(217.2, 32.6%, 17.5%) !important;
+  color: hsl(210, 40%, 98%) !important;
+}
+
+/* Dividers verticais */
+.dark .border-l,
+.dark .border-r {
+  border-color: hsl(217.2, 32.6%, 20%) !important;
+}
+
+/* Backgrounds gradiente (force escuro) */
+.dark [class*="gradient"],
+.dark [class*="Gradient"] {
+  background: linear-gradient(135deg, hsl(217.2, 32.6%, 12%) 0%, hsl(222.2, 84%, 8%) 100%) !important;
+}
+
+/* Fix para qualquer texto que ainda esteja preto */
+.dark * {
+  color: inherit;
+}
+
+.dark :not(.bg-blue-500):not(.bg-blue-600):not(.bg-green-600):not(.bg-red-600):not(.bg-orange-500):not(.bg-orange-600) {
+  color: inherit;
 }
