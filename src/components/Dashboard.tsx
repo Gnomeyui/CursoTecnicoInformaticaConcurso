@@ -65,7 +65,9 @@ const Dashboard = ({
         <div className="flex items-center gap-2">
           {/* Botão de Theme Toggle - Sol/Lua */}
           <button 
+            type="button"
             onClick={toggleDarkMode}
+            aria-label={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
             className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-yellow-500 dark:text-blue-400 hover:text-yellow-600 dark:hover:text-blue-300"
           >
             <Sun size={20} className="block dark:hidden" />
