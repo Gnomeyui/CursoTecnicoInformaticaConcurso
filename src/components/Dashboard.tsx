@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
   AlertTriangle, Trophy, Flame, TrendingUp, Target, 
-  BookOpen, Settings as SettingsIcon, ChevronRight, Zap, Calendar
+  BookOpen, Settings as SettingsIcon, ChevronRight, Zap, Calendar,
+  Sun, Moon
 } from 'lucide-react';
 import { useCustomization } from '../context/CustomizationContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { useGame } from '../context/GameContext'; // Importar contexto do Jogo
 import { useStats } from '../context/StatsContext'; // Importar contexto de Estatísticas
+import { useTheme } from '../context/ThemeContext'; // Importar contexto de Tema
 import { COPY } from '../utils/copy';
 import { getRandomMotivationalCTA } from '../utils/getRandomMotivationalCTA';
 
@@ -35,6 +37,7 @@ const Dashboard = ({
 }: DashboardProps) => {
   const { theme: currentTheme } = useCustomization();
   const { activeProfile } = useConcursoProfile();
+  const { isDarkMode, toggleDarkMode } = useTheme(); // Hook do Dark Mode
   
   // ✅ USAR DADOS REAIS DOS CONTEXTOS (NÃO HARDCODED!)
   const { xp, level } = useGame();
@@ -60,6 +63,15 @@ const Dashboard = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {/* Botão de Theme Toggle - Sol/Lua */}
+          <button 
+            onClick={toggleDarkMode}
+            className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-yellow-500 dark:text-blue-400 hover:text-yellow-600 dark:hover:text-blue-300"
+          >
+            <Sun size={20} className="block dark:hidden" />
+            <Moon size={20} className="hidden dark:block" />
+          </button>
+          
           <button onClick={onOpenStudyPlan} className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
             <Calendar size={20} />
           </button>
