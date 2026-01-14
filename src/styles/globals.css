@@ -1,3 +1,36 @@
+/* ===================================================
+   🔒 FORÇA MODO CLARO NO ANDROID - NÃO REMOVER!
+   Bloqueia o "Force Dark" automático do Android
+   =================================================== */
+
+* {
+  color-scheme: light !important;
+}
+
+html,
+body,
+#root {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  color-scheme: light !important;
+}
+
+/* Bloqueia filtros de inversão de cores do Android */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="dark"]),
+  body:not([data-theme="dark"]),
+  #root:not([data-theme="dark"]) {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+  }
+}
+
+/* ===================================================
+   TAILWIND BASE
+   =================================================== */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -5154,6 +5154,28 @@
   }
 }
 
+* {
+  --lightningcss-light: initial !important;
+  --lightningcss-dark:  !important;
+  color-scheme: light !important;
+}
+
+html, body, #root {
+  color: #000 !important;
+  --lightningcss-light: initial !important;
+  --lightningcss-dark:  !important;
+  color-scheme: light !important;
+  background-color: #fff !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="dark"]), body:not([data-theme="dark"]), #root:not([data-theme="dark"]) {
+    color: #000 !important;
+    -webkit-filter: none !important;
+    background-color: #fff !important;
+  }
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
