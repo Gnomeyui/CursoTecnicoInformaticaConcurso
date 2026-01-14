@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { 
   Bell, Trash2, LogOut, User, 
-  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles,
-  Moon, Sun
+  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Switch } from './ui/switch';
 import { useCustomization } from '../context/CustomizationContext';
-import { useTheme } from '../context/ThemeContext';
 import { APP_THEMES } from '../lib/themeConfig';
 import { authService } from '../services/AuthService';
 import { UpgradeScreen } from './UpgradeScreen';
@@ -27,16 +25,12 @@ export function Settings({
 }: SettingsProps) {
   
   const { settings } = useCustomization();
-  const { isDarkMode, toggleDarkMode } = useTheme(); // Hook do Dark Mode
   const theme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
   const [showPlanSelector, setShowPlanSelector] = useState(false);
   
   const isPremium = authService.isPremium();
   const user = authService.getUser();
   const plan = authService.getPlan();
-
-  // Log para debug
-  console.log('⚙️ Settings Mounted - isDarkMode:', isDarkMode);
 
   const handleCancelSubscription = () => {
     if (confirm('⚠️ Tem certeza que deseja cancelar sua assinatura?\n\nVocê perderá acesso a todos os recursos premium.')) {
@@ -304,22 +298,7 @@ export function Settings({
         <section>
           <h2 className="text-xs font-bold text-muted-foreground uppercase ml-4 mb-3 tracking-widest">Visual</h2>
           <div className="bg-card border border-border rounded-[1.5rem] shadow-sm overflow-hidden divide-y divide-border">
-            {/* MODO ESCURO - BOTÃO FUNCIONAL */}
-            <MenuItem 
-              icon={isDarkMode ? Moon : Sun}
-              label="Modo Escuro" 
-              desc={isDarkMode ? 'Ativado' : 'Desativado'}
-              activeToggle={
-                <Switch 
-                  checked={isDarkMode}
-                  onCheckedChange={() => {
-                    console.log('🎨 Switch Toggle - Before:', isDarkMode);
-                    toggleDarkMode();
-                  }}
-                />
-              }
-              colorClass={isDarkMode ? 'bg-slate-800 text-slate-200' : 'bg-orange-100 text-orange-500'}
-            />
+            {/* MODO ESCURO REMOVIDO - APP SEMPRE EM LIGHT MODE */}
             {onOpenCustomization && (
               <MenuItem 
                 icon={Palette} 

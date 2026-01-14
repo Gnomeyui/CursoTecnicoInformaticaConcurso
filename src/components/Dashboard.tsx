@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
   AlertTriangle, Trophy, Flame, TrendingUp, Target, 
-  BookOpen, Settings as SettingsIcon, ChevronRight, Zap, Calendar,
-  Sun, Moon
+  BookOpen, Settings as SettingsIcon, ChevronRight, Zap, Calendar
 } from 'lucide-react';
 import { useCustomization } from '../context/CustomizationContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { useGame } from '../context/GameContext'; // Importar contexto do Jogo
 import { useStats } from '../context/StatsContext'; // Importar contexto de Estatísticas
-import { useTheme } from '../context/ThemeContext'; // Importar contexto de Tema
 import { COPY } from '../utils/copy';
 import { getRandomMotivationalCTA } from '../utils/getRandomMotivationalCTA';
 
@@ -37,13 +35,6 @@ const Dashboard = ({
 }: DashboardProps) => {
   const { theme: currentTheme } = useCustomization();
   const { activeProfile } = useConcursoProfile();
-  const { isDarkMode, toggleDarkMode } = useTheme(); // Hook do Dark Mode
-  
-  // DEBUG: Log inicial
-  useEffect(() => {
-    console.log('📊 Dashboard Mounted - isDarkMode:', isDarkMode);
-    console.log('📊 HTML classes:', document.documentElement.classList.toString());
-  }, [isDarkMode]);
   
   // ✅ USAR DADOS REAIS DOS CONTEXTOS (NÃO HARDCODED!)
   const { xp, level } = useGame();
@@ -55,52 +46,20 @@ const Dashboard = ({
   const levelProgress = (xp % 1000) / 10; 
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-32 font-sans animate-in fade-in duration-500">
-      
-      {/* TESTE DEFINITIVO COM CSS INLINE */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        padding: '8px',
-        backgroundColor: isDarkMode ? '#000000' : '#ffffff',
-        color: isDarkMode ? '#ffff00' : '#000000',
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: '12px',
-        zIndex: 9999,
-        borderBottom: `2px solid ${isDarkMode ? '#ffff00' : '#000000'}`
-      }}>
-        {isDarkMode ? '🌙 DARK MODE ATIVO (CSS INLINE)' : '☀️ LIGHT MODE ATIVO (CSS INLINE)'}
-      </div>
+    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 pb-32 font-sans animate-in fade-in duration-500">
       
       {/* 1. TOP BAR */}
-      <div className="px-6 pt-6 pb-2 flex justify-between items-center bg-white dark:bg-gray-900 sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800" style={{ marginTop: '40px' }}>
+      <div className="px-6 pt-6 pb-2 flex justify-between items-center bg-white dark:bg-gray-900 sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800">
         <div onClick={onOpenProfiles} className="cursor-pointer">
-          <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-0.5">Foco Atual</p>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Foco Atual</p>
           <div className="flex items-center gap-1 group">
-            <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100 truncate max-w-[200px]">
+            <h1 className="text-lg font-bold text-gray-800 dark:text-white truncate max-w-[200px]">
               {activeProfile ? activeProfile.nome : 'Selecionar Cargo'}
             </h1>
-            <ChevronRight size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
+            <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* Botão de Theme Toggle - Sol/Lua */}
-          <button 
-            type="button"
-            onClick={() => {
-              console.log('🔘 BUTTON CLICKED! Current isDarkMode:', isDarkMode);
-              toggleDarkMode();
-            }}
-            aria-label={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
-            className="p-2 hover:bg-accent rounded-lg transition-colors"
-          >
-            <Sun size={20} className="block dark:hidden text-muted-foreground" />
-            <Moon size={20} className="hidden dark:block text-muted-foreground" />
-          </button>
-          
           <button onClick={onOpenStudyPlan} className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
             <Calendar size={20} />
           </button>
