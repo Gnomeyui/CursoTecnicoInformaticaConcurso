@@ -8,10 +8,7 @@
   },
   "android": {
     "allowMixedContent": true,
-    "captureInput": true,
-    "webContentsDebuggingEnabled": true,
-    "forceDarkAllowed": false,
-    "backgroundColor": "#FFFFFF"
+    "webContentsDebuggingEnabled": true
   },
   "plugins": {
     "LocalNotifications": {

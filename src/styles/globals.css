@@ -1,29 +1,32 @@
 /* ===================================================
-   🔒 FORÇA MODO CLARO NO ANDROID - NÃO REMOVER!
-   Bloqueia o "Force Dark" automático do Android
+   🔒 FORÇA MODO CLARO NO ANDROID - VERSÃO CORRIGIDA
+   Bloqueia o "Force Dark" sem quebrar gradientes
    =================================================== */
 
-* {
-  color-scheme: light !important;
+/* APENAS força o color-scheme, NÃO força cores */
+html {
+  color-scheme: light;
 }
 
+/* Remove filtros automáticos do Android */
 html,
-body,
-#root {
-  background-color: #FFFFFF !important;
-  color: #000000 !important;
-  color-scheme: light !important;
+body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Bloqueia filtros de inversão de cores do Android */
+/* Bloqueia filtros quando o sistema está em dark mode */
 @media (prefers-color-scheme: dark) {
-  html:not([data-theme="dark"]),
-  body:not([data-theme="dark"]),
-  #root:not([data-theme="dark"]) {
-    background-color: #FFFFFF !important;
-    color: #000000 !important;
-    filter: none !important;
-    -webkit-filter: none !important;
+  html:not([data-theme="dark"]) {
+    color-scheme: light only;
+    filter: none;
+    -webkit-filter: none;
+  }
+  
+  body:not([data-theme="dark"]) {
+    filter: none;
+    -webkit-filter: none;
   }
 }
 

@@ -5154,25 +5154,28 @@
   }
 }
 
-* {
-  --lightningcss-light: initial !important;
-  --lightningcss-dark:  !important;
-  color-scheme: light !important;
+html {
+  --lightningcss-light: initial;
+  --lightningcss-dark: ;
+  color-scheme: light;
 }
 
-html, body, #root {
-  color: #000 !important;
-  --lightningcss-light: initial !important;
-  --lightningcss-dark:  !important;
-  color-scheme: light !important;
-  background-color: #fff !important;
+html, body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @media (prefers-color-scheme: dark) {
-  html:not([data-theme="dark"]), body:not([data-theme="dark"]), #root:not([data-theme="dark"]) {
-    color: #000 !important;
-    -webkit-filter: none !important;
-    background-color: #fff !important;
+  html:not([data-theme="dark"]) {
+    --lightningcss-light: initial;
+    --lightningcss-dark: ;
+    color-scheme: light only;
+    -webkit-filter: none;
+  }
+
+  body:not([data-theme="dark"]) {
+    -webkit-filter: none;
   }
 }
 
