@@ -66,7 +66,6 @@
       --tw-scale-x: 1;
       --tw-scale-y: 1;
       --tw-scale-z: 1;
-      --tw-ease: initial;
     }
   }
 }
@@ -229,7 +228,6 @@
     --leading-relaxed: 1.625;
     --radius-2xl: 1rem;
     --radius-3xl: 1.5rem;
-    --ease-in-out: cubic-bezier(.4, 0, .2, 1);
     --animate-spin: spin 1s linear infinite;
     --animate-pulse: pulse 2s cubic-bezier(.4, 0, .6, 1) infinite;
     --blur-sm: 8px;
@@ -491,11 +489,6 @@
     outline-color: color-mix(in oklab, oklch(.708 0 0) 50%, transparent);
   }
 
-  body {
-    background-color: oklch(1 0 0);
-    color: oklch(.145 0 0);
-  }
-
   :root {
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
@@ -526,8 +519,6 @@
     :root:not(.dark) {
       --background: 210 40% 98%;
       --foreground: 222.2 84% 4.9%;
-      --card: 0 0% 100%;
-      --card-foreground: 222.2 84% 4.9%;
       --lightningcss-light: initial;
       --lightningcss-dark: ;
       color-scheme: light;
@@ -537,23 +528,23 @@
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 9%;
+    --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 9%;
+    --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
     --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 75%;
+    --muted-foreground: 215 20.2% 65.1%;
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 20%;
+    --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 224.3 76.3% 48%;
     --lightningcss-light: ;
     --lightningcss-dark: initial;
     color-scheme: dark;
@@ -563,16 +554,13 @@
     border-color: oklch(.922 0 0);
   }
 
+  html, body {
+    height: 100%;
+  }
+
   body {
     background-color: oklch(1 0 0);
     color: oklch(.145 0 0);
-    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
-    --tw-duration: .5s;
-    --tw-ease: var(--ease-in-out);
-    transition-duration: .5s;
-    transition-timing-function: var(--ease-in-out);
   }
 }
 
@@ -5154,29 +5142,63 @@
   }
 }
 
-html {
-  --lightningcss-light: initial;
-  --lightningcss-dark: ;
-  color-scheme: light;
+.bg-app {
+  background-color: oklch(1 0 0);
 }
 
-html, body {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.text-app {
+  color: oklch(.145 0 0);
 }
 
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme="dark"]) {
-    --lightningcss-light: initial;
-    --lightningcss-dark: ;
-    color-scheme: light only;
-    -webkit-filter: none;
-  }
+h1 {
+  font-size: var(--text-3xl);
+  line-height: var(--tw-leading, var(--text-3xl--line-height));
+  --tw-font-weight: var(--font-weight-extrabold);
+  font-weight: var(--font-weight-extrabold);
+  color: oklch(.145 0 0);
+}
 
-  body:not([data-theme="dark"]) {
-    -webkit-filter: none;
+@media (width >= 40rem) {
+  h1 {
+    font-size: var(--text-4xl);
+    line-height: var(--tw-leading, var(--text-4xl--line-height));
   }
+}
+
+h2 {
+  font-size: var(--text-2xl);
+  line-height: var(--tw-leading, var(--text-2xl--line-height));
+  --tw-font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-bold);
+  color: oklch(.145 0 0);
+}
+
+@media (width >= 40rem) {
+  h2 {
+    font-size: var(--text-3xl);
+    line-height: var(--tw-leading, var(--text-3xl--line-height));
+  }
+}
+
+h3 {
+  font-size: var(--text-xl);
+  line-height: var(--tw-leading, var(--text-xl--line-height));
+  --tw-font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-semibold);
+  color: oklch(.145 0 0);
+}
+
+@media (width >= 40rem) {
+  h3 {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+}
+
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: .2s;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
 }
 
 @property --tw-translate-x {
@@ -5528,11 +5550,6 @@ html, body {
   syntax: "*";
   inherits: false;
   initial-value: 1;
-}
-
-@property --tw-ease {
-  syntax: "*";
-  inherits: false
 }
 
 @keyframes spin {
