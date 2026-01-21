@@ -184,7 +184,6 @@
     --color-gray-700: oklch(.373 .034 259.733);
     --color-gray-800: oklch(.278 .033 256.848);
     --color-gray-900: oklch(.21 .034 264.665);
-    --color-gray-950: oklch(.13 .028 261.692);
     --color-black: #000;
     --color-white: #fff;
     --spacing: .25rem;
@@ -510,44 +509,6 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 1rem;
-    --lightningcss-light: initial;
-    --lightningcss-dark: ;
-    color-scheme: light;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not(.dark) {
-      --background: 210 40% 98%;
-      --foreground: 222.2 84% 4.9%;
-      --lightningcss-light: initial;
-      --lightningcss-dark: ;
-      color-scheme: light;
-    }
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
-    --lightningcss-light: ;
-    --lightningcss-dark: initial;
-    color-scheme: dark;
   }
 
   * {
@@ -1681,6 +1642,10 @@
     background-color: #fafafa;
   }
 
+  .bg-\[rgba\(250\,250\,250\,0\)\] {
+    background-color: #fafafa00;
+  }
+
   .bg-amber-50\/50 {
     background-color: color-mix(in srgb, oklch(.987 .022 95.277) 50%, transparent);
   }
@@ -2540,6 +2505,10 @@
 
   .whitespace-nowrap {
     white-space: nowrap;
+  }
+
+  .\!text-white {
+    color: var(--color-white) !important;
   }
 
   .text-\[\#0D1117\] {
@@ -3797,12 +3766,6 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :where(.dark\:divide-gray-800 > :not(:last-child)) {
-      border-color: var(--color-gray-800);
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
     .dark\:border-\[\#1F4E79\] {
       border-color: #1f4e79;
     }
@@ -4193,26 +4156,8 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    .dark\:bg-gray-800\/90 {
-      background-color: color-mix(in srgb, oklch(.278 .033 256.848) 90%, transparent);
-    }
-
-    @supports (color: color-mix(in lab, red, red)) {
-      .dark\:bg-gray-800\/90 {
-        background-color: color-mix(in oklab, var(--color-gray-800) 90%, transparent);
-      }
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
     .dark\:bg-gray-900 {
       background-color: var(--color-gray-900);
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .dark\:bg-gray-950 {
-      background-color: var(--color-gray-950);
     }
   }
 
@@ -4989,14 +4934,6 @@
     @media (hover: hover) {
       .dark\:hover\:text-gray-200:hover {
         color: var(--color-gray-200);
-      }
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    @media (hover: hover) {
-      .dark\:hover\:text-gray-300:hover {
-        color: var(--color-gray-300);
       }
     }
   }

@@ -42,10 +42,10 @@ export function ConfettiCelebration({ onDismiss }: ConfettiCelebrationProps) {
       </div>
 
       {/* Celebration Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-2xl max-w-sm mx-4 text-center animate-slide-in-up">
+      <div className="bg-white rounded-3xl p-8 shadow-2xl max-w-sm mx-4 text-center animate-slide-in-up">
         <div className="text-6xl mb-4">🎉</div>
         <h2 className="text-3xl mb-4">Parabéns!</h2>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">Você conquistou algo especial!</p>
+        <p className="text-lg text-gray-600 mb-6">Você conquistou algo especial!</p>
         <div className="flex items-center justify-center gap-2">
           <Trophy className="size-8 text-yellow-500 animate-pulse-gentle" />
           <Trophy className="size-10 text-yellow-500 animate-pulse-gentle" />

@@ -32,7 +32,7 @@ export function AppShell() {
   
   const { showLevelUpCelebration, dismissLevelUpCelebration, levelUpInfo, showGloriaCelebration, dismissGloriaCelebration } = useGame();
   const { getTodayStats } = useStats();
-  const { isDarkMode, currentTheme } = useTheme();
+  const { currentTheme } = useTheme();
 
   // ========================================
   // CARREGAR ESTATÍSTICAS DO DIA
@@ -75,34 +75,27 @@ export function AppShell() {
       if (typeof window !== 'undefined' && 'StatusBar' in window) {
         const StatusBar = (window as any).StatusBar;
         
-        const themeColors: Record<string, { light: string; dark: string }> = {
-          default: { light: '#f8fafc', dark: '#0f172a' },
-          modern: { light: '#f9fafb', dark: '#030712' },
-          reading: { light: '#f5f5f4', dark: '#1c1917' },
-          focus: { light: '#ffffff', dark: '#000000' },
-          calm: { light: '#f0fdfa', dark: '#042f2e' },
-          forest: { light: '#f8fafc', dark: '#0f172a' },
-          ocean: { light: '#f8fafc', dark: '#0f172a' },
-          sunset: { light: '#f8fafc', dark: '#0f172a' },
-          purple: { light: '#f8fafc', dark: '#0f172a' },
+        const themeColors: Record<string, string> = {
+          default: '#f8fafc',
+          modern: '#f9fafb',
+          reading: '#f5f5f4',
+          focus: '#ffffff',
+          calm: '#f0fdfa',
+          forest: '#f8fafc',
+          ocean: '#f8fafc',
+          sunset: '#f8fafc',
+          purple: '#f8fafc',
         };
         
-        const color = isDarkMode 
-          ? themeColors[currentTheme]?.dark || '#0f172a'
-          : themeColors[currentTheme]?.light || '#ffffff';
+        const color = themeColors[currentTheme] || '#ffffff';
         
-        if (isDarkMode) {
-          StatusBar?.setStyle('dark-content');
-        } else {
-          StatusBar?.setStyle('light-content');
-        }
-        
+        StatusBar?.setStyle('light-content');
         StatusBar?.setBackgroundColor(color);
       }
     };
     
     updateStatusBar();
-  }, [isDarkMode, currentTheme]);
+  }, [currentTheme]);
 
   // ========================================
   // 🔙 HANDLER DO BOTÃO FÍSICO "VOLTAR" DO ANDROID

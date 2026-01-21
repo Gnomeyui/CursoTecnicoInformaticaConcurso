@@ -46,24 +46,24 @@ const Dashboard = ({
   const levelProgress = (xp % 1000) / 10; 
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 pb-32 font-sans animate-in fade-in duration-500">
+    <div className="min-h-screen bg-gray-50/50 pb-32 font-sans animate-in fade-in duration-500">
       
       {/* 1. TOP BAR */}
-      <div className="px-6 pt-6 pb-2 flex justify-between items-center bg-white dark:bg-gray-900 sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800">
+      <div className="px-6 pt-6 pb-2 flex justify-between items-center bg-white sticky top-0 z-20 border-b border-gray-100">
         <div onClick={onOpenProfiles} className="cursor-pointer">
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Foco Atual</p>
           <div className="flex items-center gap-1 group">
-            <h1 className="text-lg font-bold text-gray-800 dark:text-white truncate max-w-[200px]">
+            <h1 className="text-lg font-bold text-gray-800 truncate max-w-[200px]">
               {activeProfile ? activeProfile.nome : 'Selecionar Cargo'}
             </h1>
             <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onOpenStudyPlan} className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+          <button onClick={onOpenStudyPlan} className="p-2.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-all text-gray-500 hover:text-gray-700">
             <Calendar size={20} />
           </button>
-          <button onClick={onOpenSettings} className="p-2.5 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+          <button onClick={onOpenSettings} className="p-2.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-all text-gray-500 hover:text-gray-700">
             <SettingsIcon size={20} />
           </button>
         </div>
@@ -81,11 +81,11 @@ const Dashboard = ({
           </div>
           
           <div className="relative z-10 flex flex-col h-full justify-between min-h-[120px]">
-            <div>
+            <div className="bg-[rgba(250,250,250,0)]">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold text-white mb-3 border border-white/10">
                 <Flame size={12} fill="currentColor" /> {detailedStats.currentStreak} dias
               </span>
-              <h2 className="text-3xl font-bold text-white mb-1">{COPY.home.title}</h2>
+              <h2 className="text-3xl font-bold !text-white mb-1">{COPY.home.title}</h2>
               <p className={`text-sm ${currentTheme.lightText} max-w-[85%]`}>
                 {motivationalText}
               </p>
@@ -102,32 +102,32 @@ const Dashboard = ({
         <div className="grid grid-cols-2 gap-4">
           
           {/* Nível (Dados Reais) */}
-          <div className="bg-white dark:bg-gray-900 p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden">
+          <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
             <div className={`absolute -right-4 -bottom-4 opacity-10 ${currentTheme.iconColor}`}>
               <Trophy size={80} />
             </div>
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Nível {level}</p>
             <div className="mt-2 mb-3">
-              <span className="text-3xl font-bold text-gray-800 dark:text-white">{xp}</span>
+              <span className="text-3xl font-bold text-gray-800">{xp}</span>
               <span className="text-xs text-gray-400 font-medium ml-1">XP</span>
             </div>
-            <div className="w-full bg-gray-100 dark:bg-gray-800 h-1.5 rounded-full overflow-hidden">
+            <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
               <div className={`h-full rounded-full ${currentTheme.progressBar}`} style={{ width: `${levelProgress}%` }}></div>
             </div>
           </div>
 
           {/* Precisão (Dados Reais) */}
-          <div className="bg-white dark:bg-gray-900 p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden">
+          <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
             <div className={`absolute -right-4 -bottom-4 opacity-10 ${currentTheme.iconColor}`}>
               <Target size={80} />
             </div>
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Precisão</p>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-gray-800 dark:text-white">
+              <span className="text-3xl font-bold text-gray-800">
                 {Math.round(detailedStats.overallAccuracy)}%
               </span>
             </div>
-            <div className="mt-3 flex items-center gap-1 text-[10px] text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-md w-fit font-bold">
+            <div className="mt-3 flex items-center gap-1 text-[10px] text-green-600 bg-green-50 px-2 py-1 rounded-md w-fit font-bold">
               <TrendingUp size={10} />
               <span>GERAL</span>
             </div>
@@ -137,12 +137,12 @@ const Dashboard = ({
         {/* 4. LISTA DE MATÉRIAS (Placeholder dinâmico se houver dados) */}
         {detailedStats.subjectStats.length > 0 ? (
           <div className="pt-2">
-            <h3 className="font-bold text-gray-800 dark:text-white mb-4 px-1 text-lg">Seu Progresso</h3>
-            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 divide-y divide-gray-50 dark:divide-gray-800">
+            <h3 className="font-bold text-gray-800 mb-4 px-1 text-lg">Seu Progresso</h3>
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 divide-y divide-gray-50">
               {detailedStats.subjectStats.map((subj, index) => (
                 <div key={index} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                   <div className="flex items-center gap-4">
-                    <span className="text-sm font-bold text-gray-800 dark:text-white">{subj.subject}</span>
+                    <span className="text-sm font-bold text-gray-800">{subj.subject}</span>
                   </div>
                   <span className="text-xs font-bold">{Math.round(subj.accuracy)}%</span>
                 </div>
@@ -151,15 +151,15 @@ const Dashboard = ({
           </div>
         ) : (
           <div className="pt-2">
-            <h3 className="font-bold text-gray-800 dark:text-white mb-4 px-1 text-lg">Suas Matérias</h3>
-            <div className={`p-6 rounded-2xl ${currentTheme.iconBg} border border-gray-100 dark:border-gray-800`}>
+            <h3 className="font-bold text-gray-800 mb-4 px-1 text-lg">Suas Matérias</h3>
+            <div className={`p-6 rounded-2xl ${currentTheme.iconBg} border border-gray-100`}>
               <div className="flex items-start gap-3">
                 <TrendingUp size={20} className={currentTheme.iconColor} />
                 <div>
-                  <p className="text-sm font-bold text-gray-800 dark:text-white mb-1">
+                  <p className="text-sm font-bold text-gray-800 mb-1">
                     Comece a estudar!
                   </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                  <p className="text-xs text-gray-600">
                     Responda questões para acompanhar seu progresso por matéria. Veja suas estatísticas completas na aba Stats.
                   </p>
                 </div>
@@ -172,23 +172,23 @@ const Dashboard = ({
 
       {/* 6. MENU INFERIOR */}
       <div className="fixed bottom-6 left-0 w-full px-6 flex justify-center z-30 pointer-events-none">
-        <nav className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-gray-200 dark:border-gray-700 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1 pointer-events-auto w-full max-w-[400px] justify-between">
+        <nav className="bg-white/90 backdrop-blur-lg border border-gray-200 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1 pointer-events-auto w-full max-w-[400px] justify-between">
           <button onClick={onStartQuiz} className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl ${currentTheme.iconBg} ${currentTheme.iconColor} shadow-sm transition-all`}>
             <BookOpen size={20} strokeWidth={2.5} className="mb-0.5" />
             <span className="text-[10px] font-bold">{COPY.bottomNav.study}</span>
           </button>
           
-          <button onClick={onOpenSimulatedExam} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+          <button onClick={onOpenSimulatedExam} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 transition-all">
             <Target size={20} strokeWidth={2.5} className="mb-0.5" />
             <span className="text-[10px] font-medium">{COPY.bottomNav.simulated}</span>
           </button>
           
-          <button onClick={onOpenStatistics} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+          <button onClick={onOpenStatistics} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 transition-all">
             <TrendingUp size={20} strokeWidth={2.5} className="mb-0.5" />
             <span className="text-[10px] font-medium">Stats</span>
           </button>
           
-          <button onClick={onOpenAchievements} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+          <button onClick={onOpenAchievements} className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl text-gray-400 hover:bg-gray-50 transition-all">
             <Trophy size={20} strokeWidth={2.5} className="mb-0.5" />
             <span className="text-[10px] font-medium">{COPY.bottomNav.achievements}</span>
           </button>

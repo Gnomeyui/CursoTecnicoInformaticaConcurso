@@ -73,7 +73,7 @@ export function Customization({ onBack }: CustomizationProps) {
         </section>
 
         {/* Info adicional */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
           <p className="text-sm text-foreground">
             🧠 <strong>Ciência das Cores:</strong> Cada paleta foi projetada para otimizar sua cognição:
           </p>
