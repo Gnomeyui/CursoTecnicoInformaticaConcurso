@@ -2,12 +2,14 @@
 
 ## ✅ AUDITORIA COMPLETA APROVADA!
 
-**STATUS:** 🟢 **TODOS OS ARQUIVOS CORRETOS!**
+**STATUS:** 🟢 **TODOS OS ARQUIVOS CORRETOS!**  
+**COMPATIBILIDADE:** 🟢 **SDK 21+ (Android 5.0 até Android 14+)**
 
-- ✅ Impostor eliminado (values-v29 deletado)
+- ✅ Impostor eliminado (values-v29 recriado corretamente)
 - ✅ CSS correto (color-scheme: light + temas)
 - ✅ Context correto (remove dark + aplica tema)
 - ✅ Android correto (forceDark false + windowBg white)
+- ✅ SDK 21+ (cobertura de ~100% dos dispositivos)
 
 ---
 

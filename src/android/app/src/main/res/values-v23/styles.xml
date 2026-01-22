@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- 
-        Tema principal do app - compatível com SDK 21+ (Android 5.0+)
-        Força modo claro sempre, sem dark mode automático
+        Tema para Android 6.0+ (SDK 23+)
+        Adiciona windowLightStatusBar para ícones escuros na status bar
     -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -12,7 +12,7 @@
         <!-- Fundo branco sempre -->
         <item name="android:windowBackground">@android:color/white</item>
         
-        <!-- Status bar clara (SDK 23+, ignorado em versões anteriores) -->
+        <!-- Status bar clara (ícones escuros) - SDK 23+ -->
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
