@@ -37,7 +37,7 @@ interface SimulatedExamProps {
 }
 
 export function SimulatedExam({ onBack }: SimulatedExamProps) {
-  const { isDarkMode } = useTheme();
+  // isDarkMode removido - app é sempre light mode
   const { addXP } = useGame();
   const { selectedProfile } = useConcursoProfile();
   const { settings } = useCustomization();

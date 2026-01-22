@@ -1,66 +1,43 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { Capacitor } from '@capacitor/core';
 
-type Theme = 'default' | 'forest' | 'ocean' | 'sunset' | 'purple' | 'modern' | 'focus' | 'calm' | 'reading';
+type Theme = 'default' | 'ocean' | 'forest' | 'sunset' | 'purple';
 
 interface ThemeContextType {
   currentTheme: Theme;
   setTheme: (theme: Theme) => void;
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState<Theme>('default');
-  const [isDarkMode, setIsDarkMode] = useState(false); // SEMPRE LIGHT MODE
+  // Carrega o tema salvo ou usa o padrão
+  const [currentTheme, setCurrentTheme] = useState<Theme>(() => {
+    return (localStorage.getItem('alerr_theme') as Theme) || 'default';
+  });
 
-  // Carregar tema salvo
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('alerr_theme') as Theme | null;
-    
-    if (savedTheme) {
-      setCurrentTheme(savedTheme);
-    }
-    
-    // FORÇAR LIGHT MODE - remover dark mode do localStorage
-    localStorage.removeItem('alerr_dark_mode');
-    setIsDarkMode(false);
-  }, []);
-
-  // Aplicar tema ao HTML
   useEffect(() => {
     const html = document.documentElement;
-    const body = document.body;
     
+    // 1. Remove qualquer traço de dark mode antigo
+    html.classList.remove('dark');
+    html.classList.add('light'); // Força light mode
+    html.style.colorScheme = 'light';
+
+    // 2. Aplica o tema colorido selecionado
     html.setAttribute('data-theme', currentTheme);
-    body.setAttribute('data-theme', currentTheme);
     localStorage.setItem('alerr_theme', currentTheme);
+
+    // 3. Força a barra de status a ser Clara (ícones escuros)
+    if (Capacitor.isNativePlatform()) {
+      StatusBar.setStyle({ style: Style.Light }).catch(() => {});
+      StatusBar.setBackgroundColor({ color: '#ffffff' }).catch(() => {});
+    }
   }, [currentTheme]);
 
-  // Aplicar LIGHT MODE FORÇADO ao HTML
-  useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-    
-    // SEMPRE REMOVER dark class
-    html.classList.remove('dark');
-    body.classList.remove('dark');
-    
-    localStorage.removeItem('alerr_dark_mode');
-  }, [isDarkMode]);
-
-  const setTheme = (theme: Theme) => {
-    setCurrentTheme(theme);
-  };
-
-  const toggleDarkMode = () => {
-    // DESABILITADO - não faz nada
-    return;
-  };
-
   return (
-    <ThemeContext.Provider value={{ currentTheme, setTheme, isDarkMode: false, toggleDarkMode }}>
+    <ThemeContext.Provider value={{ currentTheme, setTheme: setCurrentTheme }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -68,8 +45,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within ThemeProvider');
-  }
+  if (!context) throw new Error('useTheme must be used within ThemeProvider');
   return context;
 }

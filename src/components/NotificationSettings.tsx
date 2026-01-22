@@ -4,7 +4,6 @@ import {
   Check, AlertCircle, Plus, Trash2, Target, Zap, BookOpen
 } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
-import { useTheme } from '../context/ThemeContext';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
@@ -17,7 +16,7 @@ const isNative = Capacitor.isNativePlatform();
 
 export function NotificationSettings({ onBack }: NotificationSettingsProps) {
   const { settings, updateSettings, requestPermission, hasPermission, scheduleNotifications } = useNotifications();
-  const { isDarkMode } = useTheme();
+  // isDarkMode removido - app é sempre light mode
   const [customTime, setCustomTime] = useState('09:00');
   
   // ✅ NOVAS configurações consolidadas de Settings.tsx
