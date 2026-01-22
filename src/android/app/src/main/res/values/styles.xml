@@ -8,6 +8,10 @@
         
         <!-- CORREÇÃO: Desabilita o "Force Dark Mode" do Android -->
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        
+        <!-- Força status bar claro e fundo branco -->
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowBackground">@android:color/white</item>
     </style>
 
     <!-- Splash Screen theme -->
