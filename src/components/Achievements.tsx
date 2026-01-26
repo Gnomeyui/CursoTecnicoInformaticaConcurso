@@ -2,6 +2,7 @@ import React from 'react';
 import { Trophy, Medal, Star, Target, Zap, Lock, ArrowLeft, Award, Flame, Heart, Book, CheckCircle, TrendingUp, Crown, Rocket, Clock, Brain, Sparkles, Shield, Mountain, Flag, Gift, Gauge, CalendarCheck, GraduationCap, Swords, Sun, Moon, Footprints, PartyPopper, Hexagon, Gem, Hourglass, AlarmClock, Activity, Crosshair, Anchor, CircleDot, Milestone, Wind, Timer, BarChart3, Repeat, Lightbulb, Coffee, Battery } from 'lucide-react';
 import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
+import { getThemeColor, getThemeGradient } from '../lib/themeUtils';
 import { useStats } from '../context/StatsContext';
 import { useGame } from '../context/GameContext';
 
@@ -12,6 +13,10 @@ interface AchievementsProps {
 export function Achievements({ onBack }: AchievementsProps = {}) {
   const { settings } = useCustomization();
   const theme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
+  
+  // ⚠️ INLINE STYLES PARA APK
+  const themeColor = getThemeColor(settings.colorTheme);
+  const themeGradient = getThemeGradient(settings.colorTheme);
   
   // 🎯 DADOS REAIS DO APP
   const { detailedStats } = useStats();
@@ -410,8 +415,11 @@ export function Achievements({ onBack }: AchievementsProps = {}) {
   return (
     <div className="min-h-screen bg-background pb-24 animate-in fade-in">
       
-      {/* Header com Gradiente */}
-      <div className={`relative overflow-hidden pb-12 pt-8 px-6 bg-gradient-to-br ${theme.gradient} rounded-b-[2.5rem] shadow-xl`}>
+      {/* Header com Gradiente - ✅ INLINE STYLE PARA APK */}
+      <div 
+        className="relative overflow-hidden pb-12 pt-8 px-6 rounded-b-[2.5rem] shadow-xl"
+        style={{ background: themeGradient }}
+      >
         {/* Botão Voltar */}
         <button 
           onClick={() => onBack ? onBack() : window.history.back()}
@@ -430,23 +438,26 @@ export function Achievements({ onBack }: AchievementsProps = {}) {
 
       <div className="px-6 -mt-8 space-y-8 relative z-20">
 
-        {/* Card de Progresso Geral */}
+        {/* Card de Progresso Geral - ✅ INLINE STYLES PARA APK */}
         <div className="bg-card rounded-2xl p-6 shadow-lg border border-border">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-2xl font-black text-foreground">{conquistasDesbloqueadas}/50</h3>
               <p className="text-sm text-muted-foreground">Conquistas Desbloqueadas</p>
             </div>
-            <div className={`text-4xl font-black ${theme.primaryText}`}>
+            <div className="text-4xl font-black" style={{ color: themeColor }}>
               {porcentagemCompleta}%
             </div>
           </div>
           
-          {/* Barra de Progresso */}
+          {/* Barra de Progresso - ✅ INLINE STYLE PARA APK */}
           <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
             <div 
-              className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-500 rounded-full`}
-              style={{ width: `${porcentagemCompleta}%` }}
+              className="h-full transition-all duration-500 rounded-full"
+              style={{ 
+                width: `${porcentagemCompleta}%`,
+                background: themeGradient 
+              }}
             />
           </div>
           
@@ -467,7 +478,7 @@ export function Achievements({ onBack }: AchievementsProps = {}) {
           </div>
         </div>
 
-        {/* CONQUISTAS (Lista de Badges) */}
+        {/* CONQUISTAS (Lista de Badges) - ✅ INLINE STYLES PARA APK */}
         <section>
           <div className="space-y-3">
             {achievements.map((item, idx) => (
@@ -479,9 +490,14 @@ export function Achievements({ onBack }: AchievementsProps = {}) {
                     : 'bg-muted/50 border-transparent opacity-60'
                 }`}
               >
-                <div className={`p-3 rounded-xl ${item.done ? theme.bgLight : 'bg-muted'}`}>
+                <div 
+                  className="p-3 rounded-xl"
+                  style={{ 
+                    backgroundColor: item.done ? theme.bgLightHex : undefined 
+                  }}
+                >
                   {item.done ? (
-                    <item.icon size={24} className={theme.primaryText} />
+                    <item.icon size={24} style={{ color: themeColor }} />
                   ) : (
                     <Lock size={24} className="text-muted-foreground" />
                   )}
@@ -490,11 +506,13 @@ export function Achievements({ onBack }: AchievementsProps = {}) {
                   <h4 className="font-bold text-foreground">{item.title}</h4>
                   <p className="text-xs text-muted-foreground">{item.desc}</p>
                 </div>
-                <div className={`text-xs font-mono font-semibold px-2 py-1 rounded-lg ${
-                  item.done 
-                    ? `${theme.bgLight} ${theme.primaryText}` 
-                    : 'bg-muted text-muted-foreground'
-                }`}>
+                <div 
+                  className="text-xs font-mono font-semibold px-2 py-1 rounded-lg"
+                  style={{
+                    backgroundColor: item.done ? theme.bgLightHex : undefined,
+                    color: item.done ? themeColor : undefined
+                  }}
+                >
                   {item.progress}
                 </div>
               </div>

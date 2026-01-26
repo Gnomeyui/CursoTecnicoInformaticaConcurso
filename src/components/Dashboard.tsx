@@ -5,10 +5,11 @@ import {
 } from 'lucide-react';
 import { useCustomization } from '../context/CustomizationContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
-import { useGame } from '../context/GameContext'; // Importar contexto do Jogo
-import { useStats } from '../context/StatsContext'; // Importar contexto de Estatísticas
+import { useGame } from '../context/GameContext';
+import { useStats } from '../context/StatsContext';
 import { COPY } from '../utils/copy';
 import { getRandomMotivationalCTA } from '../utils/getRandomMotivationalCTA';
+import { getThemeInlineStyles, getThemeColor, getThemeGradient } from '../lib/themeUtils';
 
 interface DashboardProps {
   onStartQuiz?: () => void;
@@ -33,7 +34,7 @@ const Dashboard = ({
   onOpenStudyPlan,
   onOpenStatistics
 }: DashboardProps) => {
-  const { theme: currentTheme } = useCustomization();
+  const { theme: currentTheme, settings } = useCustomization();
   const { activeProfile } = useConcursoProfile();
   
   // ✅ USAR DADOS REAIS DOS CONTEXTOS (NÃO HARDCODED!)
@@ -43,7 +44,11 @@ const Dashboard = ({
   const [motivationalText] = useState(() => getRandomMotivationalCTA());
 
   // Calcular progresso do nível (apenas visual)
-  const levelProgress = (xp % 1000) / 10; 
+  const levelProgress = (xp % 1000) / 10;
+  
+  // ⚠️ INLINE STYLES PARA APK - Pega cores HEX diretas
+  const themeColor = getThemeColor(settings.colorTheme);
+  const themeGradient = getThemeGradient(settings.colorTheme);
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-32 font-sans animate-in fade-in duration-500">
@@ -71,22 +76,23 @@ const Dashboard = ({
 
       <main className="px-6 space-y-6 mt-6">
 
-        {/* 2. CARD PRINCIPAL */}
+        {/* 2. CARD PRINCIPAL - ✅ USA INLINE STYLE PARA APK */}
         <button 
           onClick={onStartQuiz}
-          className={`w-full group relative overflow-hidden rounded-3xl bg-gradient-to-br ${currentTheme.gradient} p-6 text-left shadow-lg hover:shadow-xl transition-all duration-300 transform active:scale-[0.98]`}
+          className="w-full group relative overflow-hidden rounded-3xl p-6 text-left shadow-lg hover:shadow-xl transition-all duration-300 transform active:scale-[0.98]"
+          style={{ background: themeGradient }}
         >
           <div className="absolute top-0 right-0 p-4 opacity-10 transform group-hover:scale-110 transition-transform duration-500">
             <Zap size={140} fill="currentColor" className="text-white" />
           </div>
           
           <div className="relative z-10 flex flex-col h-full justify-between min-h-[120px]">
-            <div className="bg-[rgba(250,250,250,0)]">
+            <div>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold text-white mb-3 border border-white/10">
                 <Flame size={12} fill="currentColor" /> {detailedStats.currentStreak} dias
               </span>
-              <h2 className="text-3xl font-bold !text-white mb-1">{COPY.home.title}</h2>
-              <p className={`text-sm ${currentTheme.lightText} max-w-[85%]`}>
+              <h2 className="text-3xl font-bold text-white mb-1">{COPY.home.title}</h2>
+              <p className="text-sm text-white/90 max-w-[85%]">
                 {motivationalText}
               </p>
             </div>
@@ -98,12 +104,12 @@ const Dashboard = ({
           </div>
         </button>
 
-        {/* 3. CARDS DE ESTATÍSTICAS */}
+        {/* 3. CARDS DE ESTATÍSTICAS - ✅ INLINE STYLES PARA APK */}
         <div className="grid grid-cols-2 gap-4">
           
           {/* Nível (Dados Reais) */}
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
-            <div className={`absolute -right-4 -bottom-4 opacity-10 ${currentTheme.iconColor}`}>
+            <div className="absolute -right-4 -bottom-4 opacity-10" style={{ color: themeColor }}>
               <Trophy size={80} />
             </div>
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Nível {level}</p>
@@ -112,13 +118,19 @@ const Dashboard = ({
               <span className="text-xs text-gray-400 font-medium ml-1">XP</span>
             </div>
             <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
-              <div className={`h-full rounded-full ${currentTheme.progressBar}`} style={{ width: `${levelProgress}%` }}></div>
+              <div 
+                className="h-full rounded-full" 
+                style={{ 
+                  width: `${levelProgress}%`,
+                  backgroundColor: themeColor 
+                }}
+              />
             </div>
           </div>
 
           {/* Precisão (Dados Reais) */}
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
-            <div className={`absolute -right-4 -bottom-4 opacity-10 ${currentTheme.iconColor}`}>
+            <div className="absolute -right-4 -bottom-4 opacity-10" style={{ color: themeColor }}>
               <Target size={80} />
             </div>
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Precisão</p>
@@ -134,7 +146,7 @@ const Dashboard = ({
           </div>
         </div>
 
-        {/* 4. LISTA DE MATÉRIAS (Placeholder dinâmico se houver dados) */}
+        {/* 4. LISTA DE MATÉRIAS - ✅ INLINE STYLES PARA APK */}
         {detailedStats.subjectStats.length > 0 ? (
           <div className="pt-2">
             <h3 className="font-bold text-gray-800 mb-4 px-1 text-lg">Seu Progresso</h3>
@@ -152,9 +164,9 @@ const Dashboard = ({
         ) : (
           <div className="pt-2">
             <h3 className="font-bold text-gray-800 mb-4 px-1 text-lg">Suas Matérias</h3>
-            <div className={`p-6 rounded-2xl ${currentTheme.iconBg} border border-gray-100`}>
+            <div className="p-6 rounded-2xl border border-gray-100" style={{ backgroundColor: currentTheme.bgLightHex }}>
               <div className="flex items-start gap-3">
-                <TrendingUp size={20} className={currentTheme.iconColor} />
+                <TrendingUp size={20} style={{ color: themeColor }} />
                 <div>
                   <p className="text-sm font-bold text-gray-800 mb-1">
                     Comece a estudar!
@@ -170,10 +182,17 @@ const Dashboard = ({
 
       </main>
 
-      {/* 6. MENU INFERIOR */}
+      {/* 6. MENU INFERIOR - ✅ INLINE STYLES PARA APK */}
       <div className="fixed bottom-6 left-0 w-full px-6 flex justify-center z-30 pointer-events-none">
         <nav className="bg-white/90 backdrop-blur-lg border border-gray-200 p-1.5 rounded-2xl shadow-2xl flex items-center gap-1 pointer-events-auto w-full max-w-[400px] justify-between">
-          <button onClick={onStartQuiz} className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl ${currentTheme.iconBg} ${currentTheme.iconColor} shadow-sm transition-all`}>
+          <button 
+            onClick={onStartQuiz} 
+            className="flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl shadow-sm transition-all"
+            style={{ 
+              backgroundColor: currentTheme.bgLightHex,
+              color: themeColor 
+            }}
+          >
             <BookOpen size={20} strokeWidth={2.5} className="mb-0.5" />
             <span className="text-[10px] font-bold">{COPY.bottomNav.study}</span>
           </button>

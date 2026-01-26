@@ -1,109 +1,174 @@
+/**
+ * ========================================
+ * GLOBAL STYLES - TAILWIND + TEMAS
+ * ========================================
+ * 
+ * ESTRUTURA:
+ * 1. Imports do Tailwind CSS
+ * 2. Variáveis CSS base (backgrounds, textos, bordas)
+ * 3. Variáveis de TEMAS (--primary muda por tema)
+ * 4. Estilos globais do body
+ * 
+ * ⚠️ IMPORTANTE PARA APK:
+ * - Variáveis CSS --primary em formato HSL
+ * - HSL: 216 85% 34% → hsl(216, 85%, 34%)
+ * - Tailwind usa bg-primary que pega var(--primary)
+ * - Se não funcionar, usar inline styles (ver Customization.tsx)
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
  
 @layer base {
+  /* ========================================
+     VARIÁVEIS BASE (SEMPRE LIGHT MODE)
+     ======================================== */
   :root {
-    /* --- CONFIGURAÇÃO FIXA (FUNDO BRANCO) --- */
-    color-scheme: light; /* Obriga o navegador a ser light */
+    /* Light mode fixo */
+    color-scheme: light;
     
-    --background: 0 0% 100%;       /* Branco Puro */
-    --foreground: 222.2 84% 4.9%;  /* Texto Preto Suave */
+    /* Backgrounds e foregrounds */
+    --background: 0 0% 100%;       /* Branco puro */
+    --foreground: 222.2 84% 4.9%;  /* Texto preto suave */
     
-    --card: 0 0% 100%;             /* Card Branco */
+    /* Cards */
+    --card: 0 0% 100%;             /* Card branco */
     --card-foreground: 222.2 84% 4.9%;
     
+    /* Popovers */
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
     
+    /* Muted (desabilitado) */
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
     
+    /* Accent (destaque) */
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
     
+    /* Destructive (erro) */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     
+    /* Bordas e inputs */
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     
+    /* Border radius padrão */
     --radius: 0.75rem;
 
-    /* --- COR PADRÃO (Azul Concentração) --- */
-    --primary: 216 85% 34%;        /* #1F4E79 - Azul Petróleo */
+    /* ========================================
+       COR PRIMÁRIA PADRÃO
+       
+       ⚠️ Esta é a cor que muda com os temas!
+       Formato HSL: H S% L% (sem vírgulas)
+       Exemplo: 216 85% 34% = hsl(216, 85%, 34%) = #1F4E79
+       ======================================== */
+    --primary: 216 85% 34%;        /* #1F4E79 - Azul Concentração */
     --primary-foreground: 210 40% 98%;
     --ring: 216 85% 34%;
   }
 
-  /* --- TEMAS CIENTÍFICOS (5 Paletas) --- */
+  /* ========================================
+     TEMAS CIENTÍFICOS (5 PALETAS)
+     
+     Cada [data-theme="..."] muda APENAS o --primary
+     O resto permanece igual (backgrounds, textos, etc)
+     ======================================== */
   
-  /* TEMA 1: Concentração Profunda - Azul Petróleo */
+  /* --------------------------------------------------
+     TEMA 1: CONCENTRAÇÃO PROFUNDA
+     Cor: #1F4E79 = HSL(216, 85%, 34%)
+     Azul petróleo para sessões longas
+     -------------------------------------------------- */
   [data-theme="deepFocus"] {
     --primary: 216 85% 34%;        /* #1F4E79 */
     --primary-foreground: 210 40% 98%;
     --ring: 216 85% 34%;
   }
 
-  /* TEMA 2: Calma Cognitiva - Verde Musgo */
+  /* --------------------------------------------------
+     TEMA 2: CALMA COGNITIVA
+     Cor: #3A5F4B = HSL(151, 25%, 31%)
+     Verde musgo para leitura e resumos
+     -------------------------------------------------- */
   [data-theme="calmStudy"] {
     --primary: 151 25% 31%;        /* #3A5F4B */
     --primary-foreground: 210 40% 98%;
     --ring: 151 25% 31%;
   }
 
-  /* TEMA 3: Alta Atenção - Verde Vibrante */
+  /* --------------------------------------------------
+     TEMA 3: ALTA ATENÇÃO
+     Cor: #27AE60 = HSL(145, 63%, 42%)
+     Verde vibrante para questões e simulados
+     -------------------------------------------------- */
   [data-theme="highAlert"] {
     --primary: 145 63% 42%;        /* #27AE60 */
     --primary-foreground: 210 40% 98%;
     --ring: 145 63% 42%;
   }
 
-  /* TEMA 4: Minimalismo Neutro - Cinza Grafite */
+  /* --------------------------------------------------
+     TEMA 4: MINIMALISMO NEUTRO
+     Cor: #5F6368 = HSL(210, 3%, 37%)
+     Cinza grafite para zero distrações
+     -------------------------------------------------- */
   [data-theme="minimalNeutral"] {
     --primary: 210 3% 37%;         /* #5F6368 */
     --primary-foreground: 210 40% 98%;
     --ring: 210 3% 37%;
   }
 
-  /* TEMA 5: Modo Noturno - Azul GitHub */
+  /* --------------------------------------------------
+     TEMA 5: MODO NOTURNO
+     Cor: #58A6FF = HSL(212, 92%, 63%)
+     Azul GitHub para estudo noturno
+     -------------------------------------------------- */
   [data-theme="nightMode"] {
     --primary: 212 92% 63%;        /* #58A6FF */
     --primary-foreground: 210 40% 98%;
     --ring: 212 92% 63%;
   }
 
-  /* --- COMPATIBILIDADE COM TEMAS ANTIGOS --- */
+  /* ========================================
+     COMPATIBILIDADE COM TEMAS ANTIGOS
+     
+     Mapeia nomes antigos para os novos temas
+     Para não quebrar configurações salvas
+     ======================================== */
   
-  /* TEMA OCEAN (antigo) -> deepFocus */
+  /* TEMA ANTIGO: ocean → deepFocus */
   [data-theme="ocean"] {
     --primary: 216 85% 34%;
     --primary-foreground: 210 40% 98%;
     --ring: 216 85% 34%;
   }
 
-  /* TEMA FOREST (antigo) -> calmStudy */
+  /* TEMA ANTIGO: forest → calmStudy */
   [data-theme="forest"] {
     --primary: 151 25% 31%;
     --primary-foreground: 210 40% 98%;
     --ring: 151 25% 31%;
   }
 
-  /* TEMA PURPLE (antigo) -> highAlert */
+  /* TEMA ANTIGO: purple → highAlert */
   [data-theme="purple"] {
     --primary: 145 63% 42%;
     --primary-foreground: 210 40% 98%;
     --ring: 145 63% 42%;
   }
 
-  /* TEMA SUNSET (antigo) -> minimalNeutral */
+  /* TEMA ANTIGO: sunset → minimalNeutral */
   [data-theme="sunset"] {
     --primary: 210 3% 37%;
     --primary-foreground: 210 40% 98%;
     --ring: 210 3% 37%;
   }
 
-  /* TEMA DEFAULT (antigo) -> deepFocus */
+  /* TEMA ANTIGO: default → deepFocus */
   [data-theme="default"] {
     --primary: 216 85% 34%;
     --primary-foreground: 210 40% 98%;
@@ -111,7 +176,36 @@
   }
 }
  
+/* ========================================
+   ESTILOS GLOBAIS
+   
+   Aplicados a todos os elementos
+   ======================================== */
 @layer base {
-  * { @apply border-border; }
-  body { @apply bg-background text-foreground; }
+  /* Bordas consistentes */
+  * { 
+    @apply border-border; 
+  }
+  
+  /* Body com fundo e texto padrão */
+  body { 
+    @apply bg-background text-foreground; 
+  }
 }
+
+/* ========================================
+   CONVERSÃO HSL → HEX (REFERÊNCIA)
+   
+   Se precisar calcular manualmente:
+   
+   HSL(216, 85%, 34%) → #1F4E79
+   H: 216 (Hue - matiz)
+   S: 85% (Saturation - saturação)
+   L: 34% (Lightness - luminosidade)
+   
+   Para converter no código:
+   const hsl = '216 85% 34%';
+   const css = `hsl(${hsl.replace(/ /g, ', ')})`;
+   
+   Ou use online: https://www.w3schools.com/colors/colors_hsl.asp
+   ======================================== */

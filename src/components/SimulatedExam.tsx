@@ -8,6 +8,7 @@ import { useGame } from '../context/GameContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
+import { getThemeColor, getThemeGradient } from '../lib/themeUtils';
 import { sqliteService } from '../lib/database/SQLiteService';
 
 // Interfaces (Mantidas)
@@ -41,6 +42,10 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
   const { selectedProfile } = useConcursoProfile();
   const { settings } = useCustomization();
   const theme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
+  
+  // ⚠️ INLINE STYLES PARA APK
+  const themeColor = getThemeColor(settings.colorTheme);
+  const themeGradient = getThemeGradient(settings.colorTheme);
   
   // Estados
   const [examState, setExamState] = useState<'config' | 'running' | 'finished'>('config');
@@ -289,9 +294,12 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
         <div className="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center">
           <div className="w-full max-w-md space-y-8">
             
-            {/* Hero Section */}
+            {/* Hero Section - ✅ INLINE STYLE PARA APK */}
             <div className="text-center space-y-4">
-              <div className={`w-20 h-20 bg-gradient-to-br ${theme.gradient} rounded-2xl rotate-3 flex items-center justify-center mx-auto shadow-xl`}>
+              <div 
+                className="w-20 h-20 rounded-2xl rotate-3 flex items-center justify-center mx-auto shadow-xl"
+                style={{ background: themeGradient }}
+              >
                 <Trophy className="w-10 h-10 text-white -rotate-3" />
               </div>
               <div>
@@ -351,12 +359,13 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
           </div>
         </div>
 
-        {/* Botão de Ação */}
+        {/* Botão de Ação - ✅ INLINE STYLE PARA APK */}
         <div className="p-6 bg-app shrink-0">
           <button
             onClick={startExam}
             disabled={loading}
-            className={`w-full max-w-md mx-auto py-4 ${theme.button} rounded-xl text-white font-bold text-lg shadow-lg flex items-center justify-center gap-3 disabled:opacity-70 transition-transform active:scale-95`}
+            className="w-full max-w-md mx-auto py-4 rounded-xl text-white font-bold text-lg shadow-lg flex items-center justify-center gap-3 disabled:opacity-70 transition-transform active:scale-95"
+            style={{ backgroundColor: themeColor }}
           >
             {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Play className="w-6 h-6 fill-current" />}
             {loading ? 'Preparando...' : 'Iniciar Agora'}
@@ -394,11 +403,14 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
             </div>
           </div>
           
-          {/* Barra de Progresso */}
+          {/* Barra de Progresso - ✅ INLINE STYLE PARA APK */}
           <div className="h-1 bg-gray-100 dark:bg-gray-800 w-full">
             <div 
-              className={`h-full ${theme.button} transition-all duration-500`}
-              style={{ width: `${((currentQuestionIndex + 1) / selectedQuestions.length) * 100}%` }}
+              className="h-full transition-all duration-500"
+              style={{ 
+                width: `${((currentQuestionIndex + 1) / selectedQuestions.length) * 100}%`,
+                backgroundColor: themeColor 
+              }}
             />
           </div>
         </div>
@@ -483,7 +495,8 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
              ) : (
                <button 
                  onClick={() => setCurrentQuestionIndex(p => p + 1)}
-                 className={`flex-1 py-3.5 ${theme.button} text-white rounded-xl font-bold shadow-lg transition-all active:scale-95`}
+                 className="flex-1 py-3.5 text-white rounded-xl font-bold shadow-lg transition-all active:scale-95"
+                 style={{ backgroundColor: themeColor }}
                >
                  Próxima
                </button>
@@ -527,11 +540,12 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
             </div>
           </div>
 
-          {/* Botão de Voltar */}
+          {/* Botão de Voltar - ✅ INLINE STYLE PARA APK */}
           <div className="pt-4">
             <button
               onClick={onBack}
-              className={`w-full py-3.5 ${theme.button} text-white rounded-xl font-bold shadow-lg hover:brightness-110 active:scale-95 transition-all`}
+              className="w-full py-3.5 text-white rounded-xl font-bold shadow-lg hover:brightness-110 active:scale-95 transition-all"
+              style={{ backgroundColor: themeColor }}
             >
               VOLTAR AO INÍCIO
             </button>

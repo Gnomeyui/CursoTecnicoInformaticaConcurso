@@ -19,6 +19,7 @@ import { OnboardingPage } from '../components/onboarding/OnboardingPage';
 import { AppRoutes, View, Difficulty } from './AppRoutes';
 import { trackEvent } from '../utils/analytics/simple-metrics';
 import { syncService } from '../services/SyncService';
+import { Toaster } from '../components/ui/sonner';
 
 export function AppShell() {
   const [currentView, setCurrentView] = useState<View>('dashboard');
@@ -245,6 +246,9 @@ export function AppShell() {
           }} 
         />
       )}
+      
+      {/* Toaster para mensagens de feedback */}
+      <Toaster />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Bell, Trash2, LogOut, User, 
-  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles
+  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles, RotateCcw
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -11,6 +11,7 @@ import { APP_THEMES } from '../lib/themeConfig';
 import { authService } from '../services/AuthService';
 import { UpgradeScreen } from './UpgradeScreen';
 import { PlanSelector } from './PlanSelector';
+import { toast } from 'sonner@2.0.3';
 
 interface SettingsProps {
   onClose: () => void;
@@ -115,6 +116,39 @@ export function Settings({
     if (window.confirm('Deseja realmente sair da sua conta?')) {
       alert('Logout realizado com sucesso!');
       onClose();
+    }
+  };
+
+  // 🔄 NOVO: Resetar apenas as configurações (mantém progresso)
+  const handleResetSettings = () => {
+    if (window.confirm('⚙️ Deseja resetar APENAS as configurações do app?\n\n✅ Seus dados de estudo (XP, estatísticas, histórico) serão mantidos\n❌ Configurações de plano, perfil e tema voltarão ao padrão\n\nDeseja continuar?')) {
+      // 🗑️ Remover apenas configurações, mantendo progresso
+      const settingsKeys = [
+        'studyPlan',
+        'alerr_settings',
+        'alerr_customization',
+        'concurso_profiles',
+        'concurso_active_profile',
+        'alerr_concurso_profile',
+        'alerr_notifications',
+        'alerr_notifications_enabled',
+        'alerr_last_scheduled',
+        'smart_notification_config',
+        'alerr_theme'
+      ];
+      
+      settingsKeys.forEach(key => {
+        try {
+          localStorage.removeItem(key);
+        } catch (e) {
+          console.error(`Erro ao remover ${key}:`, e);
+        }
+      });
+      
+      toast.success('✅ Configurações resetadas com sucesso!');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   };
 
@@ -345,6 +379,13 @@ export function Settings({
         <section>
           <h2 className="text-xs font-bold text-red-500 dark:text-red-400 uppercase ml-4 mb-3 tracking-widest">Zona de Perigo</h2>
           <div className="bg-card border border-red-200 dark:border-red-800 rounded-[1.5rem] shadow-sm overflow-hidden divide-y divide-border">
+            <MenuItem 
+              icon={RotateCcw} 
+              label="Resetar Configurações" 
+              desc="Volta para o padrão (mantém seu progresso)"
+              onClick={handleResetSettings}
+              colorClass="bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400"
+            />
             <MenuItem 
               icon={Trash2} 
               label="Resetar Progresso" 

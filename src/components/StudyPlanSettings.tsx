@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, Zap, Bell, Volume2, Smartphone, Save, Music, Upload, ChevronRight, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, Bell, Volume2, Smartphone, Music, Upload, ChevronRight, CheckCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Slider } from './ui/slider';
 import { Switch } from './ui/switch';
@@ -7,6 +7,8 @@ import { Card, CardContent } from './ui/card';
 import { Input } from './ui/input';
 import { NotificationScheduler } from '../utils/notifications/NotificationScheduler';
 import { NotificationSounds } from '../utils/notifications/NotificationSounds';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { toast } from 'sonner@2.0.3';
 
 interface StudyPlanSettingsProps {
   onBack: () => void;
@@ -42,18 +44,19 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
     }
   }, []);
 
-  // Função de Salvar
-  const handleSave = () => {
-    const settings = { dailyGoal, batchSize, intervalMinutes, notificationTime, preferences, notificationSound, customSoundFile };
+  // 💾 AUTO-SAVE: Salvar automaticamente quando qualquer configuração mudar
+  useEffect(() => {
+    const settings = { 
+      dailyGoal, 
+      batchSize, 
+      intervalMinutes, 
+      notificationTime, 
+      preferences, 
+      notificationSound, 
+      customSoundFile 
+    };
     localStorage.setItem('studyPlan', JSON.stringify(settings));
-    
-    // Aqui você pode chamar uma função para reagendar as notificações locais (se usar Capacitor)
-    // scheduleNotifications(settings); 
-    
-    // Feedback visual
-    alert("✅ Plano salvo com sucesso!"); 
-    onBack();
-  };
+  }, [dailyGoal, batchSize, intervalMinutes, notificationTime, preferences, notificationSound, customSoundFile]);
 
   // Handler para upload de arquivo de áudio
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,17 +91,12 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 animate-in slide-in-from-right">
       
-      {/* Header com Botão Salvar */}
-      <div className="bg-white dark:bg-gray-800 p-4 sticky top-0 z-10 shadow-sm flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ArrowLeft className="h-6 w-6" />
-          </Button>
-          <h1 className="text-lg font-bold text-gray-900 dark:text-white">Meu Plano</h1>
-        </div>
-        <Button onClick={handleSave} size="sm" className="bg-blue-600 text-white gap-2 hover:bg-blue-700">
-          <Save size={16} /> Salvar
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-800 p-4 sticky top-0 z-10 shadow-sm flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={onBack}>
+          <ArrowLeft className="h-6 w-6" />
         </Button>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-white">Meu Plano</h1>
       </div>
 
       <div className="p-4 space-y-6 max-w-xl mx-auto">
@@ -128,7 +126,7 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
                     <span className="text-sm font-medium text-blue-600">questões</span>
                   </div>
                 </div>
-                <Slider value={dailyGoal} onValueChange={setDailyGoal} max={100} min={5} step={5} className="py-2" />
+                <Slider value={dailyGoal} onValueChange={setDailyGoal} max={1000} min={5} step={5} className="py-2" />
                 <p className="text-xs text-gray-400 mt-2">Ajuste conforme seu tempo disponível.</p>
               </div>
 
@@ -150,8 +148,8 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
                     <span className="text-sm font-medium text-blue-600">questões</span>
                   </div>
                 </div>
-                <Slider value={batchSize} onValueChange={setBatchSize} max={500} min={3} step={1} className="py-2" />
-                <p className="text-xs text-gray-400 mt-2">De 3 a 500 questões por sessão.</p>
+                <Slider value={batchSize} onValueChange={setBatchSize} max={1000} min={3} step={1} className="py-2" />
+                <p className="text-xs text-gray-400 mt-2">De 3 a 1000 questões por sessão.</p>
               </div>
             </CardContent>
           </Card>
@@ -399,12 +397,27 @@ export function StudyPlanSettings({ onBack, onOpenNotifications }: StudyPlanSett
               </div>
             )}
             
+            {/* ✅ Switch de Vibração com TESTE no APK */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <div className="bg-blue-100 p-2 rounded-full text-blue-600"><Smartphone size={18} /></div>
                 <span className="text-sm font-medium">Vibração</span>
               </div>
-              <Switch checked={preferences.vibration} onCheckedChange={(v) => setPreferences({...preferences, vibration: v})} />
+              <Switch 
+                checked={preferences.vibration} 
+                onCheckedChange={async (v) => {
+                  setPreferences({...preferences, vibration: v});
+                  // 📳 TESTAR vibração quando ativar/desativar
+                  if (v) {
+                    try {
+                      await Haptics.impact({ style: ImpactStyle.Medium });
+                      console.log('✅ Vibração testada com sucesso!');
+                    } catch (error) {
+                      console.log('⚠️ Vibração não disponível:', error);
+                    }
+                  }
+                }} 
+              />
             </div>
             
             <div className="flex items-center justify-between p-4">
