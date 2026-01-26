@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { ThemeProvider } from '../context/ThemeContext';
+// ThemeProvider removido - CustomizationProvider já gerencia temas
 import { GameProvider } from '../context/GameContext';
 import { StatsProvider } from '../context/StatsContext';
 import { CustomizationProvider } from '../context/CustomizationContext';
@@ -14,6 +14,7 @@ import { NotificationProvider } from '../context/NotificationContext';
 import { WrongQuestionsProvider } from '../context/WrongQuestionsContext';
 import { ConcursoProfileProvider } from '../context/ConcursoProfileContext';
 import { SmartNotificationProvider } from '../context/SmartNotificationContext';
+import { AppStateProvider } from '../context/AppState/AppStateContext';
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -21,22 +22,22 @@ interface AppProvidersProps {
 
 export function AppProviders({ children }: AppProvidersProps) {
   return (
-    <ThemeProvider>
+    <CustomizationProvider>
       <GameProvider>
         <StatsProvider>
-          <CustomizationProvider>
-            <NotificationProvider>
-              <WrongQuestionsProvider>
-                <ConcursoProfileProvider>
-                  <SmartNotificationProvider>
+          <NotificationProvider>
+            <WrongQuestionsProvider>
+              <ConcursoProfileProvider>
+                <SmartNotificationProvider>
+                  <AppStateProvider>
                     {children}
-                  </SmartNotificationProvider>
-                </ConcursoProfileProvider>
-              </WrongQuestionsProvider>
-            </NotificationProvider>
-          </CustomizationProvider>
+                  </AppStateProvider>
+                </SmartNotificationProvider>
+              </ConcursoProfileProvider>
+            </WrongQuestionsProvider>
+          </NotificationProvider>
         </StatsProvider>
       </GameProvider>
-    </ThemeProvider>
+    </CustomizationProvider>
   );
 }

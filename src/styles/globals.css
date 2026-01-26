@@ -30,40 +30,84 @@
     
     --radius: 0.75rem;
 
-    /* --- COR PADRÃO (Slate/Cinza) --- */
-    --primary: 222.2 47.4% 11.2%;
+    /* --- COR PADRÃO (Azul Concentração) --- */
+    --primary: 216 85% 34%;        /* #1F4E79 - Azul Petróleo */
     --primary-foreground: 210 40% 98%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 216 85% 34%;
   }
 
-  /* --- TEMAS (Muda apenas a cor Principal) --- */
+  /* --- TEMAS CIENTÍFICOS (5 Paletas) --- */
   
-  /* TEMA AZUL (Ocean) */
+  /* TEMA 1: Concentração Profunda - Azul Petróleo */
+  [data-theme="deepFocus"] {
+    --primary: 216 85% 34%;        /* #1F4E79 */
+    --primary-foreground: 210 40% 98%;
+    --ring: 216 85% 34%;
+  }
+
+  /* TEMA 2: Calma Cognitiva - Verde Musgo */
+  [data-theme="calmStudy"] {
+    --primary: 151 25% 31%;        /* #3A5F4B */
+    --primary-foreground: 210 40% 98%;
+    --ring: 151 25% 31%;
+  }
+
+  /* TEMA 3: Alta Atenção - Verde Vibrante */
+  [data-theme="highAlert"] {
+    --primary: 145 63% 42%;        /* #27AE60 */
+    --primary-foreground: 210 40% 98%;
+    --ring: 145 63% 42%;
+  }
+
+  /* TEMA 4: Minimalismo Neutro - Cinza Grafite */
+  [data-theme="minimalNeutral"] {
+    --primary: 210 3% 37%;         /* #5F6368 */
+    --primary-foreground: 210 40% 98%;
+    --ring: 210 3% 37%;
+  }
+
+  /* TEMA 5: Modo Noturno - Azul GitHub */
+  [data-theme="nightMode"] {
+    --primary: 212 92% 63%;        /* #58A6FF */
+    --primary-foreground: 210 40% 98%;
+    --ring: 212 92% 63%;
+  }
+
+  /* --- COMPATIBILIDADE COM TEMAS ANTIGOS --- */
+  
+  /* TEMA OCEAN (antigo) -> deepFocus */
   [data-theme="ocean"] {
-    --primary: 221.2 83.2% 53.3%; /* Azul Vibrante */
+    --primary: 216 85% 34%;
     --primary-foreground: 210 40% 98%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 216 85% 34%;
   }
 
-  /* TEMA VERDE (Forest) */
+  /* TEMA FOREST (antigo) -> calmStudy */
   [data-theme="forest"] {
-    --primary: 142.1 76.2% 36.3%; /* Verde */
-    --primary-foreground: 355.7 100% 97.3%;
-    --ring: 142.1 76.2% 36.3%;
-  }
-
-  /* TEMA ROXO (Purple) */
-  [data-theme="purple"] {
-    --primary: 262.1 83.3% 57.8%; /* Roxo */
+    --primary: 151 25% 31%;
     --primary-foreground: 210 40% 98%;
-    --ring: 262.1 83.3% 57.8%;
+    --ring: 151 25% 31%;
   }
 
-  /* TEMA LARANJA (Sunset) */
+  /* TEMA PURPLE (antigo) -> highAlert */
+  [data-theme="purple"] {
+    --primary: 145 63% 42%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 145 63% 42%;
+  }
+
+  /* TEMA SUNSET (antigo) -> minimalNeutral */
   [data-theme="sunset"] {
-    --primary: 24.6 95% 53.1%; /* Laranja */
-    --primary-foreground: 60 9.1% 97.8%;
-    --ring: 24.6 95% 53.1%;
+    --primary: 210 3% 37%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 210 3% 37%;
+  }
+
+  /* TEMA DEFAULT (antigo) -> deepFocus */
+  [data-theme="default"] {
+    --primary: 216 85% 34%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 216 85% 34%;
   }
 }
  

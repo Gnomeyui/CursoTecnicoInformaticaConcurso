@@ -1,5 +1,5 @@
 ext {
-    minSdkVersion = 21
+    minSdkVersion = 22  // Atualizado de 21 para 22 (Capacitor exige SDK 22+)
     compileSdkVersion = 34
     targetSdkVersion = 34
     androidxActivityVersion = '1.8.0'

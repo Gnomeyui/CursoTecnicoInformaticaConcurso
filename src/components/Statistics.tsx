@@ -3,7 +3,7 @@ import { ArrowLeft, TrendingUp, Target, Award, Clock, Zap, BookOpen, Calendar } 
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useStats } from '../context/StatsContext';
 import { useGame } from '../context/GameContext';
-import { useTheme } from '../context/ThemeContext';
+import { useCustomization } from '../context/CustomizationContext';
 
 interface StatisticsProps {
   onBack: () => void;
@@ -12,7 +12,7 @@ interface StatisticsProps {
 export function Statistics({ onBack }: StatisticsProps) {
   const { detailedStats } = useStats();
   const { xp, level } = useGame();
-  const { theme } = useTheme();
+  const { theme } = useCustomization();
 
   // Preparar dados para gráficos
   const last7Days = detailedStats.dailyStats

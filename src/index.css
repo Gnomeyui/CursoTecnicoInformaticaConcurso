@@ -507,33 +507,69 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --radius: .75rem;
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 216 85% 34%;
     --primary-foreground: 210 40% 98%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 216 85% 34%;
+  }
+
+  [data-theme="deepFocus"] {
+    --primary: 216 85% 34%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 216 85% 34%;
+  }
+
+  [data-theme="calmStudy"] {
+    --primary: 151 25% 31%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 151 25% 31%;
+  }
+
+  [data-theme="highAlert"] {
+    --primary: 145 63% 42%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 145 63% 42%;
+  }
+
+  [data-theme="minimalNeutral"] {
+    --primary: 210 3% 37%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 210 3% 37%;
+  }
+
+  [data-theme="nightMode"] {
+    --primary: 212 92% 63%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 212 92% 63%;
   }
 
   [data-theme="ocean"] {
-    --primary: 221.2 83.2% 53.3%;
+    --primary: 216 85% 34%;
     --primary-foreground: 210 40% 98%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 216 85% 34%;
   }
 
   [data-theme="forest"] {
-    --primary: 142.1 76.2% 36.3%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --ring: 142.1 76.2% 36.3%;
+    --primary: 151 25% 31%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 151 25% 31%;
   }
 
   [data-theme="purple"] {
-    --primary: 262.1 83.3% 57.8%;
+    --primary: 145 63% 42%;
     --primary-foreground: 210 40% 98%;
-    --ring: 262.1 83.3% 57.8%;
+    --ring: 145 63% 42%;
   }
 
   [data-theme="sunset"] {
-    --primary: 24.6 95% 53.1%;
-    --primary-foreground: 60 9.1% 97.8%;
-    --ring: 24.6 95% 53.1%;
+    --primary: 210 3% 37%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 210 3% 37%;
+  }
+
+  [data-theme="default"] {
+    --primary: 216 85% 34%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 216 85% 34%;
   }
 
   * {

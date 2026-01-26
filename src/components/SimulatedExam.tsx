@@ -4,7 +4,6 @@ import {
   Flag, ChevronLeft, ChevronRight, AlertCircle
 } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { useTheme } from '../context/ThemeContext';
 import { useGame } from '../context/GameContext';
 import { useConcursoProfile } from '../context/ConcursoProfileContext';
 import { useCustomization } from '../context/CustomizationContext';

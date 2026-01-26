@@ -4,7 +4,8 @@
 
 **Data:** 22/01/2025  
 **Status:** 🟢 **AUDITORIA APROVADA - 10/10 VERIFICAÇÕES OK**  
-**Compatibilidade:** 🟢 **SDK 21+ (Android 5.0 Lollipop até Android 14+)**
+**Compatibilidade:** 🟢 **SDK 22+ (Android 5.1 Lollipop até Android 14+)**  
+**Requisito:** ✅ **Capacitor exige SDK 22 mínimo**
 
 ---
 
@@ -187,7 +188,7 @@ Quando abrir:
 6. **`AUDITORIA_APK_PRODUCAO.md`** - Auditoria técnica completa APK
 
 ### 📱 Compatibilidade:
-7. **`COMPATIBILIDADE_SDK_21.md`** - Documentação técnica SDK 21+
+7. **`COMPATIBILIDADE_SDK_22.md`** - Documentação técnica SDK 22+ (Android 5.1+)
 
 ### 🏗️ Arquitetura:
 8. **`ARQUITETURA_ESCALAVEL.md`** - Documentação arquitetura enterprise

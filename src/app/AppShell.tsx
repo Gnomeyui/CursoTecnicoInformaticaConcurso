@@ -12,7 +12,7 @@ import React, { useState, useEffect } from 'react';
 import { App as CapacitorApp } from '@capacitor/app';
 import { useGame } from '../context/GameContext';
 import { useStats } from '../context/StatsContext';
-import { useTheme } from '../context/ThemeContext';
+import { useCustomization } from '../context/CustomizationContext';
 import { ConfettiCelebration } from '../components/ConfettiCelebration';
 import { LevelUpCelebration } from '../components/LevelUpCelebration';
 import { OnboardingPage } from '../components/onboarding/OnboardingPage';
@@ -32,7 +32,7 @@ export function AppShell() {
   
   const { showLevelUpCelebration, dismissLevelUpCelebration, levelUpInfo, showGloriaCelebration, dismissGloriaCelebration } = useGame();
   const { getTodayStats } = useStats();
-  const { currentTheme } = useTheme();
+  const { primaryColor: currentTheme } = useCustomization();
 
   // ========================================
   // CARREGAR ESTATÍSTICAS DO DIA
@@ -75,19 +75,7 @@ export function AppShell() {
       if (typeof window !== 'undefined' && 'StatusBar' in window) {
         const StatusBar = (window as any).StatusBar;
         
-        const themeColors: Record<string, string> = {
-          default: '#f8fafc',
-          modern: '#f9fafb',
-          reading: '#f5f5f4',
-          focus: '#ffffff',
-          calm: '#f0fdfa',
-          forest: '#f8fafc',
-          ocean: '#f8fafc',
-          sunset: '#f8fafc',
-          purple: '#f8fafc',
-        };
-        
-        const color = themeColors[currentTheme] || '#ffffff';
+        const color = currentTheme || '#ffffff';
         
         StatusBar?.setStyle('light-content');
         StatusBar?.setBackgroundColor(color);
