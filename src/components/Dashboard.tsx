@@ -10,6 +10,7 @@ import { useStats } from '../context/StatsContext';
 import { COPY } from '../utils/copy';
 import { getRandomMotivationalCTA } from '../utils/getRandomMotivationalCTA';
 import { getThemeInlineStyles, getThemeColor, getThemeGradient } from '../lib/themeUtils';
+import { GabaritooLogo } from './GabaritooLogo';
 
 interface DashboardProps {
   onStartQuiz?: () => void;
@@ -55,13 +56,18 @@ const Dashboard = ({
       
       {/* 1. TOP BAR */}
       <div className="px-6 pt-6 pb-2 flex justify-between items-center bg-white sticky top-0 z-20 border-b border-gray-100">
-        <div onClick={onOpenProfiles} className="cursor-pointer">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Foco Atual</p>
-          <div className="flex items-center gap-1 group">
-            <h1 className="text-lg font-bold text-gray-800 truncate max-w-[200px]">
-              {activeProfile ? activeProfile.nome : 'Selecionar Cargo'}
-            </h1>
-            <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
+        <div onClick={onOpenProfiles} className="cursor-pointer flex items-center gap-3">
+          {/* Logo compacto do Gabaritoo */}
+          <GabaritooLogo size="sm" />
+          
+          <div className="flex-1">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Foco Atual</p>
+            <div className="flex items-center gap-1 group">
+              <h1 className="text-lg font-bold text-gray-800 truncate max-w-[200px]">
+                {activeProfile ? activeProfile.nome : 'Selecionar Cargo'}
+              </h1>
+              <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">

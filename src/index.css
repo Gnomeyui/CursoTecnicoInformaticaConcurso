@@ -211,6 +211,8 @@
     --text-3xl--line-height: calc(2.25 / 1.875);
     --text-4xl: 2.25rem;
     --text-4xl--line-height: calc(2.5 / 2.25);
+    --text-5xl: 3rem;
+    --text-5xl--line-height: 1;
     --text-6xl: 3.75rem;
     --text-6xl--line-height: 1;
     --font-weight-normal: 400;
@@ -229,6 +231,7 @@
     --radius-3xl: 1.5rem;
     --animate-spin: spin 1s linear infinite;
     --animate-pulse: pulse 2s cubic-bezier(.4, 0, .6, 1) infinite;
+    --animate-bounce: bounce 1s infinite;
     --blur-sm: 8px;
     --blur-md: 12px;
     --blur-lg: 16px;
@@ -737,6 +740,10 @@
     z-index: 200;
   }
 
+  .z-\[300\] {
+    z-index: 300;
+  }
+
   .col-span-2 {
     grid-column: span 2 / span 2;
   }
@@ -1240,6 +1247,10 @@
 
   .transform {
     transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);
+  }
+
+  .animate-bounce {
+    animation: var(--animate-bounce);
   }
 
   .animate-in {
@@ -2459,6 +2470,11 @@
     line-height: var(--tw-leading, var(--text-4xl--line-height));
   }
 
+  .text-5xl {
+    font-size: var(--text-5xl);
+    line-height: var(--tw-leading, var(--text-5xl--line-height));
+  }
+
   .text-6xl {
     font-size: var(--text-6xl);
     line-height: var(--tw-leading, var(--text-6xl--line-height));
@@ -2852,6 +2868,10 @@
     opacity: .8;
   }
 
+  .opacity-100 {
+    opacity: 1;
+  }
+
   .shadow-2xl {
     --tw-shadow: 0 25px 50px -12px var(--tw-shadow-color, #00000040);
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
@@ -3004,6 +3024,14 @@
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
 
+  .delay-300 {
+    transition-delay: .3s;
+  }
+
+  .delay-500 {
+    transition-delay: .5s;
+  }
+
   .duration-200 {
     --tw-duration: .2s;
     transition-duration: .2s;
@@ -3017,6 +3045,19 @@
   .duration-500 {
     --tw-duration: .5s;
     transition-duration: .5s;
+  }
+
+  .duration-700 {
+    --tw-duration: .7s;
+    transition-duration: .7s;
+  }
+
+  .delay-300 {
+    animation-delay: .3s;
+  }
+
+  .delay-500 {
+    animation-delay: .5s;
   }
 
   .outline-none {
@@ -3051,6 +3092,10 @@
 
   .slide-in-from-right {
     --tw-enter-translate-x: 100%;
+  }
+
+  .zoom-in {
+    --tw-enter-scale: 0;
   }
 
   @media (hover: hover) {
@@ -5190,6 +5235,18 @@
 @keyframes pulse {
   50% {
     opacity: .5;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    animation-timing-function: cubic-bezier(.8, 0, 1, 1);
+    transform: translateY(-25%);
+  }
+
+  50% {
+    animation-timing-function: cubic-bezier(0, 0, .2, 1);
+    transform: none;
   }
 }
 

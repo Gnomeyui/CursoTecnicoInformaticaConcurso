@@ -16,6 +16,7 @@ import { useCustomization } from '../context/CustomizationContext';
 import { ConfettiCelebration } from '../components/ConfettiCelebration';
 import { LevelUpCelebration } from '../components/LevelUpCelebration';
 import { OnboardingPage } from '../components/onboarding/OnboardingPage';
+import { SplashScreen } from '../components/SplashScreen';
 import { AppRoutes, View, Difficulty } from './AppRoutes';
 import { trackEvent } from '../utils/analytics/simple-metrics';
 import { syncService } from '../services/SyncService';
@@ -29,6 +30,10 @@ export function AppShell() {
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem('hasSeenOnboarding');
+  });
+  const [showSplash, setShowSplash] = useState(() => {
+    // Mostra splash apenas se não estiver no onboarding
+    return !!localStorage.getItem('hasSeenOnboarding');
   });
   
   const { showLevelUpCelebration, dismissLevelUpCelebration, levelUpInfo, showGloriaCelebration, dismissGloriaCelebration } = useGame();
@@ -249,6 +254,15 @@ export function AppShell() {
       
       {/* Toaster para mensagens de feedback */}
       <Toaster />
+      
+      {/* Splash Screen */}
+      {showSplash && (
+        <SplashScreen 
+          onFinish={() => {
+            setShowSplash(false);
+          }} 
+        />
+      )}
     </div>
   );
 }

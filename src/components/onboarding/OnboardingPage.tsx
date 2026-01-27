@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { BookOpen, Brain, TrendingUp, ArrowRight, Check } from 'lucide-react';
 import { COPY } from '../../utils/copy';
+import { GabaritooLogo } from '../GabaritooLogo';
 
 interface OnboardingPageProps {
   onComplete: () => void;
@@ -16,7 +17,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
       title: COPY.onboarding.slide1.title,
       subtitle: COPY.onboarding.slide1.text,
       description: '',
-      icon: <BookOpen className="w-20 h-20 text-indigo-600" />,
+      icon: <GabaritooLogo size="lg" />,
       bgGradient: 'from-indigo-500 to-purple-600',
       buttonText: COPY.onboarding.slide1.button
     },
