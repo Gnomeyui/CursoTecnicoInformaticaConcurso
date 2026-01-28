@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Bell, Trash2, LogOut, User, 
-  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles, RotateCcw
+  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles, RotateCcw, MessageSquare
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -350,6 +350,17 @@ export function Settings({
           <h2 className="text-xs font-bold text-muted-foreground uppercase ml-4 mb-3 tracking-widest">App</h2>
           <div className="bg-card border border-border rounded-[1.5rem] shadow-sm overflow-hidden divide-y divide-border">
             {/* Notificações Inteligentes removidas - disponível em Meu Plano */}
+            <MenuItem 
+              icon={MessageSquare} 
+              label="Enviar Sugestões e Feedback" 
+              desc="Compartilhe suas ideias e solicite provas"
+              onClick={() => {
+                const phoneNumber = '5595991234567'; // Formato: código país + DDD + número
+                const message = encodeURIComponent('Olá! Gostaria de enviar uma sugestão para o Gabaritoo:\n\n');
+                window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+              }}
+              colorClass="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+            />
             <MenuItem 
               icon={HelpCircle} 
               label="Ajuda e Suporte" 

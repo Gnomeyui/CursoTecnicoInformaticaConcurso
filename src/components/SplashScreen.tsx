@@ -30,15 +30,11 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
         
         {/* Logo do Gabaritoo */}
         <div className="animate-in zoom-in duration-500">
-          <GabaritooLogo size="lg" />
+          <GabaritooLogo size="xl" />
         </div>
 
-        {/* Brand Name */}
+        {/* Tagline */}
         <div className="text-center space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-          <h1 className="text-5xl font-black text-white tracking-tight">
-            Gabarit
-            <span style={{ color: '#10b981' }}>oo</span>
-          </h1>
           <p className="text-white/80 text-sm font-medium tracking-wide">
             Sua jornada para a aprovação
           </p>

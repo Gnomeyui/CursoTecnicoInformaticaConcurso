@@ -31,10 +31,12 @@ export function AppShell() {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem('hasSeenOnboarding');
   });
-  const [showSplash, setShowSplash] = useState(() => {
-    // Mostra splash apenas se não estiver no onboarding
-    return !!localStorage.getItem('hasSeenOnboarding');
-  });
+  // SPLASH DESATIVADO TEMPORARIAMENTE
+  const [showSplash, setShowSplash] = useState(false);
+  // const [showSplash, setShowSplash] = useState(() => {
+  //   // Mostra splash apenas se não estiver no onboarding
+  //   return !!localStorage.getItem('hasSeenOnboarding');
+  // });
   
   const { showLevelUpCelebration, dismissLevelUpCelebration, levelUpInfo, showGloriaCelebration, dismissGloriaCelebration } = useGame();
   const { getTodayStats } = useStats();

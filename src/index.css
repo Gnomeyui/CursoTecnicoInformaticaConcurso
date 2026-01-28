@@ -211,8 +211,6 @@
     --text-3xl--line-height: calc(2.25 / 1.875);
     --text-4xl: 2.25rem;
     --text-4xl--line-height: calc(2.5 / 2.25);
-    --text-5xl: 3rem;
-    --text-5xl--line-height: 1;
     --text-6xl: 3.75rem;
     --text-6xl--line-height: 1;
     --font-weight-normal: 400;
@@ -1780,6 +1778,10 @@
     background-color: oklch(.577 .245 27.325);
   }
 
+  .bg-emerald-100 {
+    background-color: var(--color-emerald-100);
+  }
+
   .bg-gray-50 {
     background-color: var(--color-gray-50);
   }
@@ -2468,11 +2470,6 @@
   .text-4xl {
     font-size: var(--text-4xl);
     line-height: var(--tw-leading, var(--text-4xl--line-height));
-  }
-
-  .text-5xl {
-    font-size: var(--text-5xl);
-    line-height: var(--tw-leading, var(--text-5xl--line-height));
   }
 
   .text-6xl {
@@ -4052,6 +4049,18 @@
   @media (prefers-color-scheme: dark) {
     .dark\:bg-destructive\/60 {
       background-color: color-mix(in oklab, oklch(.577 .245 27.325) 60%, transparent);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .dark\:bg-emerald-500\/20 {
+      background-color: color-mix(in srgb, oklch(.696 .17 162.48) 20%, transparent);
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .dark\:bg-emerald-500\/20 {
+        background-color: color-mix(in oklab, var(--color-emerald-500) 20%, transparent);
+      }
     }
   }
 

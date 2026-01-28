@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import logoImage from 'figma:asset/dbefc483e96f20fc902f133b4104ccca05db76bb.png';
 
 interface GabaritooLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -8,29 +8,27 @@ interface GabaritooLogoProps {
 }
 
 const sizeMap = {
-  sm: { circle: 'w-6 h-6', icon: 14, gap: 'gap-1', text: 'text-xl' },
-  md: { circle: 'w-10 h-10', icon: 20, gap: 'gap-2', text: 'text-3xl' },
-  lg: { circle: 'w-16 h-16', icon: 32, gap: 'gap-3', text: 'text-5xl' },
-  xl: { circle: 'w-20 h-20', icon: 40, gap: 'gap-4', text: 'text-6xl' },
+  sm: { width: 40, height: 40 },
+  md: { width: 80, height: 80 },
+  lg: { width: 120, height: 120 },
+  xl: { width: 160, height: 160 },
 };
 
 export function GabaritooLogo({ size = 'md', withText = false, className = '' }: GabaritooLogoProps) {
   const sizes = sizeMap[size];
 
   return (
-    <div className={`flex items-center ${sizes.gap} ${className}`}>
-      {/* Logo Icon */}
-      <div className={`flex ${sizes.gap}`}>
-        {/* Ícone será adicionado depois */}
-      </div>
-      
-      {/* Brand Text */}
-      {withText && (
-        <h1 className={`${sizes.text} font-black text-gray-900 tracking-tight`}>
-          Gabarit
-          <span style={{ color: '#10b981' }}>oo</span>
-        </h1>
-      )}
+    <div className={`flex items-center justify-center ${className}`}>
+      {/* Logo oficial do Gabaritoo (mipmap-xxxhdpi) - OCULTO TEMPORARIAMENTE */}
+      {/* <img 
+        src={logoImage} 
+        alt="Gabaritoo" 
+        style={{ 
+          width: sizes.width,
+          height: sizes.height,
+          objectFit: 'contain'
+        }}
+      /> */}
     </div>
   );
 }
