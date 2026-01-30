@@ -76,8 +76,8 @@ class SyncService {
       // 3. Importar prova base (se necessário)
       const examId = await sqliteService.importExam({
         banca: 'CESPE',
-        orgao: 'ALE-RR',
-        cargo: 'Técnico em Informática',
+        orgao: 'TRE-RO',
+        cargo: 'Técnico Judiciário',
         ano: 2024,
         nivel: 'Médio'
       });

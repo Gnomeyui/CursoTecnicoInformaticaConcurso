@@ -38,7 +38,7 @@ const motivationalMessages = [
   'Apenas 10 questões hoje já fazem diferença! 📚',
   'O TOP 1 não vai se conquistar sozinho! Vamos lá! 🏆',
   'Lembre-se: consistência é a chave do sucesso! 🔑',
-  'Sua vaga na ALE-RR está te esperando! 🎯',
+  'Sua aprovação está te esperando! 🎯',
   'Cada minuto de estudo conta! Vamos revisar? 📖',
   'Não deixe para amanhã! Responda algumas questões agora! ⚡',
   'Você está mais perto do que imagina! Continue! 🌟',
@@ -85,7 +85,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       await LocalNotifications.createChannel({
         id: 'study-reminders',
         name: 'Lembretes de Estudo',
-        description: 'Notificações para lembrar de estudar para o concurso ALE-RR',
+        description: 'Notificações para lembrar de estudar para o concurso',
         importance: 5, // MAX - Aparece na tela e faz som
         visibility: 1, // PUBLIC - Mostra conteúdo completo
         sound: 'default',
@@ -234,8 +234,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         notifications: [
           {
             id: 999,
-            title: '🎉 Bem-vindo ao ALE-RR TOP 1!',
-            body: 'Notificações ativadas! Você receberá lembretes para estudar. Rumo ao TOP 1! 🚀',
+            title: '🎉 Bem-vindo ao Gabaritoo!',
+            body: 'Notificações ativadas! Você receberá lembretes para estudar. Rumo à aprovação! 🚀',
             schedule: { at: new Date(Date.now() + 1000) }, // 1 segundo
             channelId: 'study-reminders',
             sound: 'default',
@@ -258,8 +258,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     if (!hasPermission) return;
 
     try {
-      const notification = new Notification('🎉 Bem-vindo ao ALE-RR TOP 1!', {
-        body: 'Notificações ativadas! Você receberá lembretes para estudar. Rumo ao TOP 1! 🚀',
+      const notification = new Notification('🎉 Bem-vindo ao Gabaritoo!', {
+        body: 'Notificações ativadas! Você receberá lembretes para estudar. Rumo à aprovação! 🚀',
         icon: '/path/to/icon.png' // Substitua pelo caminho do ícone
       });
 
@@ -299,7 +299,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
             if (scheduledTime > now) {
               const message = settings.motivationalMessages
                 ? motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)]
-                : 'Hora de estudar para a ALE-RR!';
+                : 'Hora de estudar!';
 
               const id = (day * 10) + index + 1;
               
@@ -377,13 +377,13 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
     const message = settings.motivationalMessages
       ? motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)]
-      : 'Hora de estudar para a ALE-RR!';
+      : 'Hora de estudar!';
 
     try {
       const notification = new Notification('⏰ Hora de Estudar!', {
         body: message,
         icon: '/icon.svg',
-        tag: 'alerr-study-reminder',
+        tag: 'gabaritoo-study-reminder',
         requireInteraction: false,
         silent: false
       });

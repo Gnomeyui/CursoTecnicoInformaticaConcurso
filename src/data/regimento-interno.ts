@@ -35,9 +35,9 @@ export const regimentoInterno: RegimentoItem[] = [];
  */
 export const regimentoData = {
   documento: {
-    titulo: "Regimento Interno da Assembleia Legislativa do Estado de Roraima",
-    ultima_atualizacao: "Resolução Legislativa N° 002/2021",
-    fonte_arquivo: "Regimento-Interno-Assembleia-Legislativa-do-Estado-de-Roraima-2021.pdf"
+    titulo: "Regimento Interno - Exemplo",
+    ultima_atualizacao: "Para uso como exemplo de estrutura de dados",
+    fonte_arquivo: "exemplo.pdf"
   },
   conteudo: [] as any[] // Conteúdo completo deve vir do Supabase
 };

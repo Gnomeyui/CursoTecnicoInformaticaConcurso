@@ -4,7 +4,7 @@ export interface ConcursoProfile {
   id: string;
   nome: string; // Ex: "Técnico em Informática"
   nivel: 'fundamental' | 'medio' | 'superior'; // Nível de escolaridade
-  orgao: string; // Ex: "ALE-RR", "TRE-RO"
+  orgao: string; // Ex: "TRE-RO", "TRF", "Prefeitura"
   materias: string[]; // Matérias específicas do concurso
   ativo: boolean; // Se está sendo estudado atualmente
   criadoEm: string;
@@ -86,7 +86,7 @@ export const perfisPredefinidos: Omit<ConcursoProfile, 'id' | 'ativo' | 'criadoE
   { nome: 'Agente Penitenciário', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Direito', 'Legislação Penal'] },
   { nome: 'Agente Social', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Conhecimentos Gerais'] },
   { nome: 'Almoxarife', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Matemática', 'Administração'] },
-  { nome: 'Assistente Administrativo', nivel: 'medio', orgao: 'ALE-RR', materias: ['Português', 'Legislação', 'Informática'] },
+  { nome: 'Assistente Administrativo', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Legislação', 'Informática'] },
   { nome: 'Assistente Administrativo I', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Informática', 'Legislação'] },
   { nome: 'Assistente de Administração', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Administração'] },
   { nome: 'Assistente de Alunos', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Conhecimentos Pedagógicos'] },
@@ -157,7 +157,7 @@ export const perfisPredefinidos: Omit<ConcursoProfile, 'id' | 'ativo' | 'criadoE
   { nome: 'Técnico Administrativo', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Administração', 'Informática'] },
   { nome: 'Técnico Agrícola', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Agricultura'] },
   { nome: 'Técnico de Enfermagem', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Enfermagem'] },
-  { nome: 'Técnico de Informática', nivel: 'medio', orgao: 'ALE-RR', materias: ['Informática', 'Legislação', 'Português', 'LGPD', 'Governança de TI'] },
+  { nome: 'Técnico de Informática', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Informática', 'Legislação', 'Português', 'LGPD', 'Governança de TI'] },
   { nome: 'Técnico de Laboratório', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Química', 'Biologia'] },
   { nome: 'Técnico de Segurança do Trabalho', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Segurança do Trabalho'] },
   { nome: 'Técnico em Radiologia', nivel: 'medio', orgao: 'Concursos Públicos', materias: ['Português', 'Radiologia'] },
@@ -182,7 +182,7 @@ export const perfisPredefinidos: Omit<ConcursoProfile, 'id' | 'ativo' | 'criadoE
   { nome: 'Analista de Informática', nivel: 'superior', orgao: 'Concursos Públicos', materias: ['Informática', 'Português', 'Legislação'] },
   { nome: 'Analista de Recursos Humanos', nivel: 'superior', orgao: 'Concursos Públicos', materias: ['Português', 'Recursos Humanos', 'Legislação'] },
   { nome: 'Analista de Sistema', nivel: 'superior', orgao: 'Concursos Públicos', materias: ['Informática', 'Programação', 'Banco de Dados'] },
-  { nome: 'Analista de Sistemas', nivel: 'superior', orgao: 'ALE-RR', materias: ['Informática', 'Legislação', 'Português', 'LGPD', 'Governança de TI'] },
+  { nome: 'Analista de Sistemas', nivel: 'superior', orgao: 'Concursos Públicos', materias: ['Informática', 'Legislação', 'Português', 'LGPD', 'Governança de TI'] },
   { nome: 'Analista de Suporte', nivel: 'superior', orgao: 'Concursos Públicos', materias: ['Informática', 'Português'] },
   { nome: 'Analista de Tecnologia da Informação', nivel: 'superior', orgao: 'Concursos Públicos', materias: ['Informática', 'Português', 'Legislação'] },
   { nome: 'Analista Judiciário - Administrativa', nivel: 'superior', orgao: 'Concursos Públicos', materias: ['Português', 'Administração', 'Direito'] },

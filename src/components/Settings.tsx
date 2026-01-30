@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Bell, Trash2, LogOut, User, 
-  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles, RotateCcw, MessageSquare
+  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles, RotateCcw, MessageSquare, Ticket
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -9,6 +9,7 @@ import { Switch } from './ui/switch';
 import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
 import { authService } from '../services/AuthService';
+import { voucherService } from '../services/VoucherService';
 import { UpgradeScreen } from './UpgradeScreen';
 import { PlanSelector } from './PlanSelector';
 import { toast } from 'sonner@2.0.3';
@@ -28,6 +29,8 @@ export function Settings({
   const { settings } = useCustomization();
   const theme = APP_THEMES[settings.colorTheme] || APP_THEMES.focus;
   const [showPlanSelector, setShowPlanSelector] = useState(false);
+  const [voucherCode, setVoucherCode] = useState('');
+  const [isRedeeming, setIsRedeeming] = useState(false);
   
   const isPremium = authService.isPremium();
   const user = authService.getUser();
@@ -150,6 +153,42 @@ export function Settings({
         window.location.reload();
       }, 1000);
     }
+  };
+
+  // 🎫 NOVO: Resgatar voucher
+  const handleRedeemVoucher = () => {
+    if (!voucherCode.trim()) {
+      toast.error('❌ Digite um código de voucher');
+      return;
+    }
+
+    setIsRedeeming(true);
+
+    // Simular delay (como se estivesse validando com servidor)
+    setTimeout(() => {
+      const result = voucherService.redeem(voucherCode);
+
+      if (result.valid && result.voucher) {
+        // Sucesso!
+        const duration = result.voucher.type === 'monthly' ? '1 mês' : '1 ano';
+        toast.success(`🎉 Voucher ativado com sucesso!\n\nVocê ganhou ${duration} de premium!`, {
+          duration: 5000,
+        });
+        
+        // Limpar campo
+        setVoucherCode('');
+        
+        // Recarregar página após 2s para mostrar o status premium
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        // Erro
+        toast.error(result.message || '❌ Erro ao validar voucher');
+      }
+
+      setIsRedeeming(false);
+    }, 800);
   };
 
   // Componente Auxiliar para Item de Menu
@@ -303,6 +342,65 @@ export function Settings({
           </div>
         </section>
         
+        {/* GRUPO 0.5: VOUCHER (NOVO) */}
+        {!isPremium && (
+          <section>
+            <h2 className="text-xs font-bold text-muted-foreground uppercase ml-4 mb-3 tracking-widest">Tem um cupom?</h2>
+            <div className="bg-card border border-border rounded-[1.5rem] shadow-sm overflow-hidden p-6">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="p-3 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-500 shadow-lg">
+                  <Ticket size={24} className="text-white" strokeWidth={2.5} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-black text-foreground mb-1">Resgatar Voucher</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Digite seu código promocional para ganhar acesso premium gratuitamente
+                  </p>
+                </div>
+              </div>
+
+              {/* Input de Voucher */}
+              <div className="space-y-3">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={voucherCode}
+                    onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !isRedeeming) {
+                        handleRedeemVoucher();
+                      }
+                    }}
+                    placeholder="Digite o código aqui"
+                    disabled={isRedeeming}
+                    className="w-full px-4 py-3 border-2 border-border rounded-xl font-mono text-center text-lg font-bold tracking-widest uppercase bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-purple-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    maxLength={20}
+                  />
+                </div>
+
+                <Button
+                  onClick={handleRedeemVoucher}
+                  disabled={isRedeeming || !voucherCode.trim()}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isRedeeming ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      Validando...
+                    </>
+                  ) : (
+                    '🎁 Resgatar Cupom'
+                  )}
+                </Button>
+
+                <p className="text-xs text-muted-foreground text-center">
+                  💡 Os cupons são válidos para uso único e concedem 1 mês ou 1 ano de acesso premium
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* GRUPO 1: ESTUDO */}
         <section>
           <h2 className="text-xs font-bold text-muted-foreground uppercase ml-4 mb-3 tracking-widest">Sua Rotina</h2>

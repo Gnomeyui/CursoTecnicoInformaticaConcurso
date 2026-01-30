@@ -494,7 +494,7 @@ class SQLiteService {
    * USO:
    * const examId = await sqliteService.importExam({
    *   banca: 'CESPE',
-   *   orgao: 'ALE-RR',
+   *   orgao: 'TRE-RO',
    *   cargo: 'Analista Legislativo',
    *   ano: 2023,
    *   nivel: 'Superior'

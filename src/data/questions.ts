@@ -17,7 +17,7 @@ export interface Question {
   // Campos para rastreamento de origem
   banca?: string; // Ex: "CESPE", "FCC", "VUNESP", "IBFC", "FGV", etc.
   ano?: number; // Ex: 2024, 2023, etc.
-  concurso?: string; // Ex: "ALE-RR - Técnico em Informática", "TRE-RO - Analista"
+  concurso?: string; // Ex: "TRE-RO - Analista", "TRF - Técnico"
 }
 
 // Lista de bancas organizadoras comuns (referência para cadastro)
