@@ -1,0 +1,18 @@
+# ============================================
+# COMANDO ÚNICO - COPIE E COLE NO TERMINAL
+# ============================================
+
+chmod +x EXECUTAR_AGORA.sh && ./EXECUTAR_AGORA.sh
+
+# ============================================
+# OU, se preferir passo a passo:
+# ============================================
+
+# Passo 1: Dar permissão
+chmod +x scripts/1-limpar-raiz.sh
+
+# Passo 2: Executar
+./scripts/1-limpar-raiz.sh
+
+# Passo 3: Validar
+ls -la | grep ".md"  # Deve mostrar apenas README.md
