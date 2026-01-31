@@ -1275,6 +1275,10 @@
     touch-action: none;
   }
 
+  .appearance-none {
+    appearance: none;
+  }
+
   .auto-rows-min {
     grid-auto-rows: min-content;
   }
@@ -1285,10 +1289,6 @@
 
   .grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .grid-rows-\[auto_auto\] {
@@ -2862,6 +2862,10 @@
     color: var(--color-gray-500);
   }
 
+  .accent-blue-600 {
+    accent-color: var(--color-blue-600);
+  }
+
   .opacity-0 {
     opacity: 0;
   }
@@ -3530,6 +3534,12 @@
   @media (hover: hover) {
     .hover\:underline:hover {
       text-decoration-line: underline;
+    }
+  }
+
+  @media (hover: hover) {
+    .hover\:opacity-80:hover {
+      opacity: .8;
     }
   }
 

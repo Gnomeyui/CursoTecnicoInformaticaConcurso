@@ -35,6 +35,9 @@
           "@radix-ui/react-toggle": "*",
           "@radix-ui/react-toggle-group": "*",
           "@radix-ui/react-tooltip": "*",
+          "@testing-library/jest-dom": "*",
+          "@testing-library/react": "*",
+          "@vitejs/plugin-react": "*",
           "@vitejs/plugin-react-swc": "*",
           "class-variance-authority": "*",
           "clsx": "*",
@@ -54,7 +57,8 @@
           "sonner": "^2.0.3",
           "tailwind-merge": "*",
           "vaul": "^1.1.2",
-          "vite": "*"
+          "vite": "*",
+          "vitest": "*"
       },
       "devDependencies": {
           "@types/node": "^20.10.0",
