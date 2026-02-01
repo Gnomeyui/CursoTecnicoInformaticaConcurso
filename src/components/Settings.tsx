@@ -16,6 +16,7 @@ import { APP_THEMES } from '../lib/themeConfig';
 import { UpgradeScreen } from './UpgradeScreen';
 import { PlanSelector } from './PlanSelector';
 import { useSettings } from '../hooks/useSettings';
+import { NotificationTestPanel } from './NotificationTestPanel';
 
 /**
  * Props do Settings
@@ -52,6 +53,9 @@ export function Settings({
   // HOOK (ÚNICA FONTE DE DADOS E LÓGICA)
   // ============================================
   const settings = useSettings(onClose);
+  
+  // State para controlar o painel de testes
+  const [showTestPanel, setShowTestPanel] = React.useState(false);
   
   // ============================================
   // THEME
@@ -111,6 +115,23 @@ export function Settings({
       {settings.showPlanSelector && (
         <div className="fixed inset-0 z-50 bg-background">
           <PlanSelector onClose={() => settings.setShowPlanSelector(false)} />
+        </div>
+      )}
+
+      {/* Notification Test Panel Modal */}
+      {showTestPanel && (
+        <div className="fixed inset-0 z-50 bg-background overflow-y-auto">
+          <div className="bg-card/80 backdrop-blur-md px-6 py-5 border-b border-border sticky top-0 z-10 flex items-center gap-3">
+            <button 
+              onClick={() => setShowTestPanel(false)} 
+              className="p-2 hover:bg-accent rounded-lg transition-colors -ml-2"
+              aria-label="Voltar"
+            >
+              <ArrowLeft className="h-6 w-6 text-foreground" />
+            </button>
+            <h1 className="text-2xl font-black text-foreground tracking-tight">Teste de Notificações</h1>
+          </div>
+          <NotificationTestPanel />
         </div>
       )}
 
@@ -329,6 +350,13 @@ export function Settings({
             App
           </h2>
           <div className="bg-card border border-border rounded-[1.5rem] shadow-sm overflow-hidden divide-y divide-border">
+            <MenuItem 
+              icon={Bell} 
+              label="🧪 Testar Notificações" 
+              desc="Verificar lembretes e vibrações"
+              onClick={() => setShowTestPanel(true)}
+              colorClass="bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400"
+            />
             <MenuItem 
               icon={MessageSquare} 
               label="Enviar Sugestões e Feedback" 

@@ -1,261 +1,523 @@
 /**
- * SyncService - Sincronização com Servidor
+ * ========================================
+ * SYNC SERVICE - ARQUITETURA OFFLINE-FIRST
+ * ========================================
  * 
- * Responsável por:
- * - Fazer fetch das questões do servidor
- * - Importar para o SQLite local
- * - Gerenciar estado de sincronização
+ * RESPONSABILIDADE:
+ * - Baixar pacotes de questões do servidor por perfil
+ * - Importar questões para SQLite local
+ * - Gerenciar sincronização inteligente
+ * - Controlar cache e atualizações
  * 
- * Criado conforme Auditoria 2.1 (10/01/2026)
+ * ARQUITETURA:
+ * ========================================
+ * 
+ * FLUXO:
+ * 1. Usuário escolhe perfil (Técnico + CESPE)
+ * 2. App baixa: https://servidor.com/downloads/cespe/tecnico.json
+ * 3. JSON contém ~2.000 questões filtradas para aquele perfil
+ * 4. Importa tudo para SQLite local
+ * 5. App funciona 100% offline a partir daqui
+ * 
+ * CUSTO ZERO:
+ * - Usuário baixa 1x (500KB-2MB JSON)
+ * - App lê do SQLite local (grátis, instantâneo)
+ * - Servidor: CDN estático (GitHub Pages, Cloudflare R2, etc)
+ * 
+ * FORMATO DO JSON:
+ * ========================================
+ * {
+ *   "metadata": {
+ *     "perfil": "Técnico Judiciário",
+ *     "banca": "CESPE",
+ *     "versao": "2024-01-15",
+ *     "total": 2000
+ *   },
+ *   "questoes": [
+ *     {
+ *       "id": "q_001",
+ *       "materia": "Informática",
+ *       "dificuldade": "medio",
+ *       "pergunta": "Qual comando Linux...",
+ *       "opcoes": ["rm -rf", "ls -la", "mkdir", "cd .."],
+ *       "correta": 1,
+ *       "explicacao": "O comando ls -la..."
+ *     }
+ *   ]
+ * }
  */
 
 import { sqliteService } from '../lib/database/SQLiteService';
+import { toast } from 'sonner@2.0.3';
 
-interface SyncStatus {
-  isSyncing: boolean;
-  lastSyncDate: string | null;
-  totalQuestions: number;
-  error: string | null;
+// ========================================
+// CONFIGURAÇÃO DO SERVIDOR
+// ========================================
+
+/**
+ * URL base do servidor de downloads
+ * 
+ * OPÇÕES:
+ * 1. GitHub Pages (GRÁTIS): 
+ *    - https://seu-usuario.github.io/gabaritoo-data
+ * 
+ * 2. Cloudflare R2 (GRÁTIS até 10GB/mês):
+ *    - https://pub-xxxxx.r2.dev
+ * 
+ * 3. Servidor próprio:
+ *    - https://api.gabaritoo.com/downloads
+ * 
+ * 4. Firebase Storage (GRÁTIS até 5GB):
+ *    - https://firebasestorage.googleapis.com/v0/b/gabaritoo/o
+ */
+const SERVER_URL = 'https://seu-usuario.github.io/gabaritoo-data/downloads';
+
+// ========================================
+// TIPOS
+// ========================================
+
+interface PacoteMetadata {
+  perfil: string;
+  banca: string;
+  cargo: string;
+  nivel: string;
+  versao: string;
+  total: number;
 }
 
+interface Questao {
+  id: string;
+  materia: string;
+  dificuldade: 'facil' | 'medio' | 'dificil';
+  pergunta: string;
+  opcoes: string[];
+  correta: number; // Índice da opção correta (0-3)
+  explicacao?: string;
+  banca?: string;
+  ano?: number;
+}
+
+interface PacoteQuestoes {
+  metadata: PacoteMetadata;
+  questoes: Questao[];
+}
+
+interface SyncStatus {
+  perfilAtual: string | null;
+  ultimaSync: string | null;
+  totalQuestoes: number;
+  versaoAtual: string | null;
+  sincronizando: boolean;
+}
+
+// ========================================
+// SYNC SERVICE CLASS
+// ========================================
+
 class SyncService {
-  private readonly SYNC_KEY = 'gabaritoo_last_sync';
-  private readonly SERVER_URL = 'https://seu-servidor.com/api'; // TODO: Atualizar com URL real
+  private readonly SYNC_KEY = 'gabaritoo_sync_status';
+
+  // ========================================
+  // STATUS DA SINCRONIZAÇÃO
+  // ========================================
 
   /**
    * Retorna o status atual da sincronização
    */
-  getSyncStatus(): SyncStatus {
+  getStatus(): SyncStatus {
     try {
-      const lastSync = localStorage.getItem(this.SYNC_KEY);
+      const stored = localStorage.getItem(this.SYNC_KEY);
       
-      return {
-        isSyncing: false,
-        lastSyncDate: lastSync,
-        totalQuestions: 0,
-        error: null
-      };
+      if (stored) {
+        return JSON.parse(stored);
+      }
+
+      return this.getDefaultStatus();
     } catch (error) {
-      return {
-        isSyncing: false,
-        lastSyncDate: null,
-        totalQuestions: 0,
-        error: 'Erro ao recuperar status'
-      };
+      console.error('Erro ao carregar status:', error);
+      return this.getDefaultStatus();
     }
   }
 
   /**
-   * Sincroniza questões do servidor para o SQLite
+   * Status padrão (primeira execução)
    */
-  async syncQuestions(): Promise<{ success: boolean; message: string; total: number }> {
-    try {
-      console.log('🔄 Iniciando sincronização com servidor...');
-
-      // 1. Verificar se já tem questões no banco
-      const hasQuestions = await sqliteService.hasQuestions();
-      
-      if (hasQuestions) {
-        console.log('ℹ️ Banco já possui questões. Pulando sincronização.');
-        const stats = await sqliteService.getDatabaseStats();
-        
-        return {
-          success: true,
-          message: 'Questões já importadas',
-          total: stats.questions
-        };
-      }
-
-      // 2. Buscar questões do servidor
-      const questions = await this.fetchQuestionsFromServer();
-      
-      if (!questions || questions.length === 0) {
-        throw new Error('Nenhuma questão retornada pelo servidor');
-      }
-
-      // 3. Importar prova base (se necessário)
-      const examId = await sqliteService.importExam({
-        banca: 'CESPE',
-        orgao: 'TRE-RO',
-        cargo: 'Técnico Judiciário',
-        ano: 2024,
-        nivel: 'Médio'
-      });
-
-      // 4. Adicionar examId a todas as questões
-      const questionsWithExam = questions.map(q => ({
-        ...q,
-        examId
-      }));
-
-      // 5. Importar questões em lote
-      await sqliteService.importQuestionsBatch(questionsWithExam);
-
-      // 6. Salvar timestamp da sincronização
-      localStorage.setItem(this.SYNC_KEY, new Date().toISOString());
-
-      console.log('✅ Sincronização concluída com sucesso!');
-
-      return {
-        success: true,
-        message: 'Sincronização concluída',
-        total: questions.length
-      };
-
-    } catch (error) {
-      console.error('❌ Erro na sincronização:', error);
-      
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Erro desconhecido',
-        total: 0
-      };
-    }
+  private getDefaultStatus(): SyncStatus {
+    return {
+      perfilAtual: null,
+      ultimaSync: null,
+      totalQuestoes: 0,
+      versaoAtual: null,
+      sincronizando: false,
+    };
   }
 
   /**
-   * Busca questões do servidor
-   * 
-   * OPÇÕES DE IMPLEMENTAÇÃO:
-   * 
-   * 1. Servidor próprio (API REST):
-   *    - GET https://seu-servidor.com/api/questions
-   * 
-   * 2. Arquivo JSON estático (mais simples para começar):
-   *    - fetch('/data/questions.json')
-   * 
-   * 3. GitHub Pages (grátis):
-   *    - https://seu-usuario.github.io/gabaritoo-data/questions.json
+   * Salva status no localStorage
    */
-  private async fetchQuestionsFromServer(): Promise<any[]> {
+  private saveStatus(status: Partial<SyncStatus>): void {
+    const current = this.getStatus();
+    const updated = { ...current, ...status };
+    localStorage.setItem(this.SYNC_KEY, JSON.stringify(updated));
+  }
+
+  // ========================================
+  // DOWNLOAD E IMPORTAÇÃO
+  // ========================================
+
+  /**
+   * Baixa e importa pacote de questões para um perfil específico
+   * 
+   * EXEMPLO:
+   * await syncService.baixarPacote({
+   *   cargo: 'Técnico Judiciário',
+   *   banca: 'CESPE',
+   *   nivel: 'Médio'
+   * });
+   * 
+   * ARQUIVO BAIXADO:
+   * https://servidor.com/downloads/cespe/tecnico-medio.json
+   * 
+   * @param perfil - Dados do perfil (cargo, banca, nível)
+   * @returns Promise<boolean> - true se sucesso
+   */
+  async baixarPacote(perfil: {
+    cargo: string;
+    banca: string;
+    nivel: string;
+  }): Promise<boolean> {
     try {
-      // OPÇÃO 1: Servidor próprio (descomente quando tiver o servidor)
-      // const response = await fetch(`${this.SERVER_URL}/questions`);
-      
-      // OPÇÃO 2: Arquivo JSON local (funciona agora)
-      const response = await fetch('/data/questions.json');
+      // 1. Marcar como sincronizando
+      this.saveStatus({ sincronizando: true });
+      toast.loading('Baixando questões...', { id: 'sync' });
+
+      // 2. Montar URL do pacote
+      const url = this.buildPackageUrl(perfil);
+      console.log('📥 Baixando pacote:', url);
+
+      // 3. Fazer download
+      const response = await fetch(url);
       
       if (!response.ok) {
-        throw new Error(`Erro HTTP: ${response.status}`);
+        throw new Error(`Pacote não encontrado: ${response.status}`);
       }
 
-      const data = await response.json();
-      
-      // Validar formato dos dados
-      if (!Array.isArray(data)) {
-        throw new Error('Formato de dados inválido: esperado array');
-      }
+      const pacote: PacoteQuestoes = await response.json();
 
-      console.log(`📦 ${data.length} questões recebidas do servidor`);
-      
-      return data;
+      // 4. Validar pacote
+      this.validatePackage(pacote);
 
-    } catch (error) {
-      console.error('❌ Erro ao buscar questões:', error);
-      
-      // Fallback: usar questões locais se o fetch falhar
-      console.log('⚠️ Tentando usar questões locais...');
-      return this.loadLocalQuestions();
-    }
-  }
+      toast.loading(`Importando ${pacote.questoes.length} questões...`, { id: 'sync' });
 
-  /**
-   * Carrega questões do arquivo local (fallback)
-   */
-  private async loadLocalQuestions(): Promise<any[]> {
-    try {
-      // Importa as questões do arquivo de dados local
-      const { questions } = await import('../data/seedQuestions');
-      
-      console.log(`📦 ${questions.length} questões carregadas localmente`);
-      
-      return questions;
-    } catch (error) {
-      console.error('❌ Erro ao carregar questões locais:', error);
-      return [];
-    }
-  }
+      // 5. Limpar questões antigas (evitar duplicatas)
+      console.log('🗑️ Limpando banco local...');
+      await sqliteService.execute('DELETE FROM questions');
 
-  /**
-   * Força uma nova sincronização (apaga cache e redownload)
-   */
-  async forceSync(): Promise<{ success: boolean; message: string; total: number }> {
-    try {
-      console.log('🔄 Forçando nova sincronização...');
-      
-      // Limpa cache de sincronização
-      localStorage.removeItem(this.SYNC_KEY);
-      
-      // Apaga questões antigas (opcional - comentado por segurança)
-      // await sqliteService.execute('DELETE FROM questions');
-      
-      // Executa sincronização normal
-      return await this.syncQuestions();
-      
-    } catch (error) {
-      console.error('❌ Erro ao forçar sincronização:', error);
-      
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Erro desconhecido',
-        total: 0
-      };
-    }
-  }
+      // 6. Criar/atualizar registro da prova
+      const examId = await sqliteService.importExam({
+        banca: perfil.banca,
+        orgao: pacote.metadata.perfil,
+        cargo: perfil.cargo,
+        ano: new Date().getFullYear(),
+        nivel: perfil.nivel,
+      });
 
-  /**
-   * Verifica se é necessário sincronizar
-   */
-  needsSync(): boolean {
-    const lastSync = localStorage.getItem(this.SYNC_KEY);
-    
-    if (!lastSync) {
+      // 7. Preparar questões para importação
+      const questoesFormatadas = pacote.questoes.map((q, index) => ({
+        examId,
+        id: q.id,
+        number: index + 1,
+        discipline: q.materia,
+        statement: q.pergunta,
+        options: q.opcoes,
+        correctOption: String.fromCharCode(97 + q.correta), // 0->a, 1->b, 2->c, 3->d
+        difficulty: q.dificuldade,
+        explanation: q.explicacao,
+      }));
+
+      // 8. Importar em lote (transação única - muito rápido!)
+      console.log('💾 Importando para SQLite...');
+      console.time('⏱️ Tempo de importação');
+      
+      await sqliteService.importQuestionsBatch(questoesFormatadas);
+      
+      console.timeEnd('⏱️ Tempo de importação');
+
+      // 9. Salvar status
+      this.saveStatus({
+        perfilAtual: `${perfil.cargo} - ${perfil.banca}`,
+        ultimaSync: new Date().toISOString(),
+        totalQuestoes: pacote.questoes.length,
+        versaoAtual: pacote.metadata.versao,
+        sincronizando: false,
+      });
+
+      toast.success(`${pacote.questoes.length} questões importadas! 🎉`, { id: 'sync' });
+      
       return true;
+
+    } catch (error) {
+      console.error('❌ Erro ao baixar pacote:', error);
+      
+      this.saveStatus({ sincronizando: false });
+      
+      toast.error(
+        error instanceof Error 
+          ? `Erro: ${error.message}` 
+          : 'Erro ao baixar questões. Verifique sua conexão.',
+        { id: 'sync' }
+      );
+      
+      return false;
+    }
+  }
+
+  /**
+   * Monta URL do pacote baseado no perfil
+   * 
+   * FORMATO:
+   * - Técnico + CESPE → cespe/tecnico-medio.json
+   * - Analista + FCC → fcc/analista-superior.json
+   * 
+   * @param perfil - Dados do perfil
+   * @returns URL completa do pacote
+   */
+  private buildPackageUrl(perfil: {
+    cargo: string;
+    banca: string;
+    nivel: string;
+  }): string {
+    // Normalizar strings (lowercase, remover acentos, espaços)
+    const banca = this.normalizeString(perfil.banca);
+    const cargo = this.normalizeString(perfil.cargo);
+    const nivel = this.normalizeString(perfil.nivel);
+
+    // Construir nome do arquivo
+    const filename = `${cargo}-${nivel}.json`;
+
+    // URL completa
+    return `${SERVER_URL}/${banca}/${filename}`;
+  }
+
+  /**
+   * Normaliza string para usar em URLs
+   * 
+   * EXEMPLO:
+   * "Técnico Judiciário" → "tecnico-judiciario"
+   */
+  private normalizeString(str: string): string {
+    return str
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .replace(/\s+/g, '-') // Substitui espaços por hífens
+      .replace(/[^a-z0-9-]/g, ''); // Remove caracteres especiais
+  }
+
+  /**
+   * Valida estrutura do pacote baixado
+   */
+  private validatePackage(pacote: any): asserts pacote is PacoteQuestoes {
+    if (!pacote.metadata) {
+      throw new Error('Pacote inválido: metadata ausente');
     }
 
-    // Sincroniza se passou mais de 7 dias
-    const lastSyncDate = new Date(lastSync);
-    const daysSinceSync = (Date.now() - lastSyncDate.getTime()) / (1000 * 60 * 60 * 24);
+    if (!Array.isArray(pacote.questoes)) {
+      throw new Error('Pacote inválido: questões ausentes');
+    }
+
+    if (pacote.questoes.length === 0) {
+      throw new Error('Pacote vazio: nenhuma questão encontrada');
+    }
+
+    // Validar primeira questão (amostra)
+    const q = pacote.questoes[0];
     
-    return daysSinceSync > 7;
+    if (!q.id || !q.pergunta || !Array.isArray(q.opcoes)) {
+      throw new Error('Pacote inválido: formato de questão incorreto');
+    }
+
+    console.log('✅ Pacote validado:', {
+      perfil: pacote.metadata.perfil,
+      versao: pacote.metadata.versao,
+      total: pacote.questoes.length,
+    });
+  }
+
+  // ========================================
+  // VERIFICAÇÕES E UTILIDADES
+  // ========================================
+
+  /**
+   * Verifica se há questões importadas no banco
+   */
+  async temQuestoes(): Promise<boolean> {
+    return await sqliteService.hasQuestions();
+  }
+
+  /**
+   * Verifica se precisa atualizar o pacote
+   * (usa versão salva vs versão do servidor)
+   */
+  async precisaAtualizar(perfil: {
+    cargo: string;
+    banca: string;
+    nivel: string;
+  }): Promise<boolean> {
+    try {
+      const status = this.getStatus();
+      
+      // Se nunca sincronizou, precisa baixar
+      if (!status.versaoAtual) {
+        return true;
+      }
+
+      // Buscar versão atual do servidor (apenas metadata, sem baixar tudo)
+      const url = this.buildPackageUrl(perfil);
+      const response = await fetch(url, { method: 'HEAD' }); // Apenas headers
+
+      if (!response.ok) {
+        return false;
+      }
+
+      // Comparar última modificação (se servidor suportar)
+      const lastModified = response.headers.get('Last-Modified');
+      
+      if (lastModified) {
+        const serverDate = new Date(lastModified);
+        const localDate = status.ultimaSync ? new Date(status.ultimaSync) : new Date(0);
+        
+        return serverDate > localDate;
+      }
+
+      // Se não tem Last-Modified, não atualiza
+      return false;
+
+    } catch (error) {
+      console.error('Erro ao verificar atualização:', error);
+      return false;
+    }
   }
 
   /**
    * Sincronização automática inteligente
-   * Chama isso no boot do app
+   * 
+   * QUANDO CHAMAR:
+   * - No boot do app (App.tsx ou AppShell.tsx)
+   * - Quando usuário trocar de perfil
+   * 
+   * COMPORTAMENTO:
+   * - Se não tem questões: baixa pacote
+   * - Se tem questões: verifica se precisa atualizar
+   * - Se offline: usa questões locais
    */
-  async autoSync(): Promise<void> {
+  async autoSync(perfil?: {
+    cargo: string;
+    banca: string;
+    nivel: string;
+  }): Promise<void> {
     try {
-      // Verifica se tem questões
-      const hasQuestions = await sqliteService.hasQuestions();
-      
-      if (!hasQuestions) {
-        console.log('🔄 Primeira execução: sincronizando questões...');
-        await this.syncQuestions();
+      // Se não passou perfil, pega do status
+      if (!perfil) {
+        const status = this.getStatus();
+        if (!status.perfilAtual) {
+          console.log('⚠️ Nenhum perfil configurado. Pulando sync.');
+          return;
+        }
+        // TODO: parsear perfilAtual para extrair cargo, banca, nivel
         return;
       }
 
-      // Verifica se precisa atualizar
-      if (this.needsSync()) {
-        console.log('🔄 Sincronizando atualizações...');
-        await this.syncQuestions();
+      // Verificar se tem questões
+      const temQuestoes = await this.temQuestoes();
+
+      if (!temQuestoes) {
+        console.log('📥 Primeira execução: baixando questões...');
+        await this.baixarPacote(perfil);
+        return;
+      }
+
+      // Verificar se precisa atualizar
+      const precisaAtualizar = await this.precisaAtualizar(perfil);
+
+      if (precisaAtualizar) {
+        console.log('🔄 Nova versão disponível. Atualizando...');
+        await this.baixarPacote(perfil);
       } else {
         console.log('✅ Questões já atualizadas');
       }
-      
+
     } catch (error) {
       console.error('⚠️ Erro na sincronização automática:', error);
       // Não bloqueia o app se falhar
+      console.log('📱 Continuando com questões locais');
     }
   }
 
   /**
    * Retorna estatísticas do banco local
    */
-  async getLocalStats() {
+  async getEstatisticas() {
     return await sqliteService.getDatabaseStats();
+  }
+
+  /**
+   * Limpa todos os dados (reset completo)
+   */
+  async limparTudo(): Promise<void> {
+    try {
+      await sqliteService.execute('DELETE FROM questions');
+      await sqliteService.execute('DELETE FROM exams');
+      await sqliteService.execute('DELETE FROM user_question_progress');
+      
+      localStorage.removeItem(this.SYNC_KEY);
+      
+      console.log('🗑️ Todos os dados foram limpos');
+      toast.success('Dados limpos com sucesso');
+      
+    } catch (error) {
+      console.error('Erro ao limpar dados:', error);
+      toast.error('Erro ao limpar dados');
+    }
   }
 }
 
-// Singleton
+// ========================================
+// SINGLETON EXPORT
+// ========================================
+
 export const syncService = new SyncService();
+
+// ========================================
+// NOTAS PARA IMPLEMENTAÇÃO
+// ========================================
+
+/**
+ * 🚀 PRÓXIMOS PASSOS:
+ * 
+ * 1. CRIAR SERVIDOR DE ARQUIVOS:
+ *    - Opção mais simples: GitHub Pages (grátis, CDN global)
+ *    - Estrutura:
+ *      /downloads
+ *        /cespe
+ *          tecnico-medio.json
+ *          analista-superior.json
+ *        /fcc
+ *          tecnico-medio.json
+ *          analista-superior.json
+ * 
+ * 2. GERAR ARQUIVOS JSON:
+ *    - Script Python/Node.js para filtrar questões por perfil
+ *    - Exportar em formato padronizado
+ *    - Comprimir com gzip (reduce 70% do tamanho)
+ * 
+ * 3. INTEGRAR NO APP:
+ *    - No ProfileSelector: chamar syncService.baixarPacote()
+ *    - No AppShell: chamar syncService.autoSync()
+ *    - Nas Settings: botão "Atualizar Questões"
+ * 
+ * 4. ATUALIZAR HOOKS:
+ *    - useQuestions: ler do SQLite em vez de Supabase
+ *    - useSimulatedExam: ler do SQLite
+ *    - useStudySession: ler do SQLite
+ */
