@@ -61,6 +61,8 @@ export interface SimulatedExamData {
   // Config
   questionCount: number;
   timeLimit: number;
+  selectedBanca: string;
+  selectedNivel: string;
   
   // Questions
   selectedQuestions: Question[];
@@ -86,6 +88,8 @@ export interface SimulatedExamData {
   // Actions
   setQuestionCount: (count: number) => void;
   setTimeLimit: (limit: number) => void;
+  setBanca: (banca: string) => void;
+  setNivel: (nivel: string) => void;
   startExam: () => Promise<void>;
   finishExam: () => void;
   selectAnswer: (answerOptionId: string) => void;
@@ -125,6 +129,8 @@ export const useSimulatedExam = (): SimulatedExamData => {
   const [examState, setExamState] = useState<ExamState>('config');
   const [questionCount, setQuestionCount] = useState(30);
   const [timeLimit, setTimeLimit] = useState(60);
+  const [selectedBanca, setSelectedBanca] = useState('');
+  const [selectedNivel, setSelectedNivel] = useState('');
   
   const [selectedQuestions, setSelectedQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -255,21 +261,53 @@ export const useSimulatedExam = (): SimulatedExamData => {
       // Inicializar SQLite
       await sqliteService.initialize();
 
+      // Construir query com filtros
+      let query = `
+        SELECT q.*, e.banca, e.ano, e.orgao, e.cargo, e.nivel
+        FROM questions q
+        JOIN exams e ON q.exam_id = e.id
+        WHERE 1=1
+      `;
+      const params: any[] = [];
+
+      // Filtro de Banca
+      if (selectedBanca) {
+        query += ' AND e.banca = ?';
+        params.push(selectedBanca);
+      }
+
+      // Filtro de Nível
+      if (selectedNivel) {
+        query += ' AND e.nivel = ?';
+        params.push(selectedNivel);
+      }
+
+      // Adicionar ORDER BY e LIMIT
+      query += ' ORDER BY RANDOM() LIMIT ?';
+      params.push(questionCount);
+
+      console.log('🔍 Query:', query);
+      console.log('🔍 Params:', params);
+
       // Buscar questões do banco real
-      const result = await sqliteService.query(
-        'SELECT * FROM questions ORDER BY RANDOM() LIMIT ?',
-        [questionCount]
-      );
+      const result = await sqliteService.query(query, params);
 
       console.log(`📊 ${result.length} questões encontradas no banco`);
 
-      // Se não houver questões, mostrar erro
+      // Se não houver questões, mostrar erro específico
       if (result.length === 0) {
-        alert(
-          '⚠️ Nenhuma Questão Encontrada!\n\n' +
-          'O banco de dados está vazio.\n' +
-          'Por favor, importe questões antes de iniciar o simulado.'
-        );
+        let errorMessage = '⚠️ Nenhuma Questão Encontrada!\n\n';
+        
+        if (selectedBanca || selectedNivel) {
+          errorMessage += 'Não há questões disponíveis com os filtros selecionados:\n';
+          if (selectedBanca) errorMessage += `• Banca: ${selectedBanca}\n`;
+          if (selectedNivel) errorMessage += `• Nível: ${selectedNivel}\n`;
+          errorMessage += '\nTente remover alguns filtros ou importe mais questões.';
+        } else {
+          errorMessage += 'O banco de dados está vazio.\nPor favor, importe questões antes de iniciar o simulado.';
+        }
+        
+        alert(errorMessage);
         setLoading(false);
         return;
       }
@@ -299,8 +337,8 @@ export const useSimulatedExam = (): SimulatedExamData => {
           subject_id: q.discipline,
           difficulty_level: 'medio',
           banca: q.banca,
-          year: String(q.year || ''),
-          exam_name: q.exam_name || 'Simulado'
+          year: String(q.year || q.ano || ''),
+          exam_name: `${q.cargo || 'Simulado'} - ${q.orgao || ''}`
         };
       });
 
@@ -331,7 +369,7 @@ export const useSimulatedExam = (): SimulatedExamData => {
     } finally {
       setLoading(false);
     }
-  }, [questionCount, timeLimit]);
+  }, [questionCount, timeLimit, selectedBanca, selectedNivel]);
 
   /**
    * Finaliza o exame e salva resultado
@@ -418,6 +456,20 @@ export const useSimulatedExam = (): SimulatedExamData => {
   }, []);
 
   /**
+   * Define a banca selecionada
+   */
+  const setBanca = useCallback((banca: string) => {
+    setSelectedBanca(banca);
+  }, []);
+
+  /**
+   * Define o nível selecionado
+   */
+  const setNivel = useCallback((nivel: string) => {
+    setSelectedNivel(nivel);
+  }, []);
+
+  /**
    * Reseta o simulado para config inicial
    */
   const reset = useCallback(() => {
@@ -442,6 +494,8 @@ export const useSimulatedExam = (): SimulatedExamData => {
     // Config
     questionCount,
     timeLimit,
+    selectedBanca,
+    selectedNivel,
     
     // Questions
     selectedQuestions,
@@ -467,6 +521,8 @@ export const useSimulatedExam = (): SimulatedExamData => {
     // Actions
     setQuestionCount,
     setTimeLimit,
+    setBanca,
+    setNivel,
     startExam,
     finishExam,
     selectAnswer,

@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { ArrowLeft, Plus, Check, Trash2, GraduationCap, Building2, Search, X } from 'lucide-react';
 import { useConcursoProfile, perfisPredefinidos } from '../context/ConcursoProfileContext';
 import { useCustomization } from '../context/CustomizationContext';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { sqliteService } from '../lib/database/SQLiteService';
 
 interface ProfileSelectorProps {
   onBack: () => void;
@@ -15,6 +16,13 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
   const { theme } = useCustomization(); // Obter tema ativo
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Estados para autocomplete de cargo
+  const [availableCargos, setAvailableCargos] = useState<string[]>([]);
+  const [showCargoSuggestions, setShowCargoSuggestions] = useState(false);
+  const [filteredCargos, setFilteredCargos] = useState<string[]>([]);
+  const cargoInputRef = useRef<HTMLInputElement>(null);
+  const cargoDropdownRef = useRef<HTMLDivElement>(null);
   
   // Estado para novo perfil
   const [customProfile, setCustomProfile] = useState({
@@ -85,6 +93,79 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
     superior: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800',
   }[nivel] || 'bg-gray-100 dark:bg-gray-800');
 
+  // Buscar cargos disponíveis do banco de dados
+  useEffect(() => {
+    const fetchCargos = async () => {
+      try {
+        console.log('📚 Tentando carregar cargos do banco...');
+        await sqliteService.initialize();
+        const result = await sqliteService.query(
+          'SELECT DISTINCT cargo FROM exams ORDER BY cargo ASC',
+          []
+        );
+        const cargos = result.map((row: any) => row.cargo).filter(Boolean);
+        console.log('🔍 Cargos carregados do banco:', cargos.length, cargos.slice(0, 5));
+        
+        // Se não houver cargos no banco, usar os perfis predefinidos como fallback
+        if (cargos.length === 0) {
+          console.log('⚠️ Banco vazio, usando perfis predefinidos como fallback');
+          const cargosPredefinidos = perfisPredefinidos.map(p => p.nome);
+          setAvailableCargos(cargosPredefinidos);
+        } else {
+          setAvailableCargos(cargos);
+        }
+      } catch (error) {
+        console.error('❌ Erro ao buscar cargos:', error);
+        // Fallback: usar perfis predefinidos
+        console.log('🔄 Usando perfis predefinidos como fallback');
+        const cargosPredefinidos = perfisPredefinidos.map(p => p.nome);
+        setAvailableCargos(cargosPredefinidos);
+      }
+    };
+    
+    if (showCreateForm) {
+      fetchCargos();
+    }
+  }, [showCreateForm]);
+
+  // Filtrar cargos conforme digitação
+  useEffect(() => {
+    console.log('🔎 Filtrando cargos:', {
+      nomeDigitado: customProfile.nome,
+      cargosDisponiveis: availableCargos.length
+    });
+    
+    if (customProfile.nome.trim() && availableCargos.length > 0) {
+      const term = customProfile.nome.toLowerCase();
+      const filtered = availableCargos
+        .filter(cargo => cargo.toLowerCase().includes(term))
+        .slice(0, 8); // Máximo 8 sugestões
+      
+      console.log('✅ Cargos filtrados:', filtered.length, filtered);
+      setFilteredCargos(filtered);
+      setShowCargoSuggestions(filtered.length > 0);
+    } else {
+      setFilteredCargos([]);
+      setShowCargoSuggestions(false);
+    }
+  }, [customProfile.nome, availableCargos]);
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const clickedInput = cargoInputRef.current && cargoInputRef.current.contains(target);
+      const clickedDropdown = cargoDropdownRef.current && cargoDropdownRef.current.contains(target);
+      
+      if (!clickedInput && !clickedDropdown) {
+        setShowCargoSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header Fixo */}
@@ -141,16 +222,35 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
               </div>
               
               <div className="space-y-4">
-                <div>
+                <div className="relative">
                   <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">
                     Cargo *
                   </label>
                   <input 
                     value={customProfile.nome}
                     onChange={e => setCustomProfile({...customProfile, nome: e.target.value})}
+                    onFocus={() => customProfile.nome && setShowCargoSuggestions(true)}
                     placeholder="Ex: Auditor Fiscal"
                     className="w-full p-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary"
+                    ref={cargoInputRef}
                   />
+                  {showCargoSuggestions && filteredCargos.length > 0 && (
+                    <div className="absolute z-50 mt-1 w-full bg-card border border-border shadow-lg rounded-lg max-h-48 overflow-y-auto" ref={cargoDropdownRef}>
+                      {filteredCargos.map((cargo, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            setCustomProfile({...customProfile, nome: cargo});
+                            setShowCargoSuggestions(false);
+                          }}
+                          className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-accent transition-colors first:rounded-t-lg last:rounded-b-lg border-b border-border last:border-b-0"
+                        >
+                          {cargo}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 
                 <div>

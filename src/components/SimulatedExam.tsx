@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { 
-  ArrowLeft, Trophy, Target, Play, Loader2, Clock
+  ArrowLeft, Trophy, Target, Play, Loader2, Clock, Building2, GraduationCap
 } from 'lucide-react';
 import { useCustomization } from '../context/CustomizationContext';
 import { APP_THEMES } from '../lib/themeConfig';
@@ -151,6 +151,56 @@ export function SimulatedExam({ onBack }: SimulatedExamProps) {
                   <span>30min</span>
                   <span>2h 30min</span>
                   <span>5h</span>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-border my-2"></div>
+
+              {/* Banca e Nível lado a lado */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Banca Filter */}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-muted-foreground" />
+                    Banca Organizadora
+                  </label>
+                  <select
+                    value={exam.selectedBanca}
+                    onChange={(e) => exam.setBanca(e.target.value)}
+                    className="w-full p-3 rounded-xl border-2 border-border bg-background text-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors outline-none"
+                  >
+                    <option value="">Todas as Bancas</option>
+                    <option value="CESPE/CEBRASPE">CESPE/CEBRASPE</option>
+                    <option value="FCC">FCC</option>
+                    <option value="FGV">FGV</option>
+                    <option value="VUNESP">VUNESP</option>
+                    <option value="IBFC">IBFC</option>
+                    <option value="AOCP">AOCP</option>
+                    <option value="IDECAN">IDECAN</option>
+                    <option value="QUADRIX">QUADRIX</option>
+                    <option value="IADES">IADES</option>
+                    <option value="CONSULPLAN">CONSULPLAN</option>
+                  </select>
+                </div>
+
+                {/* Nivel Filter */}
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-muted-foreground" />
+                    Nível de Escolaridade
+                  </label>
+                  <select
+                    value={exam.selectedNivel}
+                    onChange={(e) => exam.setNivel(e.target.value)}
+                    className="w-full p-3 rounded-xl border-2 border-border bg-background text-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors outline-none"
+                  >
+                    <option value="">Todos os Níveis</option>
+                    <option value="fundamental">Fundamental</option>
+                    <option value="medio">Médio</option>
+                    <option value="tecnico">Técnico</option>
+                    <option value="superior">Superior</option>
+                  </select>
                 </div>
               </div>
             </div>
