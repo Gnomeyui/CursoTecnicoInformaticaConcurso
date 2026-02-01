@@ -2,17 +2,17 @@
  * @file useStudySession.ts
  * @description Custom Hook para lógica da Sessão de Estudos
  * @pattern Headless Logic Pattern - Separação total de UI e Lógica
+ * @updated 2026-02-01 - Migrado para SQLite Offline-First
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { questions } from '../data/questions';
 import { useGame } from '../context/GameContext';
 import { useStats } from '../context/StatsContext';
 import { useWrongQuestions } from '../context/WrongQuestionsContext';
+import { sqliteService } from '../lib/database/SQLiteService';
 import { 
   shuffleQuestionOptions, 
   mixQuestionsWithReview, 
-  filterQuestions, 
   ShuffledQuestion 
 } from '../utils/questionHelpers';
 
@@ -24,7 +24,22 @@ export type Difficulty = 'easy' | 'medium' | 'hard' | 'mix';
 /**
  * Session status types
  */
-export type SessionStatus = 'loading' | 'ready' | 'empty' | 'migrated';
+export type SessionStatus = 'loading' | 'ready' | 'empty' | 'error';
+
+/**
+ * Question from SQLite
+ */
+interface SQLiteQuestion {
+  id: string | number;
+  exam_id: number;
+  question_number: number;
+  discipline: string;
+  statement: string;
+  options: string; // JSON string
+  correct_option: string; // 'a', 'b', 'c', 'd'
+  difficulty?: string;
+  explanation?: string;
+}
 
 /**
  * Dados retornados pelo hook
@@ -62,6 +77,55 @@ export interface StudySessionData {
   confirmAnswer: () => void;
   nextQuestion: () => void;
   getDifficultyColor: (diff: string) => string;
+}
+
+/**
+ * Converte questão do SQLite para formato interno
+ */
+function convertSQLiteQuestion(q: SQLiteQuestion): any {
+  try {
+    // Parse options de JSON string para objeto
+    const optionsObj = typeof q.options === 'string' 
+      ? JSON.parse(q.options) 
+      : q.options;
+
+    // Converter {a: '...', b: '...', c: '...', d: '...'} para array
+    const optionsArray = Array.isArray(optionsObj)
+      ? optionsObj
+      : Object.values(optionsObj);
+
+    // Mapear dificuldade SQLite -> formato interno
+    const difficultyMap: Record<string, Difficulty> = {
+      'facil': 'easy',
+      'medio': 'medium',
+      'dificil': 'hard',
+      'easy': 'easy',
+      'medium': 'medium',
+      'hard': 'hard'
+    };
+
+    const difficulty = difficultyMap[q.difficulty?.toLowerCase() || 'medium'] || 'medium';
+
+    // Mapear letra correta (a, b, c, d) para índice (0, 1, 2, 3)
+    const correctAnswerMap: Record<string, number> = {
+      'a': 0, 'b': 1, 'c': 2, 'd': 3
+    };
+
+    const correctAnswer = correctAnswerMap[q.correct_option.toLowerCase()] ?? 0;
+
+    return {
+      id: Number(q.id) || Number(q.question_number),
+      question: q.statement,
+      subject: q.discipline,
+      options: optionsArray,
+      correctAnswer,
+      difficulty,
+      explanation: q.explanation || ''
+    };
+  } catch (error) {
+    console.error('Erro ao converter questão SQLite:', error, q);
+    return null;
+  }
 }
 
 /**
@@ -110,53 +174,124 @@ export const useStudySession = (
   const [sessionQuestions, setSessionQuestions] = useState<ShuffledQuestion[]>([]);
   const [sessionStats, setSessionStats] = useState({ correct: 0, total: 0 });
   const [reviewQuestionIds, setReviewQuestionIds] = useState<number[]>([]);
+  const [status, setStatus] = useState<SessionStatus>('loading');
 
   // ============================================
-  // 3. STATUS
-  // ============================================
-  const status: SessionStatus = useMemo(() => {
-    if (questions.length === 0) return 'migrated';
-    if (sessionQuestions.length === 0) return 'loading';
-    return 'ready';
-  }, [sessionQuestions.length]);
-
-  // ============================================
-  // 4. INITIALIZE SESSION
+  // 3. LOAD QUESTIONS FROM SQLITE
   // ============================================
   useEffect(() => {
-    if (questions.length === 0) return;
+    let isMounted = true;
 
-    // Filtrar questões por dificuldade e matéria
-    const filtered = filterQuestions(questions, difficulty, subject);
-    
-    // Debug logs
-    console.log('📚 Total de questões disponíveis:', questions.length);
-    console.log('🎯 Dificuldade selecionada:', difficulty);
-    console.log('📖 Matéria selecionada:', subject);
-    console.log('✅ Questões após filtros:', filtered.length);
-    
-    // Obter questões erradas para revisão (máximo 2 repetições)
-    const wrongIds = getWrongQuestionsForReview(2);
-    setReviewQuestionIds(wrongIds);
-    
-    console.log('🔄 Questões erradas disponíveis para revisão:', wrongIds.length);
-    
-    // Mesclar questões novas com questões de revisão (30% de revisão)
-    const mixedQuestions = mixQuestionsWithReview(filtered, wrongIds, 10, 0.3);
-    
-    console.log('📝 Questões da sessão:', mixedQuestions.length);
-    console.log('🔄 Questões de revisão incluídas:', 
-      mixedQuestions.filter(q => wrongIds.includes(q.id)).length
-    );
-    
-    // Embaralhar as alternativas de cada questão
-    const shuffledQuestions = mixedQuestions.map(q => shuffleQuestionOptions(q));
-    
-    setSessionQuestions(shuffledQuestions);
+    const loadQuestions = async () => {
+      try {
+        setStatus('loading');
+        console.log('📚 Carregando questões do SQLite...');
+        console.log('🎯 Filtros:', { difficulty, subject });
+
+        // Inicializar SQLite
+        await sqliteService.initialize();
+
+        // Construir query com filtros
+        let query = 'SELECT * FROM questions WHERE 1=1';
+        const params: any[] = [];
+
+        // Filtro de matéria
+        if (subject && subject !== 'all') {
+          query += ' AND discipline = ?';
+          params.push(subject);
+        }
+
+        // Filtro de dificuldade (se não for 'mix')
+        if (difficulty !== 'mix') {
+          const difficultyMap: Record<Difficulty, string> = {
+            'easy': 'facil',
+            'medium': 'medio',
+            'hard': 'dificil',
+            'mix': 'medio' // fallback
+          };
+          
+          query += ' AND difficulty = ?';
+          params.push(difficultyMap[difficulty]);
+        }
+
+        // Ordenar aleatoriamente e limitar
+        query += ' ORDER BY RANDOM() LIMIT 10';
+
+        console.log('🔍 Query:', query);
+        console.log('🔍 Params:', params);
+
+        // Executar query
+        const results = await sqliteService.query(query, params);
+
+        console.log(`✅ ${results.length} questões encontradas`);
+
+        if (!isMounted) return;
+
+        // Verificar se há questões
+        if (results.length === 0) {
+          console.warn('⚠️ Nenhuma questão encontrada com os filtros:', { difficulty, subject });
+          setStatus('empty');
+          setSessionQuestions([]);
+          return;
+        }
+
+        // Converter questões do SQLite para formato interno
+        const convertedQuestions = results
+          .map(convertSQLiteQuestion)
+          .filter(q => q !== null);
+
+        if (convertedQuestions.length === 0) {
+          console.error('❌ Erro ao converter questões');
+          setStatus('error');
+          return;
+        }
+
+        console.log('📝 Questões convertidas:', convertedQuestions.length);
+
+        // Obter questões erradas para revisão (máximo 2 repetições)
+        const wrongIds = getWrongQuestionsForReview(2);
+        setReviewQuestionIds(wrongIds);
+
+        console.log('🔄 Questões erradas disponíveis para revisão:', wrongIds.length);
+
+        // Mesclar questões novas com questões de revisão (30% de revisão)
+        const mixedQuestions = mixQuestionsWithReview(
+          convertedQuestions, 
+          wrongIds, 
+          10, 
+          0.3
+        );
+
+        console.log('📝 Questões da sessão:', mixedQuestions.length);
+        console.log('🔄 Questões de revisão incluídas:', 
+          mixedQuestions.filter(q => wrongIds.includes(q.id)).length
+        );
+
+        // Embaralhar as alternativas de cada questão
+        const shuffledQuestions = mixedQuestions.map(q => shuffleQuestionOptions(q));
+
+        setSessionQuestions(shuffledQuestions);
+        setStatus('ready');
+
+      } catch (error) {
+        console.error('❌ Erro ao carregar questões do SQLite:', error);
+        
+        if (isMounted) {
+          setStatus('error');
+          setSessionQuestions([]);
+        }
+      }
+    };
+
+    loadQuestions();
+
+    return () => {
+      isMounted = false;
+    };
   }, [difficulty, subject, getWrongQuestionsForReview]);
 
   // ============================================
-  // 5. COMPUTED VALUES
+  // 4. COMPUTED VALUES
   // ============================================
   const currentQuestion = useMemo(() => {
     return sessionQuestions[currentQuestionIndex] || null;
@@ -181,7 +316,7 @@ export const useStudySession = (
   }, [sessionStats]);
 
   // ============================================
-  // 6. ACTIONS (CALLBACKS)
+  // 5. ACTIONS (CALLBACKS)
   // ============================================
 
   /**
@@ -262,7 +397,7 @@ export const useStudySession = (
   }, []);
 
   // ============================================
-  // 7. RETURN (Dados e Ações)
+  // 6. RETURN (Dados e Ações)
   // ============================================
   return {
     // Question State

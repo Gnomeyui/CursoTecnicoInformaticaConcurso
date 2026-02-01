@@ -24,13 +24,41 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
   const cargoInputRef = useRef<HTMLInputElement>(null);
   const cargoDropdownRef = useRef<HTMLDivElement>(null);
   
+  // Estados para autocomplete de matérias
+  const [availableMaterias, setAvailableMaterias] = useState<string[]>([]);
+  const [showMateriaSuggestions, setShowMateriaSuggestions] = useState(false);
+  const [filteredMaterias, setFilteredMaterias] = useState<string[]>([]);
+  const [materiaInput, setMateriaInput] = useState('');
+  const materiaInputRef = useRef<HTMLInputElement>(null);
+  const materiaDropdownRef = useRef<HTMLDivElement>(null);
+  
   // Estado para novo perfil
   const [customProfile, setCustomProfile] = useState({
     nome: '',
     nivel: 'medio' as 'fundamental' | 'medio' | 'superior',
     orgao: '',
-    materias: [] as string[],
+    materias: [] as string[], // Array de matérias selecionadas
   });
+
+  // Função para adicionar matéria via vírgula
+  const addMateriaFromInput = (materia: string) => {
+    const trimmedMateria = materia.trim();
+    if (trimmedMateria && !customProfile.materias.includes(trimmedMateria) && customProfile.materias.length < 15) {
+      const novasMaterias = [...customProfile.materias, trimmedMateria];
+      setCustomProfile({
+        ...customProfile, 
+        materias: novasMaterias
+      });
+      // Atualiza o input com todas as matérias separadas por vírgula
+      setMateriaInput(novasMaterias.join(', ') + ', ');
+    }
+  };
+
+  // Função para obter o termo de busca atual (após a última vírgula)
+  const getCurrentSearchTerm = (inputValue: string): string => {
+    const parts = inputValue.split(',');
+    return parts[parts.length - 1].trim();
+  };
 
   const allMaterias = [
     'Informática', 
@@ -69,15 +97,6 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
       setSearchTerm('');
       setCustomProfile({ nome: '', nivel: 'medio', orgao: '', materias: [] });
     }
-  };
-
-  const toggleMateria = (materia: string) => {
-    setCustomProfile(prev => ({
-      ...prev,
-      materias: prev.materias.includes(materia)
-        ? prev.materias.filter(m => m !== materia)
-        : [...prev.materias, materia]
-    }));
   };
 
   // Helpers de UI
@@ -159,6 +178,80 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
       
       if (!clickedInput && !clickedDropdown) {
         setShowCargoSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Buscar matérias disponíveis do banco de dados
+  useEffect(() => {
+    const fetchMaterias = async () => {
+      try {
+        console.log('📚 Tentando carregar matérias do banco...');
+        await sqliteService.initialize();
+        const result = await sqliteService.query(
+          'SELECT DISTINCT materia FROM exams ORDER BY materia ASC',
+          []
+        );
+        const materias = result.map((row: any) => row.materia).filter(Boolean);
+        console.log('🔍 Matérias carregadas do banco:', materias.length, materias.slice(0, 5));
+        
+        // Se não houver matérias no banco, usar as matérias predefinidas como fallback
+        if (materias.length === 0) {
+          console.log('⚠️ Banco vazio, usando matérias predefinidas como fallback');
+          setAvailableMaterias(allMaterias);
+        } else {
+          setAvailableMaterias(materias);
+        }
+      } catch (error) {
+        console.error('❌ Erro ao buscar matérias:', error);
+        // Fallback: usar matérias predefinidas
+        console.log('🔄 Usando matérias predefinidas como fallback');
+        setAvailableMaterias(allMaterias);
+      }
+    };
+    
+    if (showCreateForm) {
+      fetchMaterias();
+    }
+  }, [showCreateForm]);
+
+  // Filtrar matérias conforme digitação
+  useEffect(() => {
+    const currentTerm = getCurrentSearchTerm(materiaInput);
+    console.log('🔎 Filtrando matérias:', {
+      inputCompleto: materiaInput,
+      termoAtual: currentTerm,
+      materiasDisponiveis: availableMaterias.length
+    });
+    
+    if (currentTerm && availableMaterias.length > 0 && customProfile.materias.length < 15) {
+      const term = currentTerm.toLowerCase();
+      const filtered = availableMaterias
+        .filter(materia => !customProfile.materias.includes(materia)) // Não mostrar já selecionadas
+        .filter(materia => materia.toLowerCase().includes(term))
+        .slice(0, 8); // Máximo 8 sugestões
+      
+      console.log('✅ Matérias filtradas:', filtered.length, filtered);
+      setFilteredMaterias(filtered);
+      setShowMateriaSuggestions(filtered.length > 0);
+    } else {
+      setFilteredMaterias([]);
+      setShowMateriaSuggestions(false);
+    }
+  }, [materiaInput, availableMaterias, customProfile.materias]);
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const clickedInput = materiaInputRef.current && materiaInputRef.current.contains(target);
+      const clickedDropdown = materiaDropdownRef.current && materiaDropdownRef.current.contains(target);
+      
+      if (!clickedInput && !clickedDropdown) {
+        setShowMateriaSuggestions(false);
       }
     };
 
@@ -288,24 +381,91 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                 
                 <div>
                   <label className="text-xs font-bold text-muted-foreground uppercase mb-2 block">
-                    Matérias Principais (opcional)
+                    Matéria
                   </label>
-                  <div className="flex flex-wrap gap-2">
-                    {allMaterias.map(m => (
-                      <button
-                        key={m}
-                        onClick={() => toggleMateria(m)}
-                        className={`text-xs px-3 py-2 rounded-full border transition-all ${
-                          customProfile.materias.includes(m)
-                            ? 'bg-blue-100 dark:bg-blue-500/20 border-blue-400 text-blue-700 dark:text-blue-400 font-semibold'
-                            : 'bg-muted border-border text-muted-foreground hover:border-primary/50'
-                        }`}
-                      >
-                        {customProfile.materias.includes(m) && <Check size={12} className="inline mr-1" />}
-                        {m}
-                      </button>
-                    ))}
+                  
+                  {/* Matérias Selecionadas */}
+                  {customProfile.materias.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {customProfile.materias.map((mat, idx) => (
+                        <span 
+                          key={idx}
+                          className="text-xs bg-blue-100 dark:bg-blue-500/20 border border-blue-400 text-blue-700 dark:text-blue-400 px-2 py-1 rounded-full flex items-center gap-1"
+                        >
+                          {mat}
+                          <button
+                            onClick={() => {
+                              setCustomProfile({
+                                ...customProfile, 
+                                materias: customProfile.materias.filter((_, i) => i !== idx)
+                              });
+                            }}
+                            className="hover:text-blue-900 dark:hover:text-blue-200"
+                          >
+                            <X size={12} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <div className="relative">
+                    <input 
+                      value={materiaInput}
+                      onChange={e => setMateriaInput(e.target.value)}
+                      onFocus={() => setShowMateriaSuggestions(true)}
+                      onKeyDown={(e) => {
+                        const currentTerm = getCurrentSearchTerm(materiaInput);
+                        
+                        if (e.key === 'Enter' && currentTerm.trim()) {
+                          e.preventDefault();
+                          if (!customProfile.materias.includes(currentTerm.trim()) && customProfile.materias.length < 15) {
+                            const novasMaterias = [...customProfile.materias, currentTerm.trim()];
+                            setCustomProfile({
+                              ...customProfile, 
+                              materias: novasMaterias
+                            });
+                            setMateriaInput(novasMaterias.join(', ') + ', ');
+                          }
+                          setShowMateriaSuggestions(false);
+                        } else if (e.key === ',') {
+                          e.preventDefault();
+                          addMateriaFromInput(currentTerm);
+                        }
+                      }}
+                      placeholder={customProfile.materias.length >= 15 ? "Limite de 15 matérias atingido" : "Escreva a matéria e selecione..."}
+                      disabled={customProfile.materias.length >= 15}
+                      className="w-full p-3 rounded-lg border border-border bg-background text-foreground focus:ring-2 focus:ring-primary placeholder:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                      ref={materiaInputRef}
+                    />
+                    {showMateriaSuggestions && filteredMaterias.length > 0 && customProfile.materias.length < 15 && (
+                      <div className="absolute z-50 mt-1 w-full bg-card border border-border shadow-lg rounded-lg max-h-48 overflow-y-auto" ref={materiaDropdownRef}>
+                        {filteredMaterias.map((materia, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              if (!customProfile.materias.includes(materia) && customProfile.materias.length < 15) {
+                                const novasMaterias = [...customProfile.materias, materia];
+                                setCustomProfile({
+                                  ...customProfile, 
+                                  materias: novasMaterias
+                                });
+                                setMateriaInput(novasMaterias.join(', ') + ', ');
+                              }
+                              setShowMateriaSuggestions(false);
+                            }}
+                            className="w-full text-left px-4 py-2.5 text-sm text-foreground hover:bg-accent transition-colors first:rounded-t-lg last:rounded-b-lg border-b border-border last:border-b-0"
+                          >
+                            {materia}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
+                  <p className="text-xs text-muted-foreground mt-1.5">
+                    Escreva a matéria e selecione da lista. Máximo de 15 matérias ({customProfile.materias.length}/15).
+                  </p>
                 </div>
 
                 <Button 
@@ -420,7 +580,7 @@ export function ProfileSelector({ onBack }: ProfileSelectorProps) {
                   }}
                   className="text-blue-600 dark:text-blue-400 text-sm font-bold flex items-center gap-1 hover:text-blue-700 dark:hover:text-blue-300"
                 >
-                  <Plus size={16} /> Criar Outro
+                  <Plus size={16} /> Criar plano de estudo
                 </button>
               </div>
               

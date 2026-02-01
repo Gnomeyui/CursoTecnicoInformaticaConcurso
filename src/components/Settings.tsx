@@ -7,7 +7,7 @@
 import React from 'react';
 import { 
   Bell, Trash2, LogOut, User, 
-  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles, RotateCcw, MessageSquare, Ticket
+  ChevronRight, Palette, Clock, Shield, HelpCircle, ArrowLeft, Crown, Zap, Sparkles, RotateCcw, MessageSquare, Ticket, Database
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -17,6 +17,8 @@ import { UpgradeScreen } from './UpgradeScreen';
 import { PlanSelector } from './PlanSelector';
 import { useSettings } from '../hooks/useSettings';
 import { NotificationTestPanel } from './NotificationTestPanel';
+import { DownloadManager } from './DownloadManager';
+import { useConcursoProfile } from '../context/ConcursoProfileContext';
 
 /**
  * Props do Settings
@@ -298,6 +300,14 @@ export function Settings({
             </div>
           </section>
         )}
+
+        {/* GRUPO 0.7: DADOS OFFLINE */}
+        <section>
+          <h2 className="text-xs font-bold text-muted-foreground uppercase ml-4 mb-3 tracking-widest">
+            Banco de Dados Offline
+          </h2>
+          <DownloadManager />
+        </section>
 
         {/* GRUPO 1: ESTUDO */}
         <section>
